@@ -34,6 +34,7 @@ function renderDetail(el, r){
 
 function clearResults(){
   hasResult = false;
+  $('sumGross').closest('.card').classList.add('is-empty');
   ['sumGross','sumCost','sumRoi'].forEach(id => { $(id).textContent = '--'; });
   ['sumPnl','sumPnlFull','sumPnlDiff'].forEach(id => { $(id).textContent = '--'; $(id).style.color = ''; });
   $('detailNormal').innerHTML = '';
@@ -73,6 +74,7 @@ function updateCalculator(){
     return;
   }
   hasResult = true;
+  $('sumGross').closest('.card').classList.remove('is-empty');
   $('gaugeTrack').parentElement.hidden = false;
 
   renderDetail($('detailNormal'), rNormalFull);

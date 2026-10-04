@@ -10,8 +10,7 @@
 <body>
 
 <div class="topbar">
-  <span class="dot"></span>
-  <span class="brand">Brian工作室</span>
+  <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
 </div>
 <div class="subbar">
   <a href="home_page.html">🏠 首頁</a><span>›</span><a class="here" href="dividend_cashflow.html">股息與現金流規劃</a>
@@ -43,15 +42,6 @@
   </div>
 </main>
 
-<button id="backToTop" aria-label="回到頂部" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<script>
-(function(){
-  var btn = document.getElementById('backToTop');
-  window.addEventListener('scroll', function(){
-    btn.classList.toggle('show', window.scrollY > 400);
-  });
-})();
-</script>
 <script src="nav.js"></script>
 </body>
 </html>

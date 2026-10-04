@@ -27,13 +27,32 @@ body{
 .topbar{
   background:var(--navy);
   color:#eafff6;
-  display:flex;align-items:center;gap:10px;
-  padding:14px 20px;
+  display:flex;align-items:center;gap:14px;
+  padding:10px 20px;
+  position:sticky;top:0;z-index:60;
 }
 .topbar a{color:inherit;text-decoration:none;}
+.topbar .home-link{display:flex;align-items:center;gap:10px;flex:none;}
+/* Breadcrumb merged into the top bar by nav.js */
+.crumbs{
+  display:flex;align-items:center;gap:8px;min-width:0;
+  padding-left:14px;border-left:1px solid rgba(234,255,246,.25);
+  font-size:13px;color:#b9d3c8;
+  overflow:hidden;white-space:nowrap;
+}
+.crumbs a{color:#b9d3c8;}
+.crumbs a:hover{color:#fff;text-decoration:underline;}
+.crumbs a.here{color:#fff;font-weight:700;overflow:hidden;text-overflow:ellipsis;}
+@media (max-width:640px){
+  .topbar{padding:10px 14px;gap:10px;}
+  .topbar .brand{display:none;}
+  .crumbs{padding-left:10px;}
+  /* On phones keep only the parent › current page; earlier crumbs and separators are hidden */
+  .crumbs > :nth-last-child(n+4){display:none;}
+}
 .topbar .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
 .topbar .brand{font-weight:700;font-size:15px;letter-spacing:.02em;}
-.tool-menu{margin-left:auto;position:relative;}
+.tool-menu{margin-left:auto;position:relative;flex:none;}
 .tool-menu-btn{
   border:1px solid rgba(234,255,246,.35);
   background:transparent;
@@ -50,6 +69,14 @@ body{
   box-shadow:0 12px 32px rgba(15,34,51,.18);
   padding:8px;
 }
+.tool-menu-search{
+  width:100%;margin:0 0 8px;padding:8px 10px;
+  border:1.5px solid var(--border);border-radius:8px;
+  font:inherit;font-size:16px;color:var(--text);background:var(--surface);outline:none;
+}
+.tool-menu-search:focus{border-color:var(--accent);background:#fff;}
+.tool-menu-empty{margin:8px 10px;font-size:13px;color:var(--text-muted);}
+.tool-menu-group[hidden],.tool-menu-panel a[hidden]{display:none;}
 .tool-menu-group + .tool-menu-group{border-top:1px solid var(--border);margin-top:6px;padding-top:6px;}
 .tool-menu-panel a{display:block;border-radius:8px;padding:8px 10px;color:var(--navy);}
 .tool-menu-panel a.tool-menu-head{font-weight:700;font-size:14px;}
@@ -527,3 +554,62 @@ label{
 @media (min-width:641px){
   #backToTop{display:none !important;}
 }
+
+/* Footer injected by nav.js */
+.site-footer{
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  padding:18px 20px calc(18px + env(safe-area-inset-bottom, 0px));
+  font-size:13px;color:var(--text-muted);
+}
+.footer-inner{
+  max-width:1180px;margin:0 auto;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;
+}
+.footer-links{display:flex;flex-wrap:wrap;gap:6px 18px;}
+.footer-links a{color:var(--text-muted);text-decoration:none;font-weight:600;}
+.footer-links a:hover{color:var(--accent-strong);text-decoration:underline;}
+.footer-updated{margin:0;font-variant-numeric:tabular-nums;}
+
+/* Empty state: results dim and a hint shows until the inputs are valid */
+.empty-hint{
+  display:none;
+  margin:0 0 16px;padding:12px 14px;
+  border:1.5px dashed var(--border);border-radius:10px;
+  background:var(--surface);color:var(--text-muted);
+  font-size:13px;line-height:1.6;
+}
+.card.is-empty > .empty-hint{display:block;}
+.card.is-empty .tiles,
+.card.is-empty .gauge-wrap,
+.card.is-empty .pct-list,
+.card.is-empty .table-wrap,
+.card.is-empty .chart-wrap{opacity:.38;filter:grayscale(1);pointer-events:none;}
+
+/* Line chart (定期定額) */
+.chart-wrap{position:relative;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 8px;font-size:12.5px;color:var(--text-muted);}
+.chart-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px;border-radius:2px;}
+.chart-legend i.dash{border-top-style:dashed;}
+.chart-svg{display:block;width:100%;height:auto;touch-action:pan-y;}
+.chart-svg text{font-family:var(--font-main);font-size:11px;fill:var(--text-muted);}
+.chart-svg .grid{stroke:var(--border);stroke-width:1;}
+.chart-svg .axis{stroke:var(--text-muted);stroke-width:1;opacity:.5;}
+.chart-svg .line-invested{fill:none;stroke:var(--navy-2);stroke-width:2;stroke-dasharray:5 4;}
+.chart-svg .line-assets{fill:none;stroke:var(--accent-strong);stroke-width:2.5;stroke-linejoin:round;}
+.chart-svg .line-assets.neg{stroke:var(--loss);}
+.chart-svg .area-assets{fill:var(--accent);opacity:.14;}
+.chart-svg .area-assets.neg{fill:var(--loss);}
+.chart-svg .cursor{stroke:var(--navy);stroke-width:1;opacity:.35;}
+.chart-svg .dot-invested{fill:var(--navy-2);stroke:#fff;stroke-width:2;}
+.chart-svg .dot-assets{fill:var(--accent-strong);stroke:#fff;stroke-width:2;}
+.chart-svg .dot-assets.neg{fill:var(--loss);}
+.chart-tip{
+  position:absolute;top:0;left:0;z-index:2;pointer-events:none;
+  min-width:150px;padding:8px 10px;
+  background:var(--navy);color:#eafff6;border-radius:8px;
+  font-size:12px;line-height:1.6;white-space:nowrap;
+  box-shadow:0 6px 18px rgba(15,34,51,.25);
+}
+.chart-tip b{color:#fff;}
+.chart-tip[hidden]{display:none;}

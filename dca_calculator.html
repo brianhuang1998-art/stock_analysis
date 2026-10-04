@@ -57,8 +57,7 @@
 <body>
 
 <div class="topbar">
-  <span class="dot"></span>
-  <span class="brand">Brian工作室</span>
+  <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
 </div>
 <div class="subbar">
   <a href="home_page.html">🏠 首頁</a><span>›</span><a href="trading_position.html">交易與部位管理</a><span>›</span><a class="here" href="dca_calculator.html">定期定額複利試算</a>
@@ -110,6 +109,7 @@
 
       <div class="card">
         <h2>試算結果</h2>
+        <p class="empty-hint">請先修正上方標紅的欄位，結果會自動更新。</p>
         <div class="tiles">
           <div class="tile">
             <div class="k">累積投入本金</div>
@@ -135,8 +135,23 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card" id="chartCard">
+        <h2>資產成長圖</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會畫出累積投入與資產的成長曲線。</p>
+        <div class="chart-wrap" id="chartWrap">
+          <div class="chart-legend">
+            <span><i class="dash" style="border-color:var(--navy-2)"></i>累積投入本金</span>
+            <span><i style="border-color:var(--accent-strong)"></i>期末預估資產</span>
+          </div>
+          <svg class="chart-svg" id="chartSvg" viewBox="0 0 640 300" role="img" aria-label="累積投入本金與期末預估資產的逐年成長折線圖"></svg>
+          <div class="chart-tip" id="chartTip" hidden></div>
+        </div>
+        <p class="foot-note" style="margin-top:10px;">兩條線之間的距離就是複利累積出來的報酬；時間越長，距離拉得越開。</p>
+      </div>
+
+      <div class="card" id="tableCard">
         <h2>逐年明細</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會列出逐年明細。</p>
         <div class="table-wrap">
           <table class="dca-table">
             <thead>
@@ -249,6 +264,108 @@
     el.classList.toggle('loss', n < 0);
   }
 
+  /* ---------- growth chart (inline SVG, no library) ---------- */
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const W = 640, H = 300, PAD = { l: 58, r: 16, t: 14, b: 30 };
+  let chartPts = [];
+  let chartGeom = null;
+
+  function fmtAxis(n){
+    if(n >= 1e8) return +(n / 1e8).toFixed(1) + ' 億';
+    if(n >= 1e4) return +(n / 1e4).toFixed(1) + ' 萬';
+    return Math.round(n).toLocaleString('zh-Hant-TW');
+  }
+  function niceMax(v){
+    if(v <= 0) return 1;
+    const exp = Math.pow(10, Math.floor(Math.log10(v)));
+    const f = v / exp;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * exp;
+  }
+  function el(name, attrs, text){
+    const e = document.createElementNS(SVG_NS, name);
+    Object.keys(attrs || {}).forEach(k => e.setAttribute(k, attrs[k]));
+    if(text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function drawChart(points){
+    const svg = $('chartSvg');
+    chartPts = points;
+    svg.innerHTML = '';
+    $('chartTip').hidden = true;
+
+    const maxY = niceMax(Math.max(...points.map(p => Math.max(p.invested, p.assets))));
+    const maxX = points[points.length - 1].year;
+    const x = yr => PAD.l + (yr / maxX) * (W - PAD.l - PAD.r);
+    const y = v => H - PAD.b - (v / maxY) * (H - PAD.t - PAD.b);
+    chartGeom = { x, maxX };
+
+    for(let i = 0; i <= 4; i++){
+      const v = maxY * i / 4;
+      svg.appendChild(el('line', { class: i === 0 ? 'axis' : 'grid', x1: PAD.l, x2: W - PAD.r, y1: y(v), y2: y(v) }));
+      svg.appendChild(el('text', { x: PAD.l - 8, y: y(v) + 4, 'text-anchor': 'end' }, fmtAxis(v)));
+    }
+    // About 5 x ticks, on whole years
+    const step = Math.max(1, Math.ceil(maxX / 5));
+    for(let yr = 0; yr <= maxX; yr += step){
+      svg.appendChild(el('text', { x: x(yr), y: H - PAD.b + 18, 'text-anchor': yr === 0 ? 'start' : yr === maxX ? 'end' : 'middle' }, yr === 0 ? '起始' : yr + ' 年'));
+    }
+    if(maxX % step !== 0 && maxX - Math.floor(maxX / step) * step >= step / 2){
+      svg.appendChild(el('text', { x: x(maxX), y: H - PAD.b + 18, 'text-anchor': 'end' }, maxX + ' 年'));
+    }
+
+    const neg = points[points.length - 1].assets < points[points.length - 1].invested;
+    const path = key => points.map((p, i) => (i ? 'L' : 'M') + x(p.year).toFixed(1) + ' ' + y(p[key]).toFixed(1)).join(' ');
+    svg.appendChild(el('path', { class: 'area-assets' + (neg ? ' neg' : ''), d: path('assets') + ` L${x(maxX).toFixed(1)} ${y(0)} L${x(0).toFixed(1)} ${y(0)} Z` }));
+    svg.appendChild(el('path', { class: 'line-invested', d: path('invested') }));
+    svg.appendChild(el('path', { class: 'line-assets' + (neg ? ' neg' : ''), d: path('assets') }));
+
+    // Hover/touch cursor (hidden until the pointer moves over the chart)
+    const g = el('g', { id: 'chartCursor', visibility: 'hidden' });
+    g.append(
+      el('line', { class: 'cursor', id: 'curLine', y1: PAD.t, y2: H - PAD.b }),
+      el('circle', { class: 'dot-invested', id: 'curInv', r: 4.5 }),
+      el('circle', { class: 'dot-assets' + (neg ? ' neg' : ''), id: 'curAss', r: 4.5 })
+    );
+    svg.appendChild(g);
+    chartGeom.y = y;
+  }
+
+  function showTip(evt){
+    if(!chartPts.length) return;
+    const svg = $('chartSvg');
+    const rect = svg.getBoundingClientRect();
+    const sx = (evt.clientX - rect.left) / rect.width * W;
+    const frac = (sx - PAD.l) / (W - PAD.l - PAD.r);
+    const idx = Math.min(chartPts.length - 1, Math.max(0, Math.round(frac * (chartPts.length - 1))));
+    const p = chartPts[idx];
+    const px = chartGeom.x(p.year);
+
+    $('chartCursor').setAttribute('visibility', 'visible');
+    $('curLine').setAttribute('x1', px); $('curLine').setAttribute('x2', px);
+    $('curInv').setAttribute('cx', px); $('curInv').setAttribute('cy', chartGeom.y(p.invested));
+    $('curAss').setAttribute('cx', px); $('curAss').setAttribute('cy', chartGeom.y(p.assets));
+
+    const gain = p.assets - p.invested;
+    const tip = $('chartTip');
+    tip.innerHTML = `<b>${p.year === 0 ? '起始' : '第 ' + p.year + ' 年'}</b><br>累積投入　${fmtMoney(p.invested)}<br>期末資產　${fmtMoney(p.assets)}<br>累積報酬　${fmtSigned(gain)}`;
+    tip.hidden = false;
+    // Place the tooltip beside the cursor, flipping to the left near the right edge
+    const wrapRect = $('chartWrap').getBoundingClientRect();
+    const left = px / W * rect.width + (rect.left - wrapRect.left);
+    const flip = left + tip.offsetWidth + 16 > wrapRect.width;
+    tip.style.left = (flip ? left - tip.offsetWidth - 10 : left + 10) + 'px';
+    tip.style.top = (rect.top - wrapRect.top + 10) + 'px';
+  }
+  function hideTip(){
+    $('chartTip').hidden = true;
+    const c = $('chartCursor');
+    if(c) c.setAttribute('visibility', 'hidden');
+  }
+  $('chartSvg').addEventListener('pointermove', showTip);
+  $('chartSvg').addEventListener('pointerdown', showTip);
+  $('chartSvg').addEventListener('pointerleave', hideTip);
+
   function update(){
     saveStored();
 
@@ -262,7 +379,11 @@
       $('err-' + f).textContent = errors[f] || '';
       $('err-' + f).hidden = !errors[f];
     });
-    if(Object.keys(errors).length){
+    const invalid = Object.keys(errors).length > 0;
+    ['sumInvested', 'chartCard', 'tableCard'].forEach(id => $(id).closest('.card').classList.toggle('is-empty', invalid));
+    if(invalid){
+      $('chartSvg').innerHTML = '';
+      $('chartTip').hidden = true;
       $('sumInvested').textContent = '--';
       $('sumFinal').textContent = '--';
       $('sumGain').textContent = '--';
@@ -279,6 +400,7 @@
     let assets = principal;
     let invested = principal;
     const rows = [];
+    const points = [{ year: 0, invested, assets }];
 
     for(let m = 1; m <= totalMonths; m++){
       assets = assets * (1 + monthlyRate) + monthly;
@@ -287,6 +409,7 @@
         const gain = assets - invested;
         const roi = invested > 0 ? (gain / invested) * 100 : 0;
         rows.push({ year: m / 12, invested, assets, gain, roi });
+        points.push({ year: m / 12, invested, assets });
       }
     }
 
@@ -297,6 +420,8 @@
     $('sumRoi').textContent = fmtPct(finalRow.roi);
     setSign($('sumGain'), finalRow.gain);
     setSign($('sumRoi'), finalRow.gain);
+
+    drawChart(points);
 
     $('yearlyBody').innerHTML = rows.map(r => `
       <tr>
@@ -311,15 +436,6 @@
 
   FIELDS.forEach(f => $(f).addEventListener('input', update));
   update();
-})();
-</script>
-<button id="backToTop" aria-label="回到頂部" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<script>
-(function(){
-  var btn = document.getElementById('backToTop');
-  window.addEventListener('scroll', function(){
-    btn.classList.toggle('show', window.scrollY > 400);
-  });
 })();
 </script>
 <script src="stepper.js"></script>
