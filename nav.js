@@ -184,16 +184,12 @@
   footer.className = 'site-footer';
   footer.innerHTML =
     '<div class="footer-inner">' +
-      '<nav class="footer-links" aria-label="頁尾連結">' +
-        '<a href="home_page.html">🏠 回首頁</a>' +
-        '<a href="#top" id="footerTop">↑ 回到頂部</a>' +
-      '</nav>' +
       '<p class="footer-updated">最後更新：<time id="lastUpdated">讀取中…</time></p>' +
     '</div>';
   const main = document.querySelector('main');
   if(main) main.after(footer); else document.body.appendChild(footer);
 
-  /* ---------- back to top (floating button on phones + footer link) ---------- */
+  /* ---------- back to top (floating button on phones) ---------- */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function toTop(){ window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
   const toTopBtn = document.createElement('button');
@@ -203,7 +199,6 @@
   toTopBtn.textContent = '↑';
   toTopBtn.addEventListener('click', toTop);
   document.body.appendChild(toTopBtn);
-  document.getElementById('footerTop').addEventListener('click', e => { e.preventDefault(); toTop(); });
   function syncToTop(){ toTopBtn.classList.toggle('show', window.scrollY > 400); }
   window.addEventListener('scroll', syncToTop, { passive: true });
   syncToTop();
