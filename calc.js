@@ -1,15 +1,11 @@
 // Page logic for the stock / ETF P&L calculators; the trading math lives in trade_math.js, which must be loaded first
 const $ = id => document.getElementById(id);
-const fmtInt = n => Math.round(n).toLocaleString('zh-TW');
+const fmtInt = Util.fmt.int;
 const fmtSigned = n => (n > 0 ? '+' : '') + fmtInt(n);
 
 const STORAGE_PREFIX = 'pnlCalc:' + location.pathname + ':';
-function loadStored(key){
-  try { return localStorage.getItem(STORAGE_PREFIX + key); } catch(e){ return null; }
-}
-function saveStored(key, value){
-  try { localStorage.setItem(STORAGE_PREFIX + key, value); } catch(e){}
-}
+const loadStored = key => Util.store.get(STORAGE_PREFIX + key);
+const saveStored = (key, value) => Util.store.set(STORAGE_PREFIX + key, value);
 
 const FIELD_IDS = ['buyPrice','sellPrice','shares','feeDiscount','minFee','taxNormalPct','taxDayPct'];
 
@@ -179,35 +175,8 @@ function buildResultText(){
   ].join('\n');
 }
 
-function fallbackCopy(text, done){
-  const ta = document.createElement('textarea');
-  ta.value = text;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); } catch(e){}
-  document.body.removeChild(ta);
-  done();
-}
-
 function copyResult(btn){
-  if(!hasResult) return;
-  const text = buildResultText();
-  const originalText = btn.textContent;
-  const done = () => {
-    btn.textContent = '已複製 ✓';
-    btn.classList.add('copied');
-    setTimeout(()=>{
-      btn.textContent = originalText;
-      btn.classList.remove('copied');
-    }, 1500);
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text, done));
-  } else {
-    fallbackCopy(text, done);
-  }
+  if(hasResult) Util.copyText(buildResultText(), btn);
 }
 
 function setMode(mode){

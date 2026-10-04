@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+<!-- BUILD:HEAD -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjMDBlNmEwIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0OSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QjwvdGV4dD4KPC9zdmc+Cg==">
-<title>個股試算</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f2233">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,21 +12,29 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Brian工具箱">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>個股試算 - 試算工具 | Brian工具箱</title>
+<meta name="description" content="一般交易稅率 0.3%、現股當沖 0.15%，計算個股買賣的淨損益與兩平點。">
+<link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/stock_calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian工具箱">
+<meta property="og:title" content="個股試算 - 試算工具 | Brian工具箱">
+<meta property="og:description" content="一般交易稅率 0.3%、現股當沖 0.15%，計算個股買賣的淨損益與兩平點。">
+<meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/stock_calculator.html">
+<meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/icon-512.png">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="styles.css">
-<style>
-  .assume h3{font-size:14px;color:var(--navy);margin:20px 0 6px;}
-  .assume h3:first-child{margin-top:0;}
-  .assume p{margin:0 0 6px;}
-</style>
+<script src="site-config.js"></script>
+<script src="util.js"></script>
+<!-- /BUILD:HEAD -->
 </head>
 <body>
 
+<!-- BUILD:TOPBAR -->
 <div class="topbar">
   <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
+  <nav class="crumbs" aria-label="麵包屑"><a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" aria-current="page" href="stock_calculator.html">個股試算</a></nav>
 </div>
-<div class="subbar">
-  <a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" href="stock_calculator.html">個股試算</a>
-</div>
+<!-- /BUILD:TOPBAR -->
 
 <main>
   <h1>個股交易損益試算</h1>
@@ -47,49 +55,49 @@
           <div>
             <label for="buyPrice">買進價格</label>
             <div class="input-wrap">
-              <input type="number" id="buyPrice" inputmode="decimal" step="0.01" value="35.50" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="buyPrice" inputmode="decimal" step="0.01" value="35.50">
               <span class="unit">元</span>
             </div>
           </div>
           <div>
             <label for="sellPrice">賣出價格</label>
             <div class="input-wrap">
-              <input type="number" id="sellPrice" inputmode="decimal" step="0.01" value="37.20" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="sellPrice" inputmode="decimal" step="0.01" value="37.20">
               <span class="unit">元</span>
             </div>
           </div>
           <div>
             <label for="shares">股數</label>
             <div class="input-wrap">
-              <input type="number" id="shares" inputmode="numeric" step="1" value="1000" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="shares" inputmode="numeric" step="1" value="1000">
               <span class="unit">股</span>
             </div>
           </div>
           <div>
             <label for="feeDiscount">手續費折數</label>
             <div class="input-wrap">
-              <input type="number" id="feeDiscount" inputmode="decimal" step="0.1" value="2.8" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="feeDiscount" inputmode="decimal" step="0.1" value="2.8">
               <span class="unit">折</span>
             </div>
           </div>
           <div>
             <label for="minFee">單筆手續費低消</label>
             <div class="input-wrap">
-              <input type="number" id="minFee" inputmode="numeric" step="1" value="20" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="minFee" inputmode="numeric" step="1" value="20">
               <span class="unit">元</span>
             </div>
           </div>
           <div>
             <label for="taxNormalPct">一般交易證交稅率</label>
             <div class="input-wrap">
-              <input type="number" id="taxNormalPct" inputmode="decimal" step="0.01" value="0.3" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="taxNormalPct" inputmode="decimal" step="0.01" value="0.3">
               <span class="unit">%</span>
             </div>
           </div>
           <div>
             <label for="taxDayPct">現股當沖證交稅率</label>
             <div class="input-wrap">
-              <input type="number" id="taxDayPct" inputmode="decimal" step="0.01" value="0.15" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="taxDayPct" inputmode="decimal" step="0.01" value="0.15">
               <span class="unit">%</span>
             </div>
           </div>
@@ -220,7 +228,9 @@
 <script>
   initCalculator({ taxNormal: 0.3, taxDay: 0.15, note: '個股：一般交易稅率 0.3%，現股當沖減半為 0.15%。', tickType: 'stock' });
 </script>
+<!-- BUILD:TAIL -->
 <script src="stepper.js"></script>
 <script src="nav.js"></script>
+<!-- /BUILD:TAIL -->
 </body>
 </html>

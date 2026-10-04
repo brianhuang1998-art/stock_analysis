@@ -1,0 +1,16 @@
+#!/bin/sh
+# Runs before every commit: regenerates the shared page parts from site-config.js and stages the results,
+# so you never have to remember "python3 tools/build.py". Blocks the commit if a page is missing from the config.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "pre-commit: python3 not found, cannot run tools/build.py" >&2
+  exit 1
+fi
+
+if ! python3 tools/build.py; then
+  echo "pre-commit: tools/build.py reported problems (see above); commit cancelled." >&2
+  exit 1
+fi
+
+git add manifest.json sitemap.xml ./*.html

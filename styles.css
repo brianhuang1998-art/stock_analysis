@@ -13,6 +13,9 @@
   --accent-soft:#d2f6e6;
   --loss:#ef5b52;
   --loss-soft:#fde6e4;
+  --disabled-bg:#eceff1;
+  --disabled-border:#dde3e7;
+  --disabled-text:#8a98a6;
   --radius:14px;
 }
 *{box-sizing:border-box;}
@@ -84,22 +87,7 @@ body{
 .tool-menu-panel a:hover{background:var(--surface-2);}
 .tool-menu-panel a.current{background:var(--accent-soft);color:var(--accent-strong);font-weight:700;}
 .tool-menu-soon{margin-left:8px;font-size:11px;font-weight:600;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:1px 7px;}
-.topbar .sep{color:#5c7688;font-size:13px;}
-.topbar .crumb{color:#b9d3c8;font-size:13px;}
 
-.subbar{
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  padding:10px 20px;
-  display:flex;align-items:center;gap:8px;
-  font-size:13px;color:var(--text-muted);
-  flex-wrap:wrap;
-}
-.subbar a{color:var(--text-muted);text-decoration:none;}
-.subbar a:hover{color:var(--accent-strong);text-decoration:underline;}
-.subbar b{color:var(--navy);font-weight:700;}
-.subbar a.here{color:var(--navy);font-weight:700;}
-.subbar a.here:hover{color:var(--accent-strong);}
 
 main{
   max-width:1180px;
@@ -613,3 +601,79 @@ label{
 }
 .chart-tip b{color:#fff;}
 .chart-tip[hidden]{display:none;}
+
+/* ---------- Rules shared by several calculator pages (moved out of the per-page <style> blocks) ---------- */
+.tool-card .icon.sm{font-size:14px;}
+.v.profit{color:var(--accent-strong);}
+.v.loss{color:var(--loss);}
+.input-error{margin:6px 0 0;font-size:12.5px;color:var(--loss);}
+.input-wrap input:disabled{background:var(--disabled-bg);border-color:var(--disabled-border);color:var(--disabled-text);cursor:not-allowed;}
+.tile .sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+/* Tables: 逐年明細 (dca) and 逐筆明細 (avg cost) */
+.table-wrap{overflow-x:auto;}
+.lot-table,.dca-table{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap;}
+.lot-table th,.dca-table th{
+  text-align:right;font-size:12px;color:var(--text-muted);font-weight:600;
+  padding:8px 10px;border-bottom:1.5px solid var(--border);
+}
+.lot-table th:first-child,.lot-table td:first-child,
+.dca-table th:first-child,.dca-table td:first-child{text-align:left;}
+.lot-table td,.dca-table td{
+  padding:9px 10px;border-bottom:1px solid var(--border);
+  text-align:right;font-variant-numeric:tabular-nums;
+}
+.lot-table tr:last-child td,.dca-table tr:last-child td{border-bottom:none;}
+.lot-table td.avg{color:var(--navy);font-weight:700;}
+.dca-table td.gain-pos{color:var(--accent-strong);font-weight:600;}
+.dca-table td.gain-neg{color:var(--loss);font-weight:600;}
+
+/* 觀念說明 / 計算假設 text blocks */
+.assume h3{font-size:14px;color:var(--navy);margin:20px 0 6px;}
+.assume h3:first-child{margin-top:0;}
+.assume p{margin:0 0 6px;}
+.assume .rate-list{margin:10px 0 8px;}
+.formula{
+  display:inline-block;background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:4px 10px;font-variant-numeric:tabular-nums;
+}
+
+/* 加權平均成本法試算: buy-lot rows */
+.lot-head,.lot-row{display:grid;grid-template-columns:64px 1fr 1fr 40px;gap:10px;align-items:center;}
+.lot-head{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
+.lot-row + .lot-row{margin-top:10px;}
+.lot-idx{font-size:13px;color:var(--text-muted);}
+.lot-del{
+  width:40px;height:40px;border:1.5px solid var(--border);background:var(--bg);
+  color:var(--text-muted);border-radius:10px;font-size:16px;cursor:pointer;
+}
+.lot-del:hover{border-color:var(--loss);color:var(--loss);}
+.lot-del[hidden]{display:block;visibility:hidden;}
+.lot-actions{margin-top:14px;}
+
+/* 定期定額複利試算: headline gain tile */
+#sumGainTile .k{font-size:18px;}
+#sumGainTile .pnl-compare{grid-template-columns:1fr 1fr;}
+#sumGainTile .pnl-item-label{font-size:16px;}
+#sumGain,#sumRoi{font-size:26px;}
+@media (max-width:480px){ #sumGainTile .pnl-compare{grid-template-columns:1fr;} }
+
+/* 目標%數試算 */
+.price-card{max-width:360px;margin:0 auto 24px;text-align:center;}
+.price-card label{text-align:center;}
+.price-card .input-wrap input{text-align:center;font-size:24px;font-weight:700;padding:14px 58px;}
+.compare-grid{align-items:stretch;}
+.compare-grid .card + .card{margin-top:0;}
+.pct-list{display:flex;flex-direction:column;gap:0;}
+.pct-row{
+  display:grid;grid-template-columns:64px 1fr;align-items:baseline;
+  padding:9px 2px;border-bottom:1px solid var(--border);font-size:13.5px;
+}
+.pct-row:last-child{border-bottom:none;}
+.pct-row .pk{color:var(--text-muted);text-align:left;font-family:var(--font-main);}
+.pct-row .pv{font-weight:700;color:var(--navy);text-align:right;font-family:var(--font-main);font-variant-numeric:tabular-nums;}
+.pct-row.down .pv{color:var(--loss);}
+.pct-row.up .pv{color:var(--accent-strong);}
+.pct-row .exact{display:block;font-size:11px;font-weight:500;color:var(--text-muted);}
+.type-wrap{margin-top:12px;}
+.type-wrap select{text-align:center;}

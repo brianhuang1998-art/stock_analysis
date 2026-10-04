@@ -1,39 +1,20 @@
-// Site chrome shared by every page: merged top bar (brand + breadcrumb + 全部工具/搜尋), footer, back-to-top.
-// Edit TOOL_MENU here when adding a page.
+// Site chrome shared by every page: the 全部工具 dropdown (with search) in the top bar, footer, back-to-top, offline cache.
+// The pages, categories and keywords all come from site-config.js; the top bar itself and the breadcrumb are written
+// into each page by tools/build.py.
 (function(){
-  const REPO = 'brianhuang1998-art/stock_analysis';
-  const TOOL_MENU = [
-    { title: '首頁', href: 'home_page.html', keywords: 'home 回首頁', items: [] },
-    { title: '試算工具', href: 'tools.html', keywords: '損益 手續費 證交稅', items: [
-      { title: 'ETF 試算', href: 'etf_calculator.html', keywords: 'etf 債券 股票型 主動式 損益 兩平' },
-      { title: '個股試算', href: 'stock_calculator.html', keywords: '個股 當沖 損益 兩平' },
-      { title: '目標%數試算', href: 'target_price_calculator.html', keywords: '目標價 漲跌幅 升降單位 掛單' },
-      { title: '加權平均成本法試算', href: 'avg_cost_calculator.html', keywords: '均價 攤平 分批 平均成本' }
-    ]},
-    { title: '交易與部位管理', href: 'trading_position.html', keywords: '部位 停損 再平衡', items: [
-      { title: '定期定額複利試算', href: 'dca_calculator.html', keywords: 'dca 複利 存股 每月扣款 年化報酬' }
-    ]},
-    { title: '估值與基本面分析', href: 'valuation_analysis.html', soon: true, keywords: '本益比 ddm dcf roe 杜邦', items: [] },
-    { title: '股息與現金流規劃', href: 'dividend_cashflow.html', soon: true, keywords: '配息 股利 退休 4% 現金流', items: [] }
-  ];
+  const SITE = self.SITE;
+  if(!SITE) return;
+  const REPO = SITE.repo;
+  const TOOL_MENU = [SITE.home].map(h => ({ title: h.title, href: h.href, keywords: h.keywords, items: [] })).concat(
+    SITE.categories.map(c => ({
+      title: c.title, href: c.href, keywords: c.keywords, soon: c.soon,
+      items: c.tools.filter(t => !t.soon && t.href)
+    }))
+  );
 
   const topbar = document.querySelector('.topbar');
   if(!topbar) return;
   const current = location.pathname.split('/').pop() || 'home_page.html';
-
-  /* ---------- merge subbar (breadcrumb) into the top bar ---------- */
-  const subbar = document.querySelector('.subbar');
-  if(subbar){
-    const crumbs = document.createElement('nav');
-    crumbs.className = 'crumbs';
-    crumbs.setAttribute('aria-label', '麵包屑');
-    while(subbar.firstChild) crumbs.appendChild(subbar.firstChild);
-    // Last crumb is the page itself; hide the earlier ones on phones via CSS
-    const links = crumbs.querySelectorAll('a');
-    if(links.length) links[links.length - 1].setAttribute('aria-current', 'page');
-    topbar.insertBefore(crumbs, topbar.querySelector('.tool-menu'));
-    subbar.remove();
-  }
 
   /* ---------- 全部工具 dropdown with search ---------- */
   function link(text, href, className){

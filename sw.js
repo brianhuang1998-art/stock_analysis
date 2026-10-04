@@ -3,11 +3,18 @@
 // Bump CACHE_VERSION only if you want to force-clear old cached files.
 const CACHE_VERSION = 'v1';
 const CACHE = 'brian-toolbox-' + CACHE_VERSION;
-const PRECACHE = [
-  'home_page.html', 'tools.html', 'trading_position.html', 'valuation_analysis.html', 'dividend_cashflow.html',
-  'etf_calculator.html', 'stock_calculator.html', 'target_price_calculator.html', 'avg_cost_calculator.html', 'dca_calculator.html',
-  'styles.css', 'nav.js', 'stepper.js', 'calc.js', 'trade_math.js', 'manifest.json', 'icon-192.png'
-];
+
+// The page list comes from site-config.js, so a new page is cached automatically
+importScripts('site-config.js');
+const PAGES = [self.SITE.home.href];
+self.SITE.categories.forEach(c => {
+  PAGES.push(c.href);
+  c.tools.forEach(t => { if(!t.soon && t.href) PAGES.push(t.href); });
+});
+const PRECACHE = PAGES.concat([
+  'site-config.js', 'util.js', 'styles.css', 'nav.js', 'stepper.js', 'calc.js', 'trade_math.js',
+  'manifest.json', 'favicon.svg', 'icon-192.png'
+]);
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));

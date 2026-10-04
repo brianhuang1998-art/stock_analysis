@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+<!-- BUILD:HEAD -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjMDBlNmEwIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0OSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QjwvdGV4dD4KPC9zdmc+Cg==">
-<title>目標%數試算</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f2233">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,55 +12,29 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Brian工具箱">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>目標%數試算 - 試算工具 | Brian工具箱</title>
+<meta name="description" content="輸入價格，即時算出漲跌 1%～30% 各百分比對應的目標價。">
+<link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/target_price_calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian工具箱">
+<meta property="og:title" content="目標%數試算 - 試算工具 | Brian工具箱">
+<meta property="og:description" content="輸入價格，即時算出漲跌 1%～30% 各百分比對應的目標價。">
+<meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/target_price_calculator.html">
+<meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/icon-512.png">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="styles.css">
-<style>
-  .price-card{
-    max-width:360px;
-    margin:0 auto 24px;
-    text-align:center;
-  }
-  .price-card label{text-align:center;}
-  .price-card .input-wrap input{
-    text-align:center;
-    font-size:24px;
-    font-weight:700;
-    padding:14px 58px;
-  }
-  .compare-grid{align-items:stretch;}
-  .compare-grid .card + .card{margin-top:0;}
-  .pct-list{display:flex;flex-direction:column;gap:0;}
-  .pct-row{
-    display:grid;
-    grid-template-columns:64px 1fr;
-    align-items:baseline;
-    padding:9px 2px;
-    border-bottom:1px solid var(--border);
-    font-size:13.5px;
-  }
-  .pct-row:last-child{border-bottom:none;}
-  .pct-row .pk{color:var(--text-muted);text-align:left;font-family:var(--font-main);}
-  .pct-row .pv{
-    font-weight:700;
-    color:var(--navy);
-    text-align:right;
-    font-family:var(--font-main);
-    font-variant-numeric:tabular-nums;
-  }
-  .pct-row.down .pv{color:var(--loss);}
-  .pct-row.up .pv{color:var(--accent-strong);}
-  .pct-row .exact{display:block;font-size:11px;font-weight:500;color:var(--text-muted);}
-  .type-wrap{margin-top:12px;}
-  .type-wrap select{text-align:center;}
-</style>
+<script src="site-config.js"></script>
+<script src="util.js"></script>
+<!-- /BUILD:HEAD -->
 </head>
 <body>
 
+<!-- BUILD:TOPBAR -->
 <div class="topbar">
   <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
+  <nav class="crumbs" aria-label="麵包屑"><a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" aria-current="page" href="target_price_calculator.html">目標%數試算</a></nav>
 </div>
-<div class="subbar">
-  <a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" href="target_price_calculator.html">目標%數試算</a>
-</div>
+<!-- /BUILD:TOPBAR -->
 
 <main>
   <h1>目標%數試算</h1>
@@ -69,8 +43,7 @@
   <div class="card price-card">
     <h2 style="justify-content:center;">輸入價格</h2>
     <div class="input-wrap">
-      <input type="number" id="basePrice" inputmode="decimal" step="0.01" value="100"
-        onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+      <input type="number" id="basePrice" inputmode="decimal" step="0.01" value="100">
       <span class="unit">元</span>
     </div>
     <div class="input-wrap type-wrap">
@@ -109,12 +82,8 @@
   const STORAGE_KEY = 'pnlCalc:' + location.pathname + ':basePrice';
   const TYPE_KEY = 'pnlCalc:' + location.pathname + ':tickType';
 
-  function loadStored(key){
-    try { return localStorage.getItem(key); } catch(e){ return null; }
-  }
-  function saveStored(key, v){
-    try { localStorage.setItem(key, v); } catch(e){}
-  }
+  const loadStored = Util.store.get;
+  const saveStored = Util.store.set;
 
   function renderList(el, direction){
     const base = parseFloat($('basePrice').value);
@@ -161,7 +130,9 @@
   update();
 })();
 </script>
+<!-- BUILD:TAIL -->
 <script src="stepper.js"></script>
 <script src="nav.js"></script>
+<!-- /BUILD:TAIL -->
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+<!-- BUILD:HEAD -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjMDBlNmEwIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0OSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QjwvdGV4dD4KPC9zdmc+Cg==">
-<title>定期定額複利試算 - 試算工具</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f2233">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,63 +12,29 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Brian工具箱">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>定期定額複利試算 - 交易與部位管理 | Brian工具箱</title>
+<meta name="description" content="輸入本金、每月扣款金額與預期年化報酬率，算出N年後累積資產與總報酬。">
+<link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/dca_calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian工具箱">
+<meta property="og:title" content="定期定額複利試算 - 交易與部位管理 | Brian工具箱">
+<meta property="og:description" content="輸入本金、每月扣款金額與預期年化報酬率，算出N年後累積資產與總報酬。">
+<meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/dca_calculator.html">
+<meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/icon-512.png">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="styles.css">
-<style>
-  .table-wrap{overflow-x:auto;}
-  .dca-table{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap;}
-  .dca-table th{
-    text-align:right;
-    font-size:12px;
-    color:var(--text-muted);
-    font-weight:600;
-    padding:8px 10px;
-    border-bottom:1.5px solid var(--border);
-  }
-  .dca-table th:first-child,.dca-table td:first-child{text-align:left;}
-  .dca-table td{
-    padding:9px 10px;
-    border-bottom:1px solid var(--border);
-    text-align:right;
-    font-family:var(--font-main);
-    font-variant-numeric:tabular-nums;
-  }
-  .dca-table tr:last-child td{border-bottom:none;}
-  .dca-table td.gain-pos{color:var(--accent-strong);font-weight:600;}
-  .dca-table td.gain-neg{color:var(--loss);font-weight:600;}
-  .input-error{margin:6px 0 0;font-size:12.5px;color:var(--loss);}
-  #sumGainTile .k{font-size:18px;}
-  #sumGainTile .pnl-compare{grid-template-columns:1fr 1fr;}
-  #sumGainTile .pnl-item-label{font-size:16px;}
-  #sumGain,#sumRoi{font-size:26px;}
-  .v.profit{color:var(--accent-strong);}
-  .v.loss{color:var(--loss);}
-  @media (max-width:480px){ #sumGainTile .pnl-compare{grid-template-columns:1fr;} }
-  .assume h3{
-    font-size:14px;
-    color:var(--navy);
-    margin:20px 0 6px;
-  }
-  .assume h3:first-child{margin-top:0;}
-  .assume p{margin:0 0 6px;}
-  .assume .rate-list{margin:10px 0 8px;}
-  .formula{
-    display:inline-block;
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:4px 10px;
-    font-variant-numeric:tabular-nums;
-  }
-</style>
+<script src="site-config.js"></script>
+<script src="util.js"></script>
+<!-- /BUILD:HEAD -->
 </head>
 <body>
 
+<!-- BUILD:TOPBAR -->
 <div class="topbar">
   <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
+  <nav class="crumbs" aria-label="麵包屑"><a href="home_page.html">🏠 首頁</a><span>›</span><a href="trading_position.html">交易與部位管理</a><span>›</span><a class="here" aria-current="page" href="dca_calculator.html">定期定額複利試算</a></nav>
 </div>
-<div class="subbar">
-  <a href="home_page.html">🏠 首頁</a><span>›</span><a href="trading_position.html">交易與部位管理</a><span>›</span><a class="here" href="dca_calculator.html">定期定額複利試算</a>
-</div>
+<!-- /BUILD:TOPBAR -->
 
 <main>
   <h1>定期定額複利試算</h1>
@@ -82,7 +48,7 @@
           <div>
             <label for="principal">期初本金</label>
             <div class="input-wrap">
-              <input type="number" id="principal" inputmode="decimal" step="1000" value="0" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="principal" inputmode="decimal" step="1000" value="0">
               <span class="unit">元</span>
             </div>
             <p class="input-error" id="err-principal" hidden></p>
@@ -90,7 +56,7 @@
           <div>
             <label for="monthlyContribution">每月扣款金額（每個月定期定額金額）</label>
             <div class="input-wrap">
-              <input type="number" id="monthlyContribution" inputmode="decimal" step="500" value="5000" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="monthlyContribution" inputmode="decimal" step="500" value="5000">
               <span class="unit">元</span>
             </div>
             <p class="input-error" id="err-monthlyContribution" hidden></p>
@@ -98,7 +64,7 @@
           <div>
             <label for="annualRate">預期年化報酬率</label>
             <div class="input-wrap">
-              <input type="number" id="annualRate" inputmode="decimal" step="0.5" value="7" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="annualRate" inputmode="decimal" step="0.5" value="7">
               <span class="unit">%</span>
             </div>
             <p class="input-error" id="err-annualRate" hidden></p>
@@ -106,7 +72,7 @@
           <div>
             <label for="years">投資年數</label>
             <div class="input-wrap">
-              <input type="number" id="years" inputmode="numeric" step="1" value="20" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="years" inputmode="numeric" step="1" value="20">
               <span class="unit">年</span>
             </div>
             <p class="input-error" id="err-years" hidden></p>
@@ -231,29 +197,19 @@
   const STORAGE_KEY = 'dcaCalc:' + location.pathname;
   const FIELDS = ['principal','monthlyContribution','annualRate','years'];
 
-  function loadStored(){
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e){ return null; }
-  }
   function saveStored(){
     const data = {};
     FIELDS.forEach(f => { data[f] = $(f).value; });
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+    Util.store.setJSON(STORAGE_KEY, data);
   }
 
-  const saved = loadStored();
+  const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved){
     FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
   }
 
-  function fmtMoney(n){
-    return Math.round(n).toLocaleString('zh-Hant-TW') + ' 元';
-  }
-  function fmtSigned(n){
-    return (Math.round(n) > 0 ? '+' : '') + fmtMoney(n);
-  }
-  function fmtPct(n){
-    return (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
-  }
+  const { money: fmtMoney, signedMoney: fmtSigned } = Util.fmt;
+  const fmtPct = n => Util.fmt.pct(n, 1);
   const MAX_YEARS = 100;
 
   function validate(principal, monthly, annualRatePct, years){
@@ -445,7 +401,9 @@
   update();
 })();
 </script>
+<!-- BUILD:TAIL -->
 <script src="stepper.js"></script>
 <script src="nav.js"></script>
+<!-- /BUILD:TAIL -->
 </body>
 </html>

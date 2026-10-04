@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
+<!-- BUILD:HEAD -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CjxyZWN0IHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgcng9IjE0IiBmaWxsPSIjMDBlNmEwIi8+Cjx0ZXh0IHg9IjMyIiB5PSI0OSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsICdUaW1lcyBOZXcgUm9tYW4nLCBzZXJpZiIgZm9udC1zaXplPSI0OCIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QjwvdGV4dD4KPC9zdmc+Cg==">
-<title>加權平均成本法試算 - 試算工具</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0f2233">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,65 +12,29 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Brian工具箱">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>加權平均成本法試算 - 試算工具 | Brian工具箱</title>
+<meta name="description" content="分批買進時自動算出加權平均成本、損益兩平價與目前損益。">
+<link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/avg_cost_calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian工具箱">
+<meta property="og:title" content="加權平均成本法試算 - 試算工具 | Brian工具箱">
+<meta property="og:description" content="分批買進時自動算出加權平均成本、損益兩平價與目前損益。">
+<meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/avg_cost_calculator.html">
+<meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/icon-512.png">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="styles.css">
-<style>
-  .lot-head,.lot-row{
-    display:grid;
-    grid-template-columns:64px 1fr 1fr 40px;
-    gap:10px;
-    align-items:center;
-  }
-  .lot-head{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
-  .lot-row + .lot-row{margin-top:10px;}
-  .lot-idx{font-size:13px;color:var(--text-muted);}
-  .lot-del{
-    width:40px;height:40px;
-    border:1.5px solid var(--border);
-    background:#fff;
-    color:var(--text-muted);
-    border-radius:10px;
-    font-size:16px;
-    cursor:pointer;
-  }
-  .lot-del:hover{border-color:var(--loss);color:var(--loss);}
-  .lot-del[hidden]{display:block;visibility:hidden;}
-  .lot-actions{margin-top:14px;}
-  .tile .sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
-  .input-wrap input:disabled{background:#eceff1;border-color:#dde3e7;color:#8a98a6;cursor:not-allowed;}
-  .v.profit{color:var(--accent-strong);}
-  .v.loss{color:var(--loss);}
-  .table-wrap{overflow-x:auto;}
-  .lot-table{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap;}
-  .lot-table th{
-    text-align:right;
-    font-size:12px;
-    color:var(--text-muted);
-    font-weight:600;
-    padding:8px 10px;
-    border-bottom:1.5px solid var(--border);
-  }
-  .lot-table th:first-child,.lot-table td:first-child{text-align:left;}
-  .lot-table td{
-    padding:9px 10px;
-    border-bottom:1px solid var(--border);
-    text-align:right;
-    font-variant-numeric:tabular-nums;
-  }
-  .lot-table tr:last-child td{border-bottom:none;}
-  .lot-table td.avg{color:var(--navy);font-weight:700;}
-  .assume h3{font-size:14px;color:var(--navy);margin:20px 0 6px;}
-  .assume h3:first-child{margin-top:0;}
-  .assume p{margin:0 0 6px;}
-</style>
+<script src="site-config.js"></script>
+<script src="util.js"></script>
+<!-- /BUILD:HEAD -->
 </head>
 <body>
 
+<!-- BUILD:TOPBAR -->
 <div class="topbar">
   <a class="home-link" href="home_page.html" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
+  <nav class="crumbs" aria-label="麵包屑"><a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" aria-current="page" href="avg_cost_calculator.html">加權平均成本法試算</a></nav>
 </div>
-<div class="subbar">
-  <a href="home_page.html">🏠 首頁</a><span>›</span><a href="tools.html">試算工具</a><span>›</span><a class="here" href="avg_cost_calculator.html">加權平均成本法試算</a>
-</div>
+<!-- /BUILD:TOPBAR -->
 
 <main>
   <h1>加權平均成本法試算</h1>
@@ -95,21 +59,21 @@
           <div>
             <label for="currentPrice">目前股價</label>
             <div class="input-wrap">
-              <input type="number" id="currentPrice" inputmode="decimal" step="0.01" value="95" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="currentPrice" inputmode="decimal" step="0.01" value="95">
               <span class="unit">元</span>
             </div>
           </div>
           <div>
             <label for="feeDiscount">手續費折數</label>
             <div class="input-wrap">
-              <input type="number" id="feeDiscount" inputmode="decimal" step="0.1" value="2.8" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="feeDiscount" inputmode="decimal" step="0.1" value="2.8">
               <span class="unit">折</span>
             </div>
           </div>
           <div>
             <label for="minFee">單筆手續費低消</label>
             <div class="input-wrap">
-              <input type="number" id="minFee" inputmode="numeric" step="1" value="20" onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="minFee" inputmode="numeric" step="1" value="20">
               <span class="unit">元</span>
             </div>
           </div>
@@ -127,7 +91,7 @@
           <div>
             <label for="sellTaxPct">證交稅率</label>
             <div class="input-wrap">
-              <input type="number" id="sellTaxPct" inputmode="decimal" step="0.01" value="0.3" disabled onfocus="setTimeout(function(t){t.select();},1,this)" onclick="setTimeout(function(t){t.select();},1,this)">
+              <input type="number" id="sellTaxPct" inputmode="decimal" step="0.01" value="0.3" disabled>
               <span class="unit">%</span>
             </div>
           </div>
@@ -297,27 +261,18 @@
     { price: '80', shares: '2000' }
   ];
 
-  function loadStored(){
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e){ return null; }
-  }
   function saveStored(){
     const data = { lots };
     FIELDS.forEach(f => { data[f] = $(f).value; });
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+    Util.store.setJSON(STORAGE_KEY, data);
   }
 
-  const saved = loadStored();
+  const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved){
     if(Array.isArray(saved.lots) && saved.lots.length){
       lots = saved.lots.map(l => ({ price: String(l.price ?? ''), shares: String(l.shares ?? '') }));
     }
     FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
-  }
-
-  function selectOnFocus(input){
-    const sel = () => setTimeout(() => input.select(), 1);
-    input.addEventListener('focus', sel);
-    input.addEventListener('click', sel);
   }
 
   function makeInput(value, step, mode, unit, onInput){
@@ -328,7 +283,6 @@
     input.inputMode = mode;
     input.step = step;
     input.value = value;
-    selectOnFocus(input);
     input.addEventListener('input', () => onInput(input.value));
     const u = document.createElement('span');
     u.className = 'unit';
@@ -368,18 +322,7 @@
     });
   }
 
-  function fmtMoney(n){
-    return Math.round(n).toLocaleString('zh-Hant-TW') + ' 元';
-  }
-  function fmtPrice(n){
-    return n.toFixed(2) + ' 元';
-  }
-  function fmtSigned(n){
-    return (Math.round(n) > 0 ? '+' : '') + fmtMoney(n);
-  }
-  function fmtPct(n){
-    return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-  }
+  const { money: fmtMoney, price: fmtPrice, signedMoney: fmtSigned, pct: fmtPct } = Util.fmt;
   function setSign(el, n){
     el.classList.toggle('profit', n > 0);
     el.classList.toggle('loss', n < 0);
@@ -592,35 +535,8 @@
     return lines.join('\n');
   }
 
-  function fallbackCopy(text, done){
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); } catch(e){}
-    document.body.removeChild(ta);
-    done();
-  }
-
   $('copyResultBtn').addEventListener('click', function(){
-    if(!lastResult) return;
-    const btn = this;
-    const text = buildResultText();
-    const done = () => {
-      btn.textContent = '已複製 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '📋 複製結果';
-        btn.classList.remove('copied');
-      }, 1500);
-    };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
-    } else {
-      fallbackCopy(text, done);
-    }
+    if(lastResult) Util.copyText(buildResultText(), this);
   });
 
   $('addLot').addEventListener('click', () => {
@@ -649,7 +565,9 @@
   update();
 })();
 </script>
+<!-- BUILD:TAIL -->
 <script src="stepper.js"></script>
 <script src="nav.js"></script>
+<!-- /BUILD:TAIL -->
 </body>
 </html>

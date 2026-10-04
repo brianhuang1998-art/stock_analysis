@@ -3,11 +3,13 @@
 台股投資試算工具（交易損益、目標價、定期定額複利、加權平均成本等），用 GitHub Pages 架設的靜態網站。
 上線網址：https://brianhuang1998-art.github.io/stock_analysis/
 
-## 網站頁面（實際會被瀏覽器讀取）
+## 檔案說明
+
+### 網站頁面（瀏覽器會讀取）
 
 | 檔案 | 用途 |
 |---|---|
-| `index.html` | GitHub Pages 要求根目錄要有這個檔案才能正常提供網站首頁，內容只是自動導向 `home_page.html`，不放版面 |
+| `index.html` | GitHub Pages 要求根目錄要有這個檔案，內容只是自動導向 `home_page.html`，不放版面 |
 | `home_page.html` | 真正的首頁內容，網站入口，點卡片進入「試算工具」或其他三個分類頁 |
 | `tools.html` | 試算工具列表頁，列出目前提供的四個試算工具（ETF、個股、目標%數、加權平均成本法） |
 | `etf_calculator.html` | ETF 損益試算機。可選 ETF 類型（股票型／債券型／主動式），自動帶入對應證交稅率 |
@@ -18,14 +20,36 @@
 | `avg_cost_calculator.html` | 加權平均成本法試算機（放在「試算工具」分類下）。可新增／刪除多筆買進紀錄，算出加權平均成本、逐筆明細、損益兩平價與可掛單價、淨損益（手續費原價 vs 目前折數），附損益兩平進度條、即時註解與「複製結果」。商品類型（個股／股票型 ETF／債券型 ETF／自訂）決定證交稅率。計算使用 `trade_math.js` |
 | `valuation_analysis.html` | 估值與基本面分析分類頁，列出本益比河流圖、DDM、DCF、ROE 杜邦拆解等分析工具（開發中） |
 | `dividend_cashflow.html` | 股息與現金流規劃分類頁，列出月配息現金流月曆、股利稅務、退休提領試算等工具（開發中） |
-| `manifest.json` | PWA 設定（App 名稱、圖示、啟動頁、主題色），讓手機可以「加到主畫面」像 App 一樣開啟 |
-| `sw.js` | Service worker：網路優先、離線時用快取，所以逛過的頁面沒網路也能開。由 `nav.js` 註冊，只在 https／localhost 生效。新增頁面時請把檔名加進檔案開頭的 `PRECACHE` |
-| `icon-192.png`、`icon-512.png`、`icon-maskable-512.png`、`apple-touch-icon.png` | App 圖示（綠底「B」，與瀏覽器分頁圖示相同）；maskable 版本留了安全邊距給 Android 圓形／圓角裁切，apple-touch-icon 給 iPhone 用 |
-| `styles.css` | 全部頁面共用的樣式（配色、版面、卡片、表單等），改版面風格只要改這一個檔案 |
-| `nav.js` | 每頁共用的版面外殼：①把頁面上的麵包屑併入頂部深色列（品牌／麵包屑／「全部工具 ▾」同一列，頂部列固定在畫面上方）；②「全部工具」下拉選單附搜尋框（按 `/` 或 Ctrl／⌘+K 開啟，Enter 前往第一筆，方向鍵選取）；③頁尾（只顯示最後更新時間）；④手機浮動「回到頂部」按鈕。新增工具頁時，在檔案開頭的 `TOOL_MENU` 加一行即可（`keywords` 是搜尋用的關鍵字）。頁尾的「最後更新」是用 GitHub API 讀取這個 repo 最新一筆 commit 的時間（台北時間），快取 10 分鐘，讀不到時退回檔案修改時間 |
-| `stepper.js` | 把所有數字欄位的上下箭頭換成較大的 ▲▼ 按鈕（瀏覽器內建箭頭太小且各家不同），新增的欄位也會自動套用 |
+
+### 全域設定與共用檔案（改一處，全站套用）
+
+| 檔案 | 用途 |
+|---|---|
+| `site-config.js` | **全站設定的唯一來源**：站名、網址、主題色、分類、每個工具的名稱／網址／圖示／說明／搜尋關鍵字、哪些是「開發中」。頂部選單、搜尋、麵包屑、頁面標題、說明文字、分享預覽、分類頁與首頁的卡片、離線快取清單，全都從這份產生。注意 `self.SITE =` 後面必須是嚴格 JSON（雙引號、不能有註解或結尾逗號），因為 `tools/build.py` 要讀它 |
+| `tools/build.py` | 讀取 `site-config.js`，把各頁 `<!-- BUILD:XXX -->` 標記之間的內容重新產生（`HEAD` 頁首標籤與標題、`TOPBAR` 頂部列與麵包屑、`CARDS` 工具卡片、`TAIL` 結尾腳本），並更新 `manifest.json`、`sitemap.xml`。標記以外手寫的內容不會被動到。發現有 html 沒登記到設定檔，會印出警告 |
+| `_template.html` | 新增頁面用的範本（底線開頭的檔案 GitHub Pages 不會公開，也不會被 build 處理）。已包含輸入欄、結果卡、空狀態、儲存輸入的寫法 |
+| `styles.css` | 全部頁面共用的樣式（配色變數在檔案最上面），改版面風格只要改這一個檔案。各頁共用或專屬的規則也都放在檔案後半，頁面本身不再有 `<style>` |
+| `util.js` | 共用小工具 `Util`：`Util.store`（安全的 localStorage）、`Util.fmt`（金額／價格／百分比格式）、`Util.copyText`（複製並顯示「已複製 ✓」）。放在頁首，頁面腳本可直接用 |
+| `nav.js` | 每頁共用的外殼：「全部工具 ▾」下拉選單附搜尋框（按 `/` 或 Ctrl／⌘+K 開啟，Enter 前往第一筆，方向鍵選取）、頁尾（右下角顯示最後更新時間）、手機浮動「回到頂部」按鈕、註冊離線快取。頁尾的「最後更新」是用 GitHub API 讀取這個 repo 最新一筆 commit 的時間（台北時間），快取 10 分鐘，讀不到時退回檔案修改時間 |
+| `stepper.js` | 所有數字欄位（`.input-wrap` 內的 `type="number"`，之後動態新增的也算）自動套用：①較大的 ▲▼ 按鈕、②點到或聚焦時全選數字。新欄位不用再寫 `onfocus` |
 | `trade_math.js` | 共用的交易計算（手續費、證交稅、淨損益、損益兩平價、升降單位與可掛單價），個股、ETF、加權平均成本、目標%數四頁都使用這份，改公式只要改這一個檔案 |
 | `calc.js` | 個股、ETF 兩個試算頁的畫面邏輯（讀取輸入、顯示結果、進度條、註解、複製結果），計算本身呼叫 `trade_math.js`，所以頁面要先載入 `trade_math.js` |
+| `manifest.json` | PWA 設定，由 `build.py` 依 `site-config.js` 產生，不要手改 |
+| `sw.js` | Service worker：網路優先、離線時用快取。頁面清單讀自 `site-config.js`，新增頁面會自動被快取。只在 https／localhost 生效，由 `nav.js` 註冊 |
+| `favicon.svg` | 瀏覽器分頁圖示 |
+| `icon-192.png`、`icon-512.png`、`icon-maskable-512.png`、`apple-touch-icon.png` | App 圖示（綠底「B」）；maskable 版留了安全邊距給 Android 裁切，apple-touch-icon 給 iPhone 用 |
+| `sitemap.xml` | 給 Google 的網站地圖，由 `build.py` 產生 |
+
+## 新增一個工具頁（流程）
+
+1. 複製 `_template.html`，存成新檔名（例如 `rebalance_calculator.html`），改標題、輸入欄與計算。
+2. 在 `site-config.js` 對應分類的 `tools` 加一筆（`title`、`href`、`icon`、`desc`、`keywords`）。如果原本是「開發中」的佔位項目，把 `"soon": true` 拿掉並補上 `href` 即可。
+3. commit 時會自動執行 `python3 tools/build.py`（也可以手動先跑一次預覽）：頁面標題、說明、分享預覽、頂部列與麵包屑、分類頁卡片、sitemap 都會自動補好。選單、搜尋和離線快取不需要 build，直接讀設定檔。
+4. 照「更新網站流程」上傳。
+
+新增分類頁：複製一個現有分類頁（例如 `tools.html`），在 `site-config.js` 的 `categories` 加一筆，再執行 build。
+
+頁面標題格式由 `build.py` 統一產生：首頁 `Brian工具箱`、分類頁 `分類 | Brian工具箱`、工具頁 `頁名 - 分類 | Brian工具箱`。
 
 頁面間的導覽路徑：
 
@@ -33,7 +57,7 @@
 - `首頁 → 交易與部位管理 → 定期定額複利試算`
 - `首頁 → 估值與基本面分析 / 股息與現金流規劃`（這兩個分類頁目前都還是開發中的佔位卡片）
 
-每頁頂端的麵包屑（例如 `🏠 首頁 › 試算工具 › ETF 試算`）每一層都能點擊，目前所在頁面以深色粗體顯示（`styles.css` 的 `.subbar a.here`）。頂部列左側的「Brian工作室」可以點，回到首頁；麵包屑與全部工具選單都在同一列（手機上只顯示「上一層 › 目前頁」）。
+每頁頂端的麵包屑（例如 `🏠 首頁 › 試算工具 › ETF 試算`）每一層都能點擊，目前所在頁面以白色粗體顯示（`styles.css` 的 `.crumbs a.here`）。頂部列左側的「Brian工作室」可以點，回到首頁；麵包屑與全部工具選單都在同一列、固定在畫面上方（手機上只顯示「上一層 › 目前頁」）。
 
 ## 其他檔案（不會被網站使用）
 
@@ -78,5 +102,9 @@ git add -A
 git commit -m "更新內容"
 git push
 ```
+
+commit 時會自動執行 `tools/build.py`（`.githooks/pre-commit`），把頁面的共用部分依 `site-config.js` 重新產生並一起提交；如果有 html 沒登記到 `site-config.js`，commit 會被擋下並說明原因。
+
+**第一次在新電腦 clone 這個專案時**，要執行一次 `git config core.hooksPath .githooks` 才會啟用這個自動步驟（git 的設定不會跟著 repo 走）。
 
 push 完約 1 分鐘後 GitHub Pages 會自動部署新版本，網址不會變。

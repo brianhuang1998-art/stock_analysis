@@ -1,10 +1,15 @@
-// Adds larger ▲▼ buttons to every number input inside .input-wrap, including rows added later (e.g. new buy lots)
+// Enhances every number input inside .input-wrap, including rows added later (e.g. new buy lots):
+// larger ▲▼ buttons, and the whole value is selected when the field is focused or clicked
 (function(){
   function enhance(input){
     if(input.dataset.stepper) return;
     const wrap = input.closest('.input-wrap');
     if(!wrap) return;
     input.dataset.stepper = '1';
+
+    const selectAll = () => setTimeout(() => input.select(), 1);
+    input.addEventListener('focus', selectAll);
+    input.addEventListener('click', selectAll);
 
     const box = document.createElement('div');
     box.className = 'stepper';

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<!-- BUILD:HEAD -->
+<!-- /BUILD:HEAD -->
+</head>
+<body>
+
+<!-- BUILD:TOPBAR -->
+<!-- /BUILD:TOPBAR -->
+
+<main>
+  <h1>工具名稱</h1>
+  <p class="subtitle">一句話說明這個工具做什麼</p>
+
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>參數</h2>
+        <div class="field-grid">
+          <div>
+            <label for="amount">金額</label>
+            <div class="input-wrap">
+              <input type="number" id="amount" inputmode="decimal" step="1" value="1000">
+              <span class="unit">元</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>結果</h2>
+        <p class="empty-hint">請輸入有效的數值，結果會自動更新。</p>
+        <div class="tiles">
+          <div class="tile"><div class="k">結果</div><div class="v mono" id="result">--</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = 'myTool:' + location.pathname;      // 輸入內容存在瀏覽器，重新整理後保留
+  const { money } = Util.fmt;                              // 共用格式：int / money / price / signedMoney / pct
+
+  const saved = Util.store.getJSON(STORAGE_KEY);
+  if(saved && saved.amount !== undefined) $('amount').value = saved.amount;
+
+  function update(){
+    Util.store.setJSON(STORAGE_KEY, { amount: $('amount').value });
+    const n = parseFloat($('amount').value);
+    const valid = n > 0;
+    $('result').closest('.card').classList.toggle('is-empty', !valid);   // 空狀態：變灰並顯示 .empty-hint
+    $('result').textContent = valid ? money(n) : '--';
+  }
+  $('amount').addEventListener('input', update);
+  update();
+})();
+</script>
+
+<!-- BUILD:TAIL -->
+<!-- /BUILD:TAIL -->
+</body>
+</html>
