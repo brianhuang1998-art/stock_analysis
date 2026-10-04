@@ -203,6 +203,11 @@
   window.addEventListener('scroll', syncToTop, { passive: true });
   syncToTop();
 
+  /* ---------- PWA: offline cache (needs https or localhost) ---------- */
+  if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+
   /* ---------- last updated = time of the latest commit pushed to GitHub ---------- */
   const CACHE_KEY = 'site:lastCommit';
   const CACHE_MS = 10 * 60 * 1000; // GitHub API allows 60 unauthenticated calls/hour per IP
