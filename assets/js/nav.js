@@ -1,6 +1,6 @@
 // Site chrome shared by every page: the 全部工具 dropdown (with search) in the top bar, footer, back-to-top, offline cache.
 // The pages, categories and keywords all come from site-config.js; the top bar itself and the breadcrumb are written
-// into each page by tools/build.py.
+// into each page by _dev/build.py.
 (function(){
   const SITE = self.SITE;
   if(!SITE) return;

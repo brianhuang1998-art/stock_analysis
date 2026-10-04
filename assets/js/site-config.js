@@ -1,6 +1,6 @@
 // Site-wide settings: the single source of truth for pages, categories, menus, breadcrumbs, titles and cards.
 // Keep this file strict JSON after the "self.SITE =" part (double quotes, no comments, no trailing commas),
-// because tools/build.py reads it. After editing, run:  python3 tools/build.py
+// because _dev/build.py reads it. After editing, run:  python3 _dev/build.py
 // "soon": true marks a placeholder (開發中): it shows a greyed card and has no link.
 self.SITE = {
   "siteName": "Brian工具箱",

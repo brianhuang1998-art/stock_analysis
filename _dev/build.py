@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the shared parts of every page from site-config.js.
 
-Run from anywhere:  python3 tools/build.py
+Run from anywhere:  python3 _dev/build.py
 
 What it writes (only between the BUILD markers in each page, so hand-written content is never touched):
   <!-- BUILD:HEAD -->    meta tags, icons, manifest link, <title>, description, Open Graph, stylesheet, shared scripts
@@ -21,7 +21,7 @@ esc = lambda s: html.escape(s, quote=True)
 
 
 def load_config():
-    text = (ROOT / 'site-config.js').read_text(encoding='utf-8')
+    text = (ROOT / 'assets' / 'js' / 'site-config.js').read_text(encoding='utf-8')
     return json.loads(text[text.index('{'):text.rindex('}') + 1])
 
 
@@ -49,10 +49,10 @@ def head_block(cfg, href, p):
     t, d = esc(p['title']), esc(p['desc'])
     return f'''<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="{esc(cfg['themeColor'])}">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="{esc(cfg['siteName'])}">
@@ -65,11 +65,11 @@ def head_block(cfg, href, p):
 <meta property="og:title" content="{t}">
 <meta property="og:description" content="{d}">
 <meta property="og:url" content="{esc(url)}">
-<meta property="og:image" content="{esc(cfg['baseUrl'])}icon-512.png">
+<meta property="og:image" content="{esc(cfg['baseUrl'])}assets/icons/icon-512.png">
 <meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="styles.css">
-<script src="site-config.js"></script>
-<script src="util.js"></script>'''
+<link rel="stylesheet" href="assets/css/styles.css">
+<script src="assets/js/site-config.js"></script>
+<script src="assets/js/util.js"></script>'''
 
 
 def topbar_block(cfg, p):
@@ -116,7 +116,7 @@ def cards_block(cfg, p):
     return '\n'.join(items)
 
 
-TAIL = '<script src="stepper.js"></script>\n<script src="nav.js"></script>'
+TAIL = '<script src="assets/js/stepper.js"></script>\n<script src="assets/js/nav.js"></script>'
 
 
 def replace_block(text, name, body, path):
@@ -166,9 +166,9 @@ def main():
         'background_color': '#ffffff',
         'theme_color': cfg['themeColor'],
         'icons': [
-            {'src': 'icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
-            {'src': 'icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
-            {'src': 'icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'},
+            {'src': 'assets/icons/icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
+            {'src': 'assets/icons/icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+            {'src': 'assets/icons/icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'},
         ],
     }
     (ROOT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
