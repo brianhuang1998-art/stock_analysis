@@ -94,17 +94,6 @@
             <p class="input-error" id="err-years" hidden></p>
           </div>
           <div class="field-wide">
-            <label for="version">規則版本（一次套用下面四項設定）</label>
-            <div class="input-wrap">
-              <select id="version">
-                <option value="modified">修正版：2006 論文最終做法</option>
-                <option value="original">原版：2004 原始做法</option>
-                <option value="custom">自訂：下面四項自行組合</option>
-              </select>
-            </div>
-            <p class="note-line">選「原版」或「修正版」會同時設定下面四項；手動改其中一項，這裡會自動變成「自訂」。</p>
-          </div>
-          <div class="field-wide">
             <label for="mode">模擬方式</label>
             <div class="input-wrap">
               <select id="mode">
@@ -252,7 +241,7 @@
           <p>論文還有第 4 條「投資組合管理規則」，決定要賣股票、債券還是現金來支付生活費。本頁假設退休金<strong>100% 是台股 ETF</strong>（如 0050），沒有債券或現金可以動用，所以這條不適用，下跌時只能賣股票。</p>
 
           <h3>3.「原版」與「修正版」差在哪？</h3>
-          <p><strong>原版</strong> = Guyton 2004 年的原始做法；<strong>修正版</strong> = Guyton &amp; Klinger 2006 年論文的最終做法。參數區的「規則版本」會一次套用這四項：</p>
+          <p><strong>原版</strong> = Guyton 2004 年的原始做法；<strong>修正版</strong> = Guyton &amp; Klinger 2006 年論文的最終做法。下方參數區有四個下拉選單，每個選項後面都標了「原版」或「修正版」，可以自行組合：</p>
           <div class="table-wrap">
             <table class="data-table">
               <thead><tr><th>設定</th><th>原版</th><th>修正版</th></tr></thead>
@@ -312,21 +301,6 @@
   const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
 
-  // 「規則版本」一次設定四個下拉選單；四項的組合若剛好等於某個版本就顯示該版本，否則顯示「自訂」
-  const PRESETS = {
-    modified: { mode: 'mc',     freezeMode: 'modified', inflCap: 'none', cprExpire: 'yes' },
-    original: { mode: 'stress', freezeMode: 'original', inflCap: '6',    cprExpire: 'no' }
-  };
-  const PRESET_KEYS = Object.keys(PRESETS.modified);
-  function syncVersion(){
-    const hit = Object.keys(PRESETS).find(name => PRESET_KEYS.every(k => $(k).value === PRESETS[name][k]));
-    $('version').value = hit || 'custom';
-  }
-  $('version').addEventListener('change', () => {
-    const preset = PRESETS[$('version').value];
-    if(preset) PRESET_KEYS.forEach(k => { $(k).value = preset[k]; });
-    update();
-  });
 
   /* ---------- random numbers: seeded so the same inputs always give the same answer ---------- */
   function mulberry32(a){
@@ -616,7 +590,6 @@
   }
 
   function update(){
-    syncVersion();
     const data = {};
     FIELDS.forEach(f => { data[f] = $(f).value; });
     Util.store.setJSON(STORAGE_KEY, data);
