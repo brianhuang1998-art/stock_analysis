@@ -128,6 +128,15 @@
             </div>
           </div>
           <div class="field-wide">
+            <label for="inflCap">通膨規則：每年依通膨調高時，要不要設上限？</label>
+            <div class="input-wrap">
+              <select id="inflCap">
+                <option value="none">不設上限（2006 論文最終版）</option>
+                <option value="6">上限 6%（2004 原版）</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-wide">
             <label for="cprExpire">保本規則在退休最後 15 年停用？</label>
             <div class="input-wrap">
               <select id="cprExpire">
@@ -191,7 +200,7 @@
           <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="動態提領與固定提領的每年提領率折線圖，含上下護欄"></svg>
           <div class="chart-tip" hidden></div>
         </div>
-        <p class="foot-note" style="margin-top:10px;">提領率 = 當年提領金額 ÷ 當年年初資產。動態提領的提領率一碰到紅色虛線（上、下護欄）就會被拉回來；固定提領沒有護欄，市場下跌時提領率會一路攀升。</p>
+        <p class="foot-note" id="rateNote" style="margin-top:10px;"></p>
       </div>
 
       <div class="card" id="tableCard">
@@ -203,6 +212,7 @@
             <tbody id="yearlyBody"></tbody>
           </table>
         </div>
+        <p class="foot-note" id="yearlyNote"></p>
       </div>
     </div>
 
@@ -221,7 +231,7 @@
               <thead><tr><th>規則</th><th>條件</th><th>動作</th></tr></thead>
               <tbody>
                 <tr><td>通膨規則</td><td>前一年投資虧損</td><td>今年提領金額不隨通膨調整</td></tr>
-                <tr><td></td><td>前一年有賺錢</td><td>依通膨調高，<strong>上限 6%</strong>（被上限擋下的不補）</td></tr>
+                <tr><td></td><td>前一年有賺錢</td><td>依通膨調高。<strong>2006 論文最終版不設上限</strong>；2004 原版有 6% 上限（被擋下的不補），可在參數裡切換</td></tr>
                 <tr><td>保本規則</td><td>目前提領率 &gt; 初始提領率 × 120%（上護欄）</td><td>今年提領金額<strong>下調 10%</strong></td></tr>
                 <tr><td>繁榮規則</td><td>目前提領率 &lt; 初始提領率 × 80%（下護欄）</td><td>今年提領金額<strong>上調 10%</strong></td></tr>
               </tbody>
@@ -235,7 +245,7 @@
             <li><strong>蒙地卡羅</strong>：用「預期年化報酬率」與「年化波動率」隨機產生 2,000 條報酬路徑（對數常態分配，固定亂數種子，所以同樣的輸入每次結果相同）。動態與固定提領<strong>使用同一批路徑</strong>，方便公平比較。成功 = 退休期間資金都沒有用完。</li>
             <li><strong>壓力情境</strong>：退休最初幾年連續下跌，之後每年固定為預期報酬率，看護欄規則一步步怎麼動作（逐年明細會標出每年觸發的規則）。</li>
             <li>每年「年初」先提領，剩下的資產再成長一年。</li>
-            <li>通膨固定為你輸入的數字。想看到 6% 上限擋下來的效果，可以把通膨設到 7% 以上。</li>
+            <li>通膨固定為你輸入的數字。論文最終版取消了 6% 上限（取消後購買力多維持 10% 以上，成功率沒有下降）；若切換成「上限 6%」，要把通膨設到 6% 以上才看得到差別。</li>
           </ul>
 
           <h3>4.報酬率與波動率填多少？</h3>
@@ -262,11 +272,11 @@
 (function(){
   const $ = id => document.getElementById(id);
   const STORAGE_KEY = 'retirementDynamicCalc:' + location.pathname;
-  const FIELDS = ['assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','cprExpire'];
+  const FIELDS = ['assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','inflCap','cprExpire'];
   const MAX_YEARS = 60;
   const TRIALS = 2000;
   const SEED = 20060301;
-  const INFLATION_CAP = 0.06;      // 通膨規則：調升上限
+  const INFLATION_CAP = 0.06;      // 通膨規則：2004 原版的調升上限（2006 論文最終版取消）
   const GUARD = 0.2;               // 護欄：初始提領率 ±20%
   const STEP = 0.1;                // 保本 / 繁榮規則：一次調整 10%
   const CPR_YEARS_BEFORE_END = 15; // 保本規則在退休最後 15 年停用（論文）
@@ -305,7 +315,7 @@
     const o = emptyRun(T);
     const wr0 = p.wr0;
     const infl = p.infl;
-    const cap = Math.min(infl, INFLATION_CAP);
+    const cap = p.inflCap === '6' ? Math.min(infl, INFLATION_CAP) : infl;
     let bal = p.assets;
     let W = 0;
     let ppSum = 0;
@@ -365,7 +375,7 @@
     for(let i = 0; i < T; i++){
       const s = sortedCopy(col('start', i)), w = sortedCopy(col('wd', i)), r = sortedCopy(col('wr', i)), e = sortedCopy(col('end', i));
       years.push({
-        startMed: percentile(s, .5), wdMed: percentile(w, .5), wrMed: percentile(r, .5),
+        startMed: percentile(s, .5), wdMed: percentile(w, .5), wrMed: percentile(r, .5), wrLo: percentile(r, .1), wrHi: percentile(r, .9),
         endMed: percentile(e, .5), endLo: percentile(e, .1), endHi: percentile(e, .9),
         cutShare: runs.filter(x => x.adj[i] === -1).length / n,
         raiseShare: runs.filter(x => x.adj[i] === 1).length / n,
@@ -490,24 +500,34 @@
     // ----- withdrawal-rate chart: current rate each year, with the guardrails
     const xs1 = Array.from({ length: T }, (_, i) => i + 1);
     const dynWr = dyn.years.map(y => y.wrMed), fixWr = fix.years.map(y => y.wrMed);
+    const dynWrLo = dyn.years.map(y => y.wrLo), dynWrHi = dyn.years.map(y => y.wrHi);
     const upper = v.wr0 * (1 + GUARD), lower = v.wr0 * (1 - GUARD);
+    const rateMax = LineChart.niceMax(Math.max(upper * 1.6, Math.min(Math.max(...dynWrHi), upper * 3)));
+    const clipped = fixWr.some(x => x > rateMax) || dynWrHi.some(x => x > rateMax);
     LineChart.draw($('rateChart'), {
       xs: xs1,
       xLabel: n => n + ' 年',
       yFormat: n => (n * 100).toFixed(1) + '%',
-      yMax: LineChart.niceMax(Math.max(upper * 1.6, Math.min(Math.max(...dynWr), upper * 3))),
+      yMax: rateMax,
       hlines: [
         { value: upper, cls: 'hline-guard', label: `上護欄 ${fmtPct(upper)}` },
         { value: v.wr0, cls: 'hline-base', label: `初始 ${fmtPct(v.wr0)}` },
         { value: lower, cls: 'hline-guard', label: `下護欄 ${fmtPct(lower)}` }
       ],
+      bands: stress ? [] : [{ cls: 'band-dynamic', lo: dynWrLo, hi: dynWrHi }],
       series: [{ cls: 's-fixed', values: fixWr }, { cls: 's-dynamic', values: dynWr }],
-      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>動態提領率　${fmtPct(dynWr[i], 2)}<br>固定提領率　${fmtPct(fixWr[i], 2)}`
+      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>動態提領率　${fmtPct(dynWr[i], 2)}<br>固定提領率　${fmtPct(fixWr[i], 2)}` +
+        (stress ? '' : `<br><span class="tip-muted">動態 10%～90%：${fmtPct(dynWrLo[i], 2)} ～ ${fmtPct(dynWrHi[i], 2)}</span>`)
     });
     $('rateLegend').innerHTML =
       legendItem('l-dynamic', '動態提領率' + (stress ? '' : '（中位數）')) +
       legendItem('l-fixed', '固定提領率' + (stress ? '' : '（中位數）')) +
+      (stress ? '' : legendItem('l-band', '動態提領率 10%～90% 區間')) +
       legendItem('l-guard', '上、下護欄（初始 ±20%）');
+    $('rateNote').textContent = (stress
+      ? '提領率 = 當年提領金額 ÷ 當年年初資產。動態提領的提領率超過上護欄就被下調拉回、低於下護欄就被上調拉高；固定提領沒有護欄，下跌時提領率會直接飆高。'
+      : '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的路徑算 100%）。實線是各年度的中位數，淡綠色區域是動態提領 80% 的情境（10%～90%）。動態提領的中位數通常貼近初始提領率、碰不到護欄，護欄是在比較好或比較差的個別路徑上動作，所以請看淡綠色區域的上下緣（護欄一次只調整 10%，所以區域上緣可能暫時略高於上護欄）。固定提領沒有護欄：報酬撐不住提領時，提領率會逐年攀升；報酬遠高於提領時則會下降。')
+      + (clipped ? ' 超出圖表上緣的部分被截斷，滑鼠移到該年（手機點一下）可看到實際數字。' : '');
 
     // ----- yearly table
     $('tableTitle').textContent = stress ? '逐年明細（壓力情境）' : '逐年明細（中位數）';
@@ -515,6 +535,9 @@
     $('yearlyHead').innerHTML = stress
       ? '<tr><th>年度</th><th>當年報酬</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>動態：年底資產</th><th>觸發規則</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>'
       : '<tr><th>年度</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>動態：年底資產</th><th>當年觸發比例</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>';
+    $('yearlyNote').textContent = stress
+      ? '這是單一條情境路徑，不是平均或中位數。「觸發規則」依序檢查：先看前一年報酬決定是否凍結通膨調整，再看提領率是否超出護欄（保本 −10%、繁榮 +10%），兩者可以在同一年同時發生。「用完」代表該年年底資產為 0。'
+      : '每一欄都是「該年度 2,000 條路徑各自的中位數」，欄與欄是分別取中位數，所以「提領率」不一定剛好等於「當年提領 ÷ 年初資產」，動態的年底資產則會等於下一年的年初資產。「當年觸發比例」是該年有多少比例的路徑發生該動作；凍結通膨與下調／上調可以在同一年同時發生，所以三個比例不能相加。「用完」代表該年度的中位數資產已是 0（有一半以上的路徑資金用完）。';
     $('yearlyBody').innerHTML = dyn.years.map((y, i) => {
       const f = fix.years[i];
       const endCell = m => m <= 0 ? '<td class="gain-neg">用完</td>' : `<td>${fmtMoney(m)}</td>`;
@@ -567,6 +590,7 @@
       stressYears: Number($('stressYears').value),
       stressReturn: parseFloat($('stressReturn').value),
       freezeMode: $('freezeMode').value,
+      inflCap: $('inflCap').value,
       cprExpire: $('cprExpire').value
     };
     v.wr0Pct = parseFloat($('wr0').value);
