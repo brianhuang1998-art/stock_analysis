@@ -567,23 +567,24 @@ label{
 .input-wrap input:disabled{background:var(--disabled-bg);border-color:var(--disabled-border);color:var(--disabled-text);cursor:not-allowed;}
 .tile .sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
 
-/* Tables: 逐年明細 (dca) and 逐筆明細 (avg cost) */
+/* Tables: 逐年明細 (dca), 逐筆明細 (avg cost); .data-table is the generic name for new pages */
 .table-wrap{overflow-x:auto;}
-.lot-table,.dca-table{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap;}
-.lot-table th,.dca-table th{
+.lot-table,.dca-table,.data-table{width:100%;border-collapse:collapse;font-size:13.5px;white-space:nowrap;}
+.lot-table th,.dca-table th,.data-table th{
   text-align:right;font-size:12px;color:var(--text-muted);font-weight:600;
   padding:8px 10px;border-bottom:1.5px solid var(--border);
 }
 .lot-table th:first-child,.lot-table td:first-child,
-.dca-table th:first-child,.dca-table td:first-child{text-align:left;}
-.lot-table td,.dca-table td{
+.dca-table th:first-child,.dca-table td:first-child,
+.data-table th:first-child,.data-table td:first-child{text-align:left;}
+.lot-table td,.dca-table td,.data-table td{
   padding:9px 10px;border-bottom:1px solid var(--border);
   text-align:right;font-variant-numeric:tabular-nums;
 }
-.lot-table tr:last-child td,.dca-table tr:last-child td{border-bottom:none;}
+.lot-table tr:last-child td,.dca-table tr:last-child td,.data-table tr:last-child td{border-bottom:none;}
 .lot-table td.avg{color:var(--navy);font-weight:700;}
-.dca-table td.gain-pos{color:var(--accent-strong);font-weight:600;}
-.dca-table td.gain-neg{color:var(--loss);font-weight:600;}
+.dca-table td.gain-pos,.data-table td.gain-pos{color:var(--accent-strong);font-weight:600;}
+.dca-table td.gain-neg,.data-table td.gain-neg{color:var(--loss);font-weight:600;}
 
 /* 觀念說明 / 計算假設 text blocks */
 .assume h3{font-size:14px;color:var(--navy);margin:20px 0 6px;}

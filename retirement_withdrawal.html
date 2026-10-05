@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<!-- BUILD:HEAD -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f2233">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Brian工具箱">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>退休提領試算（4%法則） - 股息與現金流規劃 | Brian工具箱</title>
+<meta name="description" content="輸入退休資產與提領率，估算能撐幾年、每月可提領多少。">
+<link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/retirement_withdrawal.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Brian工具箱">
+<meta property="og:title" content="退休提領試算（4%法則） - 股息與現金流規劃 | Brian工具箱">
+<meta property="og:description" content="輸入退休資產與提領率，估算能撐幾年、每月可提領多少。">
+<meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/retirement_withdrawal.html">
+<meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/assets/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="assets/css/styles.css">
+<script src="assets/js/site-config.js"></script>
+<script src="assets/js/util.js"></script>
+<!-- /BUILD:HEAD -->
+</head>
+<body>
+
+<!-- BUILD:TOPBAR -->
+<div class="topbar">
+  <a class="home-link" href="./" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
+  <nav class="crumbs" aria-label="麵包屑"><a href="./">🏠 首頁</a><span>›</span><a href="dividend_cashflow.html">股息與現金流規劃</a><span>›</span><a class="here" aria-current="page" href="retirement_withdrawal.html">退休提領試算（4%法則）</a></nav>
+</div>
+<!-- /BUILD:TOPBAR -->
+
+<main>
+  <h1>退休提領試算（4%法則）</h1>
+  <p class="subtitle">輸入退休資產與提領率，估算每月可提領多少、資產能撐幾年</p>
+
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>試算參數</h2>
+        <div class="field-grid">
+          <div>
+            <label for="assets">退休時資產</label>
+            <div class="input-wrap">
+              <input type="number" id="assets" inputmode="decimal" step="100000" value="10000000">
+              <span class="unit">元</span>
+            </div>
+            <p class="input-error" id="err-assets" hidden></p>
+          </div>
+          <div>
+            <label for="withdrawRate">首年提領率（4% 法則填 4）</label>
+            <div class="input-wrap">
+              <input type="number" id="withdrawRate" inputmode="decimal" step="0.1" value="4">
+              <span class="unit">%</span>
+            </div>
+            <p class="input-error" id="err-withdrawRate" hidden></p>
+          </div>
+          <div>
+            <label for="annualReturn">預期年化報酬率</label>
+            <div class="input-wrap">
+              <input type="number" id="annualReturn" inputmode="decimal" step="0.5" value="5">
+              <span class="unit">%</span>
+            </div>
+            <p class="input-error" id="err-annualReturn" hidden></p>
+          </div>
+          <div>
+            <label for="inflation">預期通貨膨脹率</label>
+            <div class="input-wrap">
+              <input type="number" id="inflation" inputmode="decimal" step="0.5" value="2">
+              <span class="unit">%</span>
+            </div>
+            <p class="input-error" id="err-inflation" hidden></p>
+          </div>
+          <div>
+            <label for="years">預計退休年數</label>
+            <div class="input-wrap">
+              <input type="number" id="years" inputmode="numeric" step="1" value="30">
+              <span class="unit">年</span>
+            </div>
+            <p class="input-error" id="err-years" hidden></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>試算結果</h2>
+        <p class="empty-hint">請先修正上方標紅的欄位，結果會自動更新。</p>
+        <div class="tiles">
+          <div class="tile">
+            <div class="k">首年每月可提領</div>
+            <div class="v mono" id="sumMonthly">--</div>
+          </div>
+          <div class="tile">
+            <div class="k">首年每年可提領</div>
+            <div class="v mono" id="sumYearly">--</div>
+          </div>
+          <div class="tile wide" id="sumLastTile">
+            <div class="k">資產可以撐多久</div>
+            <div class="v mono" id="sumLasted">--</div>
+            <div class="sub" id="sumVerdict"></div>
+          </div>
+          <div class="tile">
+            <div class="k" id="sumEndLabel">退休結束時剩餘資產</div>
+            <div class="v mono" id="sumEnd">--</div>
+          </div>
+          <div class="tile">
+            <div class="k">最後一年每月提領（含通膨）</div>
+            <div class="v mono" id="sumLastMonthly">--</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>提領率對照</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會比較不同提領率。</p>
+        <p class="note-line">其他參數維持不變，只改提領率：</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>提領率</th>
+                <th>首年每月可領</th>
+                <th>資產可撐</th>
+                <th>撐得到退休年數？</th>
+              </tr>
+            </thead>
+            <tbody id="rateBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>逐年明細</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會列出逐年明細。</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>年度</th>
+                <th>年初資產</th>
+                <th>當年提領（含通膨）</th>
+                <th>年底資產</th>
+              </tr>
+            </thead>
+            <tbody id="yearlyBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>計算假設</h2>
+        <div class="insight assume">
+          <h3>1.什麼是 4% 法則？</h3>
+          <p>退休第一年提領退休資產的 <strong>4%</strong>，之後每年把提領金額依通貨膨脹調高，讓生活水準不變。源自 1990 年代美國的研究（Bengen、Trinity Study）：用美國股債混合的歷史資料回測，大多數 30 年期間資金不會用完。</p>
+          <p>反推就是「<strong>25 倍法則</strong>」：每年想花 60 萬，退休時大約要準備 60 萬 ÷ 4% = 1,500 萬。</p>
+          <p>它是依美國歷史市場得出的經驗法則，不保證台灣或未來的市場也一樣。</p>
+
+          <h3>2.本頁怎麼算？</h3>
+          <p>每年「年初」先提領，剩下的資產再依預期年化報酬率成長一年：</p>
+          <p><span class="formula">年底資產 = (年初資產 − 當年提領) × (1 + 報酬率)</span></p>
+          <p><span class="formula">當年提領 = 首年提領 × (1 + 通膨率)<sup>年度 − 1</sup></span></p>
+          <p>首年提領 = 退休時資產 × 提領率。資產不夠付當年提領時，視為在那一年用完。最多模擬 100 年。</p>
+
+          <h3>3.提領率怎麼選？</h3>
+          <ul>
+            <li>退休 30 年左右：4% 是常見起點</li>
+            <li>提早退休、預計超過 40 年：常見建議調低到 3～3.5%</li>
+            <li>有勞保、勞退或租金等其他收入：可以適度提高</li>
+          </ul>
+          <p>建議多試幾組報酬率與通膨率（例如報酬 3%、5%、7%），看結果差多少。</p>
+
+          <h3>4.沒算進去、但實際會影響結果的東西</h3>
+          <ul>
+            <li><strong class="neg">市場波動與順序風險</strong>：本頁假設每年報酬固定。實際上退休初期遇到大跌，傷害遠大於後期大跌</li>
+            <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬</li>
+            <li><strong class="neg">醫療與長照等大額支出</strong>：不會每年平均發生</li>
+            <li><strong class="neg">通膨不一定固定</strong>：醫療、房租的漲幅常高於一般物價</li>
+          </ul>
+        </div>
+        <div class="foot-note">
+          此工具僅供試算規劃參考，不代表實際投資結果，也不構成投資建議。
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const STORAGE_KEY = 'retirementCalc:' + location.pathname;
+  const FIELDS = ['assets','withdrawRate','annualReturn','inflation','years'];
+  const MAX_YEARS = 100;
+  const COMPARE_RATES = [3, 3.5, 4, 4.5, 5, 6];
+  const { money: fmtMoney } = Util.fmt;
+
+  const saved = Util.store.getJSON(STORAGE_KEY);
+  if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
+
+  function validate(v){
+    const e = {};
+    if(!(v.assets > 0)) e.assets = '請輸入大於 0 的退休資產。';
+    if(!isFinite(v.rate) || v.rate < 0 || v.rate > 100) e.withdrawRate = '提領率請輸入 0～100 之間的數字。';
+    if(!isFinite(v.ret)) e.annualReturn = '請輸入預期年化報酬率。';
+    else if(v.ret <= -100) e.annualReturn = '年化報酬率要大於 -100%。';
+    if(!isFinite(v.inf)) e.inflation = '請輸入預期通貨膨脹率。';
+    else if(v.inf <= -100) e.inflation = '通貨膨脹率要大於 -100%。';
+    if(!Number.isInteger(v.years) || v.years < 1 || v.years > MAX_YEARS) e.years = `預計退休年數請輸入 1～${MAX_YEARS} 的整數。`;
+    return e;
+  }
+
+  // Withdraw at the start of each year (first year = assets × rate, then raised by inflation), then grow the rest.
+  // Returns the yearly rows (stopping the year the money runs out) and lasted = years the money lasts (null if still positive after MAX_YEARS).
+  function simulate(assets, ratePct, retPct, infPct){
+    const first = assets * ratePct / 100;
+    const rows = [];
+    let bal = assets;
+    for(let y = 1; y <= MAX_YEARS; y++){
+      const want = first * Math.pow(1 + infPct / 100, y - 1);
+      if(want >= bal){
+        // Not enough for the full withdrawal this year
+        rows.push({ year: y, start: bal, planned: want, withdraw: bal, end: 0, depleted: true });
+        return { first, rows, lasted: (y - 1) + (want > 0 ? bal / want : 0) };
+      }
+      const end = (bal - want) * (1 + retPct / 100);
+      rows.push({ year: y, start: bal, planned: want, withdraw: want, end, depleted: false });
+      bal = end;
+    }
+    return { first, rows, lasted: null };
+  }
+
+  const fmtYears = n => n === null ? `${MAX_YEARS} 年以上` : (Math.round(n * 10) / 10) + ' 年';
+
+  function setEmpty(on){
+    ['sumMonthly', 'rateBody', 'yearlyBody'].forEach(id => $(id).closest('.card').classList.toggle('is-empty', on));
+  }
+
+  function update(){
+    const v = {
+      assets: parseFloat($('assets').value),
+      rate: parseFloat($('withdrawRate').value),
+      ret: parseFloat($('annualReturn').value),
+      inf: parseFloat($('inflation').value),
+      years: Number($('years').value)
+    };
+    const data = {};
+    FIELDS.forEach(f => { data[f] = $(f).value; });
+    Util.store.setJSON(STORAGE_KEY, data);
+
+    const errors = validate(v);
+    FIELDS.forEach(f => {
+      $('err-' + f).textContent = errors[f] || '';
+      $('err-' + f).hidden = !errors[f];
+    });
+    if(Object.keys(errors).length){
+      setEmpty(true);
+      ['sumMonthly','sumYearly','sumLasted','sumEnd','sumLastMonthly'].forEach(id => { $(id).textContent = '--'; });
+      $('sumLasted').classList.remove('profit', 'loss');
+      $('sumVerdict').textContent = '';
+      $('rateBody').innerHTML = '';
+      $('yearlyBody').innerHTML = '';
+      return;
+    }
+    setEmpty(false);
+
+    const r = simulate(v.assets, v.rate, v.ret, v.inf);
+    const shown = r.rows.slice(0, v.years);
+    const last = shown[shown.length - 1];
+    const enough = r.lasted === null || r.lasted >= v.years;
+
+    $('sumMonthly').textContent = fmtMoney(r.first / 12);
+    $('sumYearly').textContent = fmtMoney(r.first);
+    $('sumLasted').textContent = fmtYears(r.lasted);
+    $('sumLasted').classList.toggle('profit', enough);
+    $('sumLasted').classList.toggle('loss', !enough);
+    $('sumVerdict').textContent = enough
+      ? `撐得過預計的 ${v.years} 年退休期間。`
+      : `撐不到預計的 ${v.years} 年，約在第 ${r.rows.length} 年用完。`;
+    $('sumEndLabel').textContent = `退休 ${v.years} 年後剩餘資產`;
+    $('sumEnd').textContent = fmtMoney(enough ? last.end : 0);
+    $('sumLastMonthly').textContent = fmtMoney(last.planned / 12);
+
+    $('yearlyBody').innerHTML = shown.map(row => `
+      <tr>
+        <td>第 ${row.year} 年</td>
+        <td>${fmtMoney(row.start)}</td>
+        <td>${fmtMoney(row.withdraw)}</td>
+        <td class="${row.depleted ? 'gain-neg' : ''}">${row.depleted ? '用完' : fmtMoney(row.end)}</td>
+      </tr>
+    `).join('');
+
+    $('rateBody').innerHTML = COMPARE_RATES.map(rate => {
+      const c = simulate(v.assets, rate, v.ret, v.inf);
+      const ok = c.lasted === null || c.lasted >= v.years;
+      const mark = rate === v.rate ? ' <strong>（目前設定）</strong>' : '';
+      return `
+      <tr>
+        <td>${rate}%${mark}</td>
+        <td>${fmtMoney(c.first / 12)}</td>
+        <td>${fmtYears(c.lasted)}</td>
+        <td class="${ok ? 'gain-pos' : 'gain-neg'}">${ok ? '撐得到' : '撐不到'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  FIELDS.forEach(f => $(f).addEventListener('input', update));
+  update();
+})();
+</script>
+
+<!-- BUILD:TAIL -->
+<script src="assets/js/stepper.js"></script>
+<script src="assets/js/nav.js"></script>
+<!-- /BUILD:TAIL -->
+</body>
+</html>

@@ -133,7 +133,6 @@ self.SITE = {
       "href": "dividend_cashflow.html",
       "icon": "💰",
       "keywords": "配息 股利 退休 4% 現金流",
-      "soon": true,
       "description": "規劃配息現金流與稅務、退休提領的試算工具。",
       "homeDesc": "月配息現金流月曆、股利稅務、退休提領試算等工具。",
       "homeCta": "前往工具列表 →",
@@ -152,9 +151,10 @@ self.SITE = {
         },
         {
           "title": "退休提領試算（4%法則）",
+          "href": "retirement_withdrawal.html",
           "icon": "🏖️",
           "desc": "輸入退休資產與提領率，估算能撐幾年、每月可提領多少。",
-          "soon": true
+          "keywords": "退休 提領 4% 法則 fire 通膨 25倍"
         }
       ]
     }
