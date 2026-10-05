@@ -13,7 +13,7 @@ self.SITE.categories.forEach(c => {
 });
 const PRECACHE = PAGES.concat([
   'assets/js/site-config.js', 'assets/js/util.js', 'assets/js/nav.js', 'assets/js/stepper.js',
-  'assets/js/calc.js', 'assets/js/trade_math.js', 'assets/css/styles.css',
+  'assets/js/calc.js', 'assets/js/trade_math.js', 'assets/js/chart.js', 'assets/css/styles.css',
   'manifest.json', 'assets/icons/favicon.svg', 'assets/icons/icon-192.png'
 ]);
 

@@ -155,6 +155,13 @@ self.SITE = {
           "icon": "🏖️",
           "desc": "輸入退休資產與提領率，估算能撐幾年、每月可提領多少。",
           "keywords": "退休 提領 4% 法則 fire 通膨 25倍"
+        },
+        {
+          "title": "退休動態提領試算",
+          "href": "retirement_dynamic_withdrawal.html",
+          "icon": "🧭",
+          "desc": "用 Guyton-Klinger 護欄規則動態調整提領，對照固定提領的成功率與資產變化。",
+          "keywords": "退休 動態提領 護欄 guyton klinger 保本 繁榮 通膨規則 蒙地卡羅"
         }
       ]
     }

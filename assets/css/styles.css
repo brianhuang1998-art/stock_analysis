@@ -635,3 +635,25 @@ label{
 .pct-row .exact{display:block;font-size:11px;font-weight:500;color:var(--text-muted);}
 .type-wrap{margin-top:12px;}
 .type-wrap select{text-align:center;}
+
+/* ---------- Line chart series (assets/js/chart.js) and its legend ---------- */
+.chart-svg .s-dynamic,.chart-svg .s-fixed{fill:none;stroke-linejoin:round;}
+.chart-svg .s-dynamic{stroke:var(--accent-strong);stroke-width:2.5;}
+.chart-svg .s-fixed{stroke:var(--navy-2);stroke-width:2;stroke-dasharray:5 4;}
+.chart-svg circle.dot{stroke:#fff;stroke-width:2;}
+.chart-svg circle.dot.s-dynamic{fill:var(--accent-strong);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
+.chart-svg circle.dot.s-fixed{fill:var(--navy-2);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
+.chart-svg .band-dynamic{fill:var(--accent);opacity:.16;}
+.chart-svg .hline-guard{stroke:var(--loss);stroke-width:1.2;stroke-dasharray:4 4;}
+.chart-svg .hline-base{stroke:var(--text-muted);stroke-width:1;stroke-dasharray:2 4;opacity:.7;}
+.chart-svg .hline-label{font-size:10.5px;}
+.chart-legend i.l-dynamic{border-color:var(--accent-strong);}
+.chart-legend i.l-fixed{border-color:var(--navy-2);border-top-style:dashed;}
+.chart-legend i.l-guard{border-color:var(--loss);border-top-style:dashed;border-top-width:2px;}
+.chart-legend i.l-band{height:10px;border:none;background:rgba(0,201,140,.2);border-radius:3px;}
+.chart-tip .tip-muted{color:#b9d3c8;}
+.field-wide{grid-column:1 / -1;}
+
+/* Rules table inside the explanation card: wrap text instead of scrolling */
+.assume .data-table{white-space:normal;margin:8px 0 12px;}
+.assume .data-table th,.assume .data-table td{text-align:left;vertical-align:top;}
