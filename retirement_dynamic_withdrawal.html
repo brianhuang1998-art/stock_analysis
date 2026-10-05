@@ -513,11 +513,13 @@
     $('tableTitle').textContent = stress ? '逐年明細（壓力情境）' : '逐年明細（中位數）';
     const retOf = i => i < v.stressYears ? v.stressReturn / 100 : v.ret / 100;
     $('yearlyHead').innerHTML = stress
-      ? '<tr><th>年度</th><th>當年報酬</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>觸發規則</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>'
-      : '<tr><th>年度</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>當年觸發比例</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>';
+      ? '<tr><th>年度</th><th>當年報酬</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>動態：年底資產</th><th>觸發規則</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>'
+      : '<tr><th>年度</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>動態：年底資產</th><th>當年觸發比例</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>';
     $('yearlyBody').innerHTML = dyn.years.map((y, i) => {
       const f = fix.years[i];
-      const fixEndCell = f.endMed <= 0 ? '<td class="gain-neg">用完</td>' : `<td>${fmtMoney(f.endMed)}</td>`;
+      const endCell = m => m <= 0 ? '<td class="gain-neg">用完</td>' : `<td>${fmtMoney(m)}</td>`;
+      const dynEndCell = endCell(y.endMed);
+      const fixEndCell = endCell(f.endMed);
       if(stress){
         const run = dyn.runs[0];
         const tags = [];
@@ -529,7 +531,7 @@
       <tr>
         <td>第 ${i + 1} 年</td>
         <td class="${retOf(i) < 0 ? 'gain-neg' : 'gain-pos'}">${fmtPct(retOf(i))}</td>
-        <td>${fmtMoney(y.startMed)}</td><td>${fmtMoney(y.wdMed)}</td><td>${fmtPct(y.wrMed, 2)}</td>
+        <td>${fmtMoney(y.startMed)}</td><td>${fmtMoney(y.wdMed)}</td><td>${fmtPct(y.wrMed, 2)}</td>${dynEndCell}
         <td>${tags.join('、') || '—'}</td>
         <td>${fmtMoney(f.wdMed)}</td>${fixEndCell}
       </tr>`;
@@ -541,7 +543,7 @@
       return `
       <tr>
         <td>第 ${i + 1} 年</td>
-        <td>${fmtMoney(y.startMed)}</td><td>${fmtMoney(y.wdMed)}</td><td>${fmtPct(y.wrMed, 2)}</td>
+        <td>${fmtMoney(y.startMed)}</td><td>${fmtMoney(y.wdMed)}</td><td>${fmtPct(y.wrMed, 2)}</td>${dynEndCell}
         <td>${trig.join('／') || '—'}</td>
         <td>${fmtMoney(f.wdMed)}</td>${fixEndCell}
       </tr>`;
