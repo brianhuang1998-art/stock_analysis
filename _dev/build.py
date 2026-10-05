@@ -150,7 +150,7 @@ def main():
             changed.append(href)
 
     # Pages that exist but are not in the config (a new page that was forgotten)
-    ignore = {'index.html'}
+    ignore = set()
     for f in sorted(ROOT.glob('*.html')):
         if f.name not in pages and f.name not in ignore and not f.name.startswith('_'):
             problems.append(f'{f.name}: not listed in site-config.js (it will be missing from menus and the sitemap)')
