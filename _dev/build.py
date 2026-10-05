@@ -28,24 +28,24 @@ def load_config():
 def build_pages(cfg):
     """href -> page info (kind, title, description, crumbs)."""
     home = cfg['home']
-    pages = {home['href']: dict(kind='home', title=cfg['siteName'], desc=cfg['description'],
+    pages = {home['file']: dict(kind='home', title=cfg['siteName'], desc=cfg['description'], url=home['href'],
                                 crumbs=[(home['title'], home['href'])])}
     for cat in cfg['categories']:
         home_crumb = (home['title'], home['href'])
-        pages[cat['href']] = dict(kind='category', cat=cat, desc=cat['description'],
+        pages[cat['href']] = dict(kind='category', cat=cat, desc=cat['description'], url=cat['href'],
                                   title=f"{cat['title']} | {cfg['siteName']}",
                                   crumbs=[home_crumb, (cat['title'], cat['href'])])
         for tool in cat['tools']:
             if tool.get('soon') or not tool.get('href'):
                 continue
-            pages[tool['href']] = dict(kind='tool', desc=tool['desc'],
+            pages[tool['href']] = dict(kind='tool', desc=tool['desc'], url=tool['href'],
                                        title=f"{tool['title']} - {cat['title']} | {cfg['siteName']}",
                                        crumbs=[home_crumb, (cat['title'], cat['href']), (tool['title'], tool['href'])])
     return pages
 
 
 def head_block(cfg, href, p):
-    url = cfg['baseUrl'] + href
+    url = cfg['baseUrl'] + ('' if p['url'] == './' else p['url'])
     t, d = esc(p['title']), esc(p['desc'])
     return f'''<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -138,6 +138,8 @@ def main():
             problems.append(f'{href}: listed in site-config.js but the file does not exist')
             continue
         text = original = path.read_text(encoding='utf-8')
+        if p['kind'] == 'home' and not text.startswith('---\npermalink: /\n---\n'):
+            problems.append(f"{href}: must start with the front matter lines '---', 'permalink: /', '---' (this is what publishes it as the site root)")
         blocks = {'HEAD': head_block(cfg, href, p), 'TOPBAR': topbar_block(cfg, p), 'TAIL': TAIL}
         if p['kind'] in ('home', 'category'):
             blocks['CARDS'] = cards_block(cfg, p)
@@ -173,7 +175,7 @@ def main():
     }
     (ROOT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
-    urls = ''.join(f'  <url><loc>{esc(cfg["baseUrl"] + h)}</loc></url>\n' for h in pages)
+    urls = ''.join(f'  <url><loc>{esc(cfg["baseUrl"] + ("" if p["url"] == "./" else p["url"]))}</loc></url>\n' for p in pages.values())
     (ROOT / 'sitemap.xml').write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '</urlset>\n',
         encoding='utf-8')

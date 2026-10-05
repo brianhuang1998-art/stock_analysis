@@ -1,8 +1,7 @@
 # 股票網站架設
 
 台股投資試算工具（交易損益、目標價、定期定額複利、加權平均成本等），用 GitHub Pages 架設的靜態網站。
-上線網址：https://brianhuang1998-art.github.io/stock_analysis/home_page.html
-（根目錄刻意不放 `index.html`，所以只輸入到 `/stock_analysis/` 會是 404，請用上面完整網址。其他頁面都能直接用檔名開啟。）
+上線網址：https://brianhuang1998-art.github.io/stock_analysis/
 
 ## 快速上手
 
@@ -30,7 +29,7 @@
 
 ```
 股票網站架設/
-├── home_page.html             首頁（網站入口）
+├── home_page.html             首頁原始檔（檔頭的 permalink 會讓它發佈成網站根網址）
 ├── *.html                     其他網頁（放在最外層，網址才不會變）
 ├── manifest.json              PWA 設定（build 自動產生，不要手改）
 ├── sw.js                      離線快取（必須放最外層才管得到整個網站）
@@ -59,7 +58,7 @@
 
 | 檔案 | 用途 |
 |---|---|
-| `home_page.html` | 真正的首頁內容，網站入口，四張分類卡片（試算工具、交易與部位管理、估值與基本面分析、股息與現金流規劃）由 `build.py` 產生 |
+| `home_page.html` | 首頁。檔案最上面三行 `---`／`permalink: /`／`---` 是給 GitHub Pages（Jekyll）看的，讓這一頁發佈成網站根網址 `/stock_analysis/`，所以**不要刪**（`build.py` 會檢查）；發佈後 `/home_page.html` 這個網址不存在，網站內所有「回首頁」連結都是 `./`。用瀏覽器直接開本機檔案時，這三行會顯示在畫面最上方，屬於正常現象。網站入口，四張分類卡片（試算工具、交易與部位管理、估值與基本面分析、股息與現金流規劃）由 `build.py` 產生 |
 | `tools.html` | 試算工具列表頁，列出目前提供的四個試算工具（ETF、個股、目標%數、加權平均成本法），卡片由 `build.py` 產生 |
 | `etf_calculator.html` | ETF 損益試算機。可選 ETF 類型（股票型／債券型／主動式），自動帶入對應證交稅率 |
 | `stock_calculator.html` | 個股損益試算機。稅率預設一般交易 0.3%、現股當沖 0.15% |

@@ -14,7 +14,7 @@
 
   const topbar = document.querySelector('.topbar');
   if(!topbar) return;
-  const current = location.pathname.split('/').pop() || 'home_page.html';
+  const current = location.pathname.split('/').pop() || './';
 
   /* ---------- 全部工具 dropdown with search ---------- */
   function link(text, href, className){

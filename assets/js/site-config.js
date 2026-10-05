@@ -12,7 +12,8 @@ self.SITE = {
   "themeColor": "#0f2233",
   "home": {
     "title": "首頁",
-    "href": "home_page.html",
+    "file": "home_page.html",
+    "href": "./",
     "keywords": "home 回首頁"
   },
   "categories": [
