@@ -45,7 +45,32 @@
       <div class="card">
         <h2>試算參數</h2>
         <div class="field-grid">
-          <div>
+          <div class="field-wide">
+            <label for="goal">試算目標</label>
+            <div class="input-wrap">
+              <select id="goal">
+                <option value="assets">已知退休資產 → 算每月可領多少</option>
+                <option value="spend">已知每月想花多少 → 反推需要準備多少退休金</option>
+              </select>
+            </div>
+          </div>
+          <div id="spendBox" hidden>
+            <label for="monthlySpend">每月想花多少（今日幣值）</label>
+            <div class="input-wrap">
+              <input type="number" id="monthlySpend" inputmode="decimal" step="1000" value="50000">
+              <span class="unit">元</span>
+            </div>
+            <p class="input-error" id="err-monthlySpend" hidden></p>
+          </div>
+          <div id="yearsToRetireBox" hidden>
+            <label for="yearsToRetire">距離退休還有幾年（已退休填 0）</label>
+            <div class="input-wrap">
+              <input type="number" id="yearsToRetire" inputmode="numeric" step="1" value="0">
+              <span class="unit">年</span>
+            </div>
+            <p class="input-error" id="err-yearsToRetire" hidden></p>
+          </div>
+          <div id="assetsBox">
             <label for="assets">退休時資產</label>
             <div class="input-wrap">
               <input type="number" id="assets" inputmode="decimal" step="100000" value="10000000">
@@ -97,7 +122,7 @@
             <label for="mode">模擬方式</label>
             <div class="input-wrap">
               <select id="mode">
-                <option value="mc">蒙地卡羅：2,000 條隨機路徑，看機率與中位數（修正版）</option>
+                <option value="mc">蒙地卡羅：4,000 條隨機路徑，看機率與中位數（修正版）</option>
                 <option value="stress">壓力情境：退休初期連續下跌，看護欄怎麼動作（原版）</option>
               </select>
             </div>
@@ -160,6 +185,11 @@
             <div class="k">首年每年可提領</div>
             <div class="v mono" id="sumYearly">--</div>
           </div>
+          <div class="tile wide" id="needTile" hidden>
+            <div class="k">需要準備的退休金</div>
+            <div class="v mono" id="sumNeed">--</div>
+            <div class="sub" id="sumNeedSub"></div>
+          </div>
           <div class="tile">
             <div class="k" id="sumSuccessLabel">動態提領成功率</div>
             <div class="v mono" id="sumSuccess">--</div>
@@ -172,7 +202,7 @@
               <tr>
                 <th>項目</th>
                 <th>動態提領（護欄規則）</th>
-                <th>固定提領（隨通膨調整）</th>
+                <th>固定提領（金額隨通膨調整、提領率會變）</th>
               </tr>
             </thead>
             <tbody id="compareBody"></tbody>
@@ -222,7 +252,7 @@
         <div class="insight assume">
           <h3>1.什麼是動態提領？</h3>
           <p>固定提領（4%法則）不管市場好壞，每年照領、再依通膨調高。動態提領（Guyton-Klinger「護欄」策略）則是<strong>依市場表現與目前提領率，每年微調提領金額</strong>：市場差時少領一點保住本金，市場好時多領一點享受人生。</p>
-          <p>代價是生活費會上下波動；好處是<strong>初始提領率可以更高</strong>。論文（Guyton &amp; Klinger, 2006）用蒙地卡羅模擬得出：股票占 65% 以上的組合，40 年期間初始提領率 5.2%～5.6% 達 99% 成功率，比固定提領的 3.x% 高很多。</p>
+          <p>代價是生活費會上下波動；好處是<strong>初始提領率可以更高</strong>。論文（Guyton &amp; Klinger, 2006）用蒙地卡羅模擬得出：股票占 65% 以上的組合，40 年期間初始提領率 5.2%～5.6% 達 99% 成功率，比不使用任何決策規則時的 3.0%～3.6%（論文 Table 2）高很多。</p>
 
           <h3>2.三大規則</h3>
           <p>先算出<strong>目前提領率 = 當年提領金額 ÷ 當年年初資產</strong>，再依序檢查：</p>
@@ -257,16 +287,21 @@
 
           <h3>4.這頁怎麼模擬？</h3>
           <ul>
-            <li><strong>蒙地卡羅</strong>：用「預期年化報酬率」與「年化波動率」隨機產生 2,000 條報酬路徑（對數常態分配，固定亂數種子，所以同樣的輸入每次結果相同）。動態與固定提領<strong>使用同一批路徑</strong>，方便公平比較。成功 = 退休期間資金都沒有用完。</li>
+            <li><strong>蒙地卡羅</strong>：用「預期年化報酬率」與「年化波動率」隨機產生 4,000 條報酬路徑（對數常態分配，固定亂數種子，所以同樣的輸入每次結果相同）。動態與固定提領<strong>使用同一批路徑</strong>，方便公平比較。成功 = 退休期間資金都沒有用完。</li>
             <li><strong>壓力情境</strong>：退休最初幾年連續下跌，之後每年固定為預期報酬率，看護欄規則一步步怎麼動作（逐年明細會標出每年觸發的規則）。</li>
             <li>每年「年初」先提領，剩下的資產再成長一年。</li>
             <li>通膨固定為你輸入的數字。修正版（2006 論文）取消了 6% 上限（論文稱取消後購買力多維持 10% 以上，成功率沒有下降）；若切換成「上限 6%」，要把通膨設到 6% 以上才看得到差別。</li>
           </ul>
 
-          <h3>5.報酬率與波動率填多少？</h3>
+          <h3>5.反推：每月想花多少，要準備多少退休金？</h3>
+          <p>把「試算目標」改成「已知每月想花多少」，頁面會用<strong>需要的退休金 = 退休第一年的每年花費 ÷ 初始提領率</strong>算出要準備的金額，再用這筆金額跑整個模擬，所以成功率、圖表和明細都會一併更新。</p>
+          <p>例：每月花 5 萬、每年 60 萬，初始提領率 5% → 需要 1,200 萬（若用固定 4% 法則則是 1,500 萬，即「25 倍法則」）。如果距離退休還有幾年，每月花費會先依通膨換算成退休當年的金額再計算。</p>
+          <p>注意：這個金額是依你選的初始提領率反推的，不代表那個提領率在你的假設下一定夠安全，請看下方的成功率與較差情境。</p>
+
+          <h3>6.報酬率與波動率填多少？</h3>
           <p>這是你自己的假設，沒有人能保證。預設 7% 與 18% 只是參考值；台股 ETF 的實際報酬與波動請自行查詢長期數據，並多試幾組（例如報酬 5%、7%、9%）。</p>
 
-          <h3>6.沒算進去、但實際會影響結果的東西</h3>
+          <h3>7.沒算進去、但實際會影響結果的東西</h3>
           <ul>
             <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬</li>
             <li><strong class="neg">通膨不固定</strong>：實際通膨每年不同，醫療、房租漲幅常高於一般物價</li>
@@ -287,9 +322,9 @@
 (function(){
   const $ = id => document.getElementById(id);
   const STORAGE_KEY = 'retirementDynamicCalc:' + location.pathname;
-  const FIELDS = ['assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','inflCap','cprExpire'];
+  const FIELDS = ['goal','monthlySpend','yearsToRetire','assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','inflCap','cprExpire'];
   const MAX_YEARS = 60;
-  const TRIALS = 2000;
+  const TRIALS = 4000;
   const SEED = 20060301;
   const INFLATION_CAP = 0.06;      // 通膨規則：2004 原版的調升上限（2006 論文最終版取消）
   const GUARD = 0.2;               // 護欄：初始提領率 ±20%
@@ -323,7 +358,7 @@
   // rets[t-1] is the market return of year t (as a fraction). Withdrawals happen on the first day of each year.
   function emptyRun(T){
     return { start: new Float64Array(T), wd: new Float64Array(T), wr: new Float64Array(T), end: new Float64Array(T),
-             frozen: new Uint8Array(T), adj: new Int8Array(T), fail: 0, cuts: 0, raises: 0, freezes: 0, pp: 0 };
+             frozen: new Uint8Array(T), adj: new Int8Array(T), fail: 0, cuts: 0, raises: 0, freezes: 0, pp: 0, ppLast: 0 };
   }
 
   function runPath(p, rets, dynamic){
@@ -368,6 +403,7 @@
       }
     }
     o.pp = ppSum / T;
+    o.ppLast = o.wd[T - 1] / (p.assets * wr0 * Math.pow(1 + infl, T - 1)); // 最後一年提領 ÷ 該年的計畫提領（論文的 Year 40 PP%）
     return o;
   }
 
@@ -400,11 +436,12 @@
     }
     const ends = sortedCopy(runs.map(r => r.end[T - 1]));
     const pps = sortedCopy(runs.map(r => r.pp));
+    const ppsLast = sortedCopy(runs.map(r => r.ppLast));
     return {
       years,
       success: runs.filter(r => !r.fail).length / n,
       endMed: percentile(ends, .5), endLo: percentile(ends, .1),
-      ppMed: percentile(pps, .5),
+      ppMed: percentile(pps, .5), ppLastMed: percentile(ppsLast, .5),
       cuts: runs.reduce((a, r) => a + r.cuts, 0) / n,
       raises: runs.reduce((a, r) => a + r.raises, 0) / n,
       freezes: runs.reduce((a, r) => a + r.freezes, 0) / n,
@@ -415,7 +452,10 @@
 
   function validate(v){
     const e = {};
-    if(!(v.assets > 0)) e.assets = '請輸入大於 0 的退休資產。';
+    if(v.goal === 'spend'){
+      if(!(v.monthlySpend > 0)) e.monthlySpend = '請輸入大於 0 的每月花費。';
+      if(!Number.isInteger(v.yearsToRetire) || v.yearsToRetire < 0 || v.yearsToRetire > MAX_YEARS) e.yearsToRetire = `距離退休年數請輸入 0～${MAX_YEARS} 的整數。`;
+    } else if(!(v.assets > 0)) e.assets = '請輸入大於 0 的退休資產。';
     if(!(v.wr0 > 0) || v.wr0 > 100) e.wr0 = '初始提領率請輸入大於 0、不超過 100 的數字。';
     if(!isFinite(v.ret)) e.annualReturn = '請輸入預期年化報酬率。';
     else if(v.ret <= -100) e.annualReturn = '年化報酬率要大於 -100%。';
@@ -440,6 +480,7 @@
     ['sumMonthly','sumYearly','sumSuccess'].forEach(id => { $(id).textContent = '--'; });
     $('sumSuccess').classList.remove('profit', 'loss');
     $('sumSuccessSub').textContent = '';
+    $('needTile').hidden = true;
     $('compareBody').innerHTML = '';
     $('compareNote').textContent = '';
     $('yearlyHead').innerHTML = '';
@@ -448,6 +489,7 @@
     LineChart.clear($('rateChart'));
   }
 
+  const FIXED_LABEL = '固定提領（金額固定、提領率會變）';
   const legendItem = (cls, text) => `<span><i class="${cls}"></i>${text}</span>`;
 
   function render(v, dyn, fix){
@@ -455,6 +497,13 @@
     const stress = v.mode === 'stress';
     const first = v.assets * v.wr0;
 
+    $('needTile').hidden = v.goal !== 'spend';
+    if(v.goal === 'spend'){
+      $('sumNeed').textContent = fmtMoney(v.assets);
+      $('sumNeedSub').textContent = `退休第一年每月花費約 ${fmtMoney(v.spendAtRetire)}` +
+        (v.yearsToRetire > 0 ? `（今日 ${fmtMoney(v.monthlySpend)}，${v.yearsToRetire} 年後依 ${v.inf}% 通膨換算）` : '') +
+        `；每年 ${fmtMoney(v.spendAtRetire * 12)} ÷ 初始提領率 ${fmtPct(v.wr0)}。若改用固定 4% 法則則需要 ${fmtMoney(v.spendAtRetire * 12 / 0.04)}。`;
+    }
     $('sumMonthly').textContent = fmtMoney(first / 12);
     $('sumYearly').textContent = fmtMoney(first);
     const okDyn = dyn.success >= 0.95;
@@ -480,13 +529,14 @@
     if(!stress) rows.push(['退休結束時資產（較差的 10% 情境）', fmtMoney(dyn.endLo), fmtMoney(fix.endLo)]);
     rows.push(
       [`平均購買力維持${med}`, fmtPct(dyn.ppMed, 0), fmtPct(fix.ppMed, 0)],
+      [`最後一年的購買力${med}`, fmtPct(dyn.ppLastMed, 0), fmtPct(fix.ppLastMed, 0)],
       [`最後一年每月提領${med}`, fmtMoney(dyn.lastWdMed / 12), fmtMoney(fix.lastWdMed / 12)],
       [stress ? '退休期間被下調／上調／凍結次數' : '平均每條路徑被下調／上調／凍結次數',
         `${dyn.cuts.toFixed(stress ? 0 : 1)}／${dyn.raises.toFixed(stress ? 0 : 1)}／${dyn.freezes.toFixed(stress ? 0 : 1)} 次`, '—']
     );
     $('compareBody').innerHTML = rows.map(r => `
       <tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
-    $('compareNote').textContent = '「平均購買力維持」= 實際提領 ÷ 一般隨通膨調整的計畫提領，100% 代表生活水準完全不縮水；固定提領資金用完後，之後每年都是 0，會拉低這個數字。';
+    $('compareNote').textContent = '「平均購買力維持」= 各年（實際提領 ÷ 一般隨通膨調整的計畫提領）的平均；「最後一年的購買力」= 最後一年的同一個比值（論文的 Year 40 PP%）。100% 代表生活水準完全不縮水；資金用完後每年提領為 0，會拉低這兩個數字。';
 
     // ----- asset chart: balance at the end of each year (x = 0 is the day you retire)
     const xs0 = Array.from({ length: T + 1 }, (_, i) => i);
@@ -507,11 +557,11 @@
     });
     $('assetLegend').innerHTML =
       legendItem('l-dynamic', '動態提領' + (stress ? '' : '（中位數）')) +
-      legendItem('l-fixed', '固定提領' + (stress ? '' : '（中位數）')) +
+      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）')) +
       (stress ? '' : legendItem('l-band', '動態提領 10%～90% 區間'));
     $('assetNote').textContent = stress
       ? `情境：前 ${v.stressYears} 年每年 ${v.stressReturn}%，之後每年 ${v.ret}%。固定提領在下跌期間照領，資產掉得比較深。`
-      : '實線是 2,000 條路徑每一年的中位數（一半的人比它好、一半比它差）；淡綠色區域是動態提領 80% 的情境所在範圍（第 10 到第 90 百分位）。';
+      : '實線是 4,000 條路徑每一年的中位數（一半的人比它好、一半比它差）；淡綠色區域是動態提領 80% 的情境所在範圍（第 10 到第 90 百分位）。';
 
     // ----- withdrawal-rate chart: current rate each year, with the guardrails
     const xs1 = Array.from({ length: T }, (_, i) => i + 1);
@@ -532,17 +582,17 @@
       ],
       bands: stress ? [] : [{ cls: 'band-dynamic', lo: dynWrLo, hi: dynWrHi }],
       series: [{ cls: 's-fixed', values: fixWr }, { cls: 's-dynamic', values: dynWr }],
-      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>動態提領率　${fmtPct(dynWr[i], 2)}<br>固定提領率　${fmtPct(fixWr[i], 2)}` +
+      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>動態提領率　${fmtPct(dynWr[i], 2)}<br>固定提領的提領率　${fmtPct(fixWr[i], 2)}` +
         (stress ? '' : `<br><span class="tip-muted">動態 10%～90%：${fmtPct(dynWrLo[i], 2)} ～ ${fmtPct(dynWrHi[i], 2)}</span>`)
     });
     $('rateLegend').innerHTML =
       legendItem('l-dynamic', '動態提領率' + (stress ? '' : '（中位數）')) +
-      legendItem('l-fixed', '固定提領率' + (stress ? '' : '（中位數）')) +
+      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）')) +
       (stress ? '' : legendItem('l-band', '動態提領率 10%～90% 區間')) +
       legendItem('l-guard', '上、下護欄（初始 ±20%）');
     $('rateNote').textContent = (stress
-      ? '提領率 = 當年提領金額 ÷ 當年年初資產。動態提領的提領率超過上護欄就被下調拉回、低於下護欄就被上調拉高；固定提領沒有護欄，下跌時提領率會直接飆高。'
-      : '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的路徑算 100%）。實線是各年度的中位數，淡綠色區域是動態提領 80% 的情境（10%～90%）。動態提領的中位數通常貼近初始提領率、碰不到護欄，護欄是在比較好或比較差的個別路徑上動作，所以請看淡綠色區域的上下緣（護欄一次只調整 10%，所以區域上緣可能暫時略高於上護欄）。固定提領沒有護欄：報酬撐不住提領時，提領率會逐年攀升；報酬遠高於提領時則會下降。')
+      ? '提領率 = 當年提領金額 ÷ 當年年初資產。動態提領的提領率超過上護欄就被下調拉回、低於下護欄就被上調拉高；固定提領的「固定」是指每年的提領「金額」只隨通膨調高、不看市場，所以資產一變動，提領率（= 金額 ÷ 年初資產）就跟著變，沒有護欄時下跌會直接飆高。'
+      : '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的路徑算 100%）。實線是各年度的中位數，淡綠色區域是動態提領 80% 的情境（10%～90%）。動態提領的中位數通常貼近初始提領率、碰不到護欄，護欄是在比較好或比較差的個別路徑上動作，所以請看淡綠色區域的上下緣（護欄一次只調整 10%，所以區域上緣可能暫時略高於上護欄）。固定提領的「固定」是指每年的提領「金額」只隨通膨調高、不看市場，所以提領率（= 金額 ÷ 年初資產）會跟著資產變動：報酬撐不住提領時逐年攀升，報酬遠高於提領時則會下降。')
       + (clipped ? ' 超出圖表上緣的部分被截斷，滑鼠移到該年（手機點一下）可看到實際數字。' : '');
 
     // ----- yearly table
@@ -553,7 +603,7 @@
       : '<tr><th>年度</th><th>動態：年初資產</th><th>動態：當年提領</th><th>動態：提領率</th><th>動態：年底資產</th><th>當年觸發比例</th><th>固定：當年提領</th><th>固定：年底資產</th></tr>';
     $('yearlyNote').textContent = stress
       ? '這是單一條情境路徑，不是平均或中位數。「觸發規則」依序檢查：先看前一年報酬決定是否凍結通膨調整，再看提領率是否超出護欄（保本 −10%、繁榮 +10%），兩者可以在同一年同時發生。「用完」代表該年年底資產為 0。'
-      : '每一欄都是「該年度 2,000 條路徑各自的中位數」，欄與欄是分別取中位數，所以「提領率」不一定剛好等於「當年提領 ÷ 年初資產」，動態的年底資產則會等於下一年的年初資產。「當年觸發比例」是該年有多少比例的路徑發生該動作；凍結通膨與下調／上調可以在同一年同時發生，所以三個比例不能相加。「用完」代表該年度的中位數資產已是 0（有一半以上的路徑資金用完）。';
+      : '每一欄都是「該年度 4,000 條路徑各自的中位數」，欄與欄是分別取中位數，所以「提領率」不一定剛好等於「當年提領 ÷ 年初資產」，動態的年底資產則會等於下一年的年初資產。「當年觸發比例」是該年有多少比例的路徑發生該動作；凍結通膨與下調／上調可以在同一年同時發生，所以三個比例不能相加。「用完」代表該年度的中位數資產已是 0（有一半以上的路徑資金用完）。';
     $('yearlyBody').innerHTML = dyn.years.map((y, i) => {
       const f = fix.years[i];
       const endCell = m => m <= 0 ? '<td class="gain-neg">用完</td>' : `<td>${fmtMoney(m)}</td>`;
@@ -595,6 +645,9 @@
     Util.store.setJSON(STORAGE_KEY, data);
 
     const v = {
+      goal: $('goal').value,
+      monthlySpend: parseFloat($('monthlySpend').value),
+      yearsToRetire: Number($('yearsToRetire').value),
       assets: parseFloat($('assets').value),
       wr0: parseFloat($('wr0').value) / 100,
       ret: parseFloat($('annualReturn').value),
@@ -610,6 +663,16 @@
       cprExpire: $('cprExpire').value
     };
     v.wr0Pct = parseFloat($('wr0').value);
+
+    // 反推：退休第一年的每年花費 ÷ 初始提領率 = 需要的退休金（每月花費先依通膨換算成退休當年的金額）
+    const reverse = v.goal === 'spend';
+    $('assetsBox').hidden = reverse;
+    $('spendBox').hidden = !reverse;
+    $('yearsToRetireBox').hidden = !reverse;
+    if(reverse && v.monthlySpend > 0 && Number.isInteger(v.yearsToRetire) && v.yearsToRetire >= 0 && v.wr0 > 0 && isFinite(v.infl)){
+      v.spendAtRetire = v.monthlySpend * Math.pow(1 + v.infl, v.yearsToRetire);
+      v.assets = v.spendAtRetire * 12 / v.wr0;
+    }
 
     const stress = v.mode === 'stress';
     $('stressYearsBox').hidden = !stress;
