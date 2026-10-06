@@ -38,7 +38,30 @@
 
 <main>
   <h1>退休提領試算（4%法則）</h1>
-  <p class="subtitle">輸入退休資產與提領率，估算每月可提領多少、資產能撐幾年</p>
+  <p class="subtitle">輸入退休資產與提領率，估算每月可領多少、資金能撐幾年（每年報酬固定、提領金額只隨通膨調高）</p>
+
+  <section class="card intro" aria-labelledby="introTitle">
+    <h2 id="introTitle">30 秒看懂：什麼是 4% 法則</h2>
+    <div class="intro-grid">
+      <div>
+        <h3>做法</h3>
+        <p>退休第一年領「退休資產 × 4%」，之後每年<strong>只把金額依通膨調高</strong>，不管市場好壞。例如資產 1,000 萬，第一年領 40 萬；之後每年多領一點，追上物價，讓生活水準不變。</p>
+        <p>反過來算就是「<strong>25 倍法則</strong>」：每年想花多少，乘以 25 就是退休時要準備的金額。</p>
+      </div>
+      <div>
+        <h3>優點與盲點</h3>
+        <p><strong>優點</strong>：簡單，每年的生活費可預期。<strong>盲點</strong>：它完全不看市場。市場連續下跌時，同樣的金額佔資產的比例會越來越高，錢可能提早用完。本頁每年報酬固定，<strong>看不出這個風險</strong>。</p>
+        <p class="intro-link"><a href="retirement_dynamic_withdrawal.html">→ 想看市場下跌時怎麼調整？「退休動態提領試算」</a></p>
+      </div>
+    </div>
+    <div class="guard-demo" role="group" aria-label="固定提領的金額如何逐年變化，以資產 1,000 萬、提領率 4%、通膨 2% 為例">
+      <p class="guard-head">舉例：資產 1,000 萬、提領率 4%、通膨 2%</p>
+      <div class="guard-row mid"><span class="tag">第 1 年</span><span>1,000 萬 × 4% = <strong>40 萬</strong>（每月約 3.3 萬）</span></div>
+      <div class="guard-row mid"><span class="tag">第 2 年</span><span>40 萬 × 1.02 = <strong>40.8 萬</strong></span></div>
+      <div class="guard-row mid"><span class="tag">第 10 年</span><span>40 萬 × 1.02<sup>9</sup> ≈ <strong>47.8 萬</strong>（金額變多，但買到的東西和第 1 年一樣多）</span></div>
+    </div>
+    <p class="foot-note">4% 的來源：Bengen（1994–1997）發現，30 年期間要有 100% 成功率，最大初始提領率約 4.1%～4.58%；Trinity 研究（1998）發現 4.0% 在 1926–1995 年的各個 30 年期間幾乎都不會用完（以上是 Guyton &amp; Klinger 2006 第 50 頁的引述，都是美國歷史資料）。只是粗略試算，不是投資建議。名詞與算式請看右側「參考區」（手機在頁面最下方）。</p>
+  </section>
 
   <div class="layout">
     <div>
@@ -54,7 +77,7 @@
             <p class="input-error" id="err-assets" hidden></p>
           </div>
           <div>
-            <label for="withdrawRate">首年提領率（4% 法則填 4）</label>
+            <label for="withdrawRate">首年提領率（4% 法則填 4） <a class="help" href="#g-rate" aria-label="名詞解釋：提領率">ⓘ</a></label>
             <div class="input-wrap">
               <input type="number" id="withdrawRate" inputmode="decimal" step="0.1" value="4">
               <span class="unit">%</span>
@@ -62,7 +85,7 @@
             <p class="input-error" id="err-withdrawRate" hidden></p>
           </div>
           <div>
-            <label for="annualReturn">預期年化報酬率</label>
+            <label for="annualReturn">預期年化報酬率（每年固定） <a class="help" href="#g-return" aria-label="名詞解釋：預期年化報酬率">ⓘ</a></label>
             <div class="input-wrap">
               <input type="number" id="annualReturn" inputmode="decimal" step="0.5" value="5">
               <span class="unit">%</span>
@@ -152,44 +175,78 @@
           </table>
         </div>
       </div>
-    </div>
 
-    <div>
       <div class="card">
-        <h2>計算假設</h2>
-        <div class="insight assume">
-          <h3>1.什麼是 4% 法則？</h3>
-          <p>退休第一年提領退休資產的 <strong>4%</strong>，之後每年把提領金額依通貨膨脹調高，讓生活水準不變。源自 1990 年代美國的研究（Bengen、Trinity Study）：用美國股債混合的歷史資料回測，大多數 30 年期間資金不會用完。</p>
-          <p>反推就是「<strong>25 倍法則</strong>」：每年想花 60 萬，退休時大約要準備 60 萬 ÷ 4% = 1,500 萬。</p>
-          <p>它是依美國歷史市場得出的經驗法則，不保證台灣或未來的市場也一樣。</p>
-
-          <h3>2.本頁怎麼算？</h3>
-          <p>每年「年初」先提領，剩下的資產再依預期年化報酬率成長一年：</p>
-          <p><span class="formula">年底資產 = (年初資產 − 當年提領) × (1 + 報酬率)</span></p>
-          <p><span class="formula">當年提領 = 首年提領 × (1 + 通膨率)<sup>年度 − 1</sup></span></p>
-          <p>首年提領 = 退休時資產 × 提領率。資產不夠付當年提領時，視為在那一年用完。最多模擬 100 年。</p>
-
-          <h3>3.提領率怎麼選？</h3>
-          <ul>
-            <li>退休 30 年左右：4% 是常見起點</li>
-            <li>提早退休、預計超過 40 年：常見建議調低到 3～3.5%</li>
-            <li>有勞保、勞退或租金等其他收入：可以適度提高</li>
-          </ul>
-          <p>建議多試幾組報酬率與通膨率（例如報酬 3%、5%、7%），看結果差多少。</p>
-
-          <h3>4.沒算進去、但實際會影響結果的東西</h3>
-          <ul>
-            <li><strong class="neg">市場波動與順序風險</strong>：本頁假設每年報酬固定。實際上退休初期遇到大跌，傷害遠大於後期大跌</li>
-            <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬</li>
-            <li><strong class="neg">醫療與長照等大額支出</strong>：不會每年平均發生</li>
-            <li><strong class="neg">通膨不一定固定</strong>：醫療、房租的漲幅常高於一般物價</li>
-          </ul>
-        </div>
-        <div class="foot-note">
-          此工具僅供試算規劃參考，不代表實際投資結果，也不構成投資建議。
-        </div>
+        <h2>下一步：市場下跌時怎麼辦？</h2>
+        <p class="note-line" style="margin:0 0 10px;">這頁假設每年報酬固定，所以看不到「退休初期遇到大跌」的風險。動態提領會在市場差時少領一點、好時多領一點，並用蒙地卡羅模擬估計成功率。</p>
+        <p class="intro-link"><a href="retirement_dynamic_withdrawal.html">→ 前往「退休動態提領試算」</a></p>
       </div>
     </div>
+
+    <aside class="ref-col" aria-label="參考區：名詞解釋與算式">
+      <h2 class="ref-title">參考區</h2>
+
+      <details class="ref" id="ref-glossary" open>
+        <summary>名詞解釋</summary>
+        <dl class="glossary">
+          <dt id="g-rate">首年提領率</dt>
+          <dd>退休第一年領的金額 ÷ 退休時資產。例：資產 1,000 萬、第一年領 40 萬 → 4%。4% 法則就是把它訂為 4%。</dd>
+          <dt>4% 法則 / 25 倍法則</dt>
+          <dd>第一年領資產的 4%，之後每年只依通膨調高金額。反推：退休時需要的資產 = 每年花費 ÷ 4% = 每年花費 × 25。例：每年花 60 萬 → 約需 1,500 萬。</dd>
+          <dt>通膨調整</dt>
+          <dd>每年的提領金額 = 去年的金額 × (1 + 通膨率)，讓購買力維持不變。</dd>
+          <dt id="g-return">預期年化報酬率</dt>
+          <dd>本頁每年的報酬都是這個固定數字，所以算術平均和複利年化沒有差別。實際市場每年起伏很大，不會這麼平順。</dd>
+          <dt>資產可以撐多久</dt>
+          <dd>資金用完之前的年數。含小數：完整年數 + 最後一年剩下的資產 ÷ 當年應提領的金額。超過 100 年顯示「100 年以上」。</dd>
+          <dt id="g-seq">順序風險</dt>
+          <dd>同樣的長期平均報酬，如果大跌發生在退休初期，傷害遠大於發生在後期，因為你一邊賣資產生活、一邊遇到下跌。論文也指出，資金用完的情況多半是退休初期遇到不利的報酬或高通膨（Guyton &amp; Klinger 2006，第 53 頁）。本頁每年報酬固定，看不出這個風險。</dd>
+          <dt>固定提領 vs 動態提領</dt>
+          <dd>固定提領（本頁）：金額只隨通膨調高，不看市場。動態提領：依市場表現與目前提領率調整金額，可在「退休動態提領試算」看到。</dd>
+        </dl>
+      </details>
+
+      <details class="ref" id="ref-rules">
+        <summary>規則與算式</summary>
+        <ul>
+          <li><strong>第 1 年提領</strong> = 退休時資產 × 提領率。例：1,000 萬 × 4% = 40 萬。</li>
+          <li><strong>當年提領</strong> = 首年提領 × (1 + 通膨率)<sup>年度 − 1</sup>。例：通膨 2%，第 2 年 = 40 萬 × 1.02 = 40.8 萬。</li>
+          <li><strong>年底資產</strong> = (年初資產 − 當年提領) × (1 + 報酬率)。例：報酬 5%，第 1 年底 = (1,000 萬 − 40 萬) × 1.05 = 1,008 萬。</li>
+          <li>每年「年初」先提領，剩下的資產再成長一年。</li>
+          <li>資產不夠付當年提領時，視為在那一年用完（那一年之後提領為 0）。</li>
+          <li><strong>可撐年數</strong> = 已完整提領的年數 + 最後一年剩下的資產 ÷ 當年應提領金額；最多模擬 100 年。</li>
+          <li><strong>反推需要的資產</strong>（25 倍法則）= 每年花費 ÷ 提領率。</li>
+        </ul>
+      </details>
+
+      <details class="ref" id="ref-compare">
+        <summary>提領率對照怎麼看</summary>
+        <p>「提領率對照」固定比較 3%、3.5%、4%、4.5%、5%、6%：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
+      </details>
+
+      <details class="ref" id="ref-choose">
+        <summary>提領率怎麼選</summary>
+        <ul>
+          <li><strong>退休 30 年左右</strong>：4% 是常見起點（Trinity 研究的 4.0%，見上方來源）。</li>
+          <li><strong>預計超過 40 年（例如提早退休）</strong>：論文 Table 2（40 年期間、不使用任何決策規則）顯示，90%～95% 成功率下的最大初始提領率約 <strong>3.0%～3.6%</strong>，所以想領得更久，3%～3.5% 比較保守。</li>
+          <li><strong>有勞保、勞退或租金等其他收入</strong>：可以適度提高，因為不必完全靠這筆資產。</li>
+        </ul>
+        <p>以上研究都是美國歷史資料、以 50%～80% 股票的組合為主；本頁每年報酬固定，算出的「撐得到」也不等於論文的「成功率」。建議多試幾組報酬率與通膨率（例如報酬 3%、5%、7%），看結果差多少。</p>
+      </details>
+
+      <details class="ref" id="ref-limits">
+        <summary>沒算進去的東西與限制</summary>
+        <ul>
+          <li><strong class="neg">市場波動與順序風險</strong>：本頁假設每年報酬固定。實際上退休初期遇到大跌，傷害遠大於後期大跌。</li>
+          <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬。</li>
+          <li><strong class="neg">醫療與長照等大額支出</strong>：不會每年平均發生。</li>
+          <li><strong class="neg">通膨不一定固定</strong>：醫療、房租的漲幅常高於一般物價。</li>
+          <li><strong class="neg">適用範圍</strong>：4% 與 3%～3.6% 都來自美國歷史資料，不保證台灣或未來的市場也一樣。</li>
+        </ul>
+      </details>
+
+      <p class="foot-note">此工具僅供試算規劃參考，不代表實際投資結果，也不構成投資建議。</p>
+    </aside>
   </div>
 </main>
 
@@ -310,6 +367,15 @@
       </tr>`;
     }).join('');
   }
+
+  document.querySelectorAll('a.help').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if(!target) return;
+    const box = target.closest('details');
+    if(box) box.open = true;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }));
 
   FIELDS.forEach(f => $(f).addEventListener('input', update));
   update();
