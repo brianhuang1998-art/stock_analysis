@@ -21,7 +21,7 @@ esc = lambda s: html.escape(s, quote=True)
 
 
 def load_config():
-    text = (ROOT / 'assets' / 'js' / 'site-config.js').read_text(encoding='utf-8')
+    text = (ROOT / 'config' / 'site-config.js').read_text(encoding='utf-8')
     return json.loads(text[text.index('{'):text.rindex('}') + 1])
 
 
@@ -68,7 +68,7 @@ def head_block(cfg, href, p):
 <meta property="og:image" content="{esc(cfg['baseUrl'])}assets/icons/icon-512.png">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="assets/css/styles.css">
-<script src="assets/js/site-config.js"></script>
+<script src="config/site-config.js"></script>
 <script src="assets/js/util.js"></script>'''
 
 

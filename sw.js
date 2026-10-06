@@ -5,14 +5,14 @@ const CACHE_VERSION = 'v1';
 const CACHE = 'brian-toolbox-' + CACHE_VERSION;
 
 // The page list comes from site-config.js, so a new page is cached automatically
-importScripts('assets/js/site-config.js');
+importScripts('config/site-config.js');
 const PAGES = [self.SITE.home.href];
 self.SITE.categories.forEach(c => {
   PAGES.push(c.href);
   c.tools.forEach(t => { if(!t.soon && t.href) PAGES.push(t.href); });
 });
 const PRECACHE = PAGES.concat([
-  'assets/js/site-config.js', 'assets/js/util.js', 'assets/js/nav.js', 'assets/js/stepper.js',
+  'config/site-config.js', 'assets/js/util.js', 'assets/js/nav.js', 'assets/js/stepper.js',
   'assets/js/calc.js', 'assets/js/trade_math.js', 'assets/js/chart.js', 'assets/css/styles.css',
   'manifest.json', 'assets/icons/favicon.svg', 'assets/icons/icon-192.png'
 ]);

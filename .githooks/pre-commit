@@ -1,6 +1,8 @@
 #!/bin/sh
-# Runs before every commit: regenerates the shared page parts from site-config.js and stages the results,
-# so you never have to remember "python3 _dev/build.py". Blocks the commit if a page is missing from the config.
+# Runs before every commit:
+#  1. regenerates the shared page parts from config/site-config.js and stages the results, so you never have to remember
+#     "python3 _dev/build.py". Blocks the commit if a page is missing from the config.
+#  2. prints a warning if a file is in the wrong folder (see .claude/skills/organize-files). It never blocks the commit.
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
 if ! command -v python3 >/dev/null 2>&1; then
@@ -14,3 +16,7 @@ if ! python3 _dev/build.py; then
 fi
 
 git add manifest.json sitemap.xml ./*.html
+
+# Warning only: misplaced or unclassified files
+python3 .claude/skills/organize-files/scripts/organize.py check --quiet || echo "pre-commit: (warning) some files are not in their usual folder; the commit goes ahead." >&2
+exit 0

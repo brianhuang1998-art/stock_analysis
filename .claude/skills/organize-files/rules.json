@@ -1,0 +1,75 @@
+{
+  "_help": "Edit this file to teach the skill a new kind of file. Rules are tried in order; the first category whose pattern matches wins. A pattern without '/' is matched against the file name, with '/' against the whole path from the project root. 'dest' is the folder the file belongs in ('' = project root); {skill} is filled with the skill name.",
+
+  "ignore": [".git", ".venv-pdf", "__pycache__", ".DS_Store", "node_modules", ".claude/worktrees"],
+
+  "pinned": [
+    "README.md", ".gitignore", ".nojekyll", "CLAUDE.md",
+    "manifest.json", "sw.js", "sitemap.xml",
+    ".githooks/*", ".claude/settings*.json"
+  ],
+
+  "protected": [".claude/skills"],
+
+  "containers": ["assets", "papers", "config", "_dev", ".claude/skills", ".githooks"],
+
+  "categories": [
+    { "id": "skill",
+      "label": "Claude Code skill",
+      "dest": ".claude/skills/{skill}",
+      "match": ["SKILL.md"],
+      "note": "Skills must live in .claude/skills/<skill-name>/ for Claude Code to find them. Their scripts and references stay inside that folder." },
+
+    { "id": "paper-source",
+      "label": "Paper (the PDF itself)",
+      "dest": "papers/source",
+      "match": ["*.pdf"] },
+
+    { "id": "paper-transcription",
+      "label": "Paper audit: table transcriptions",
+      "dest": "papers/audit/transcriptions",
+      "match": ["scan_table*.json", "*_pass2.json", "transcription*.json"] },
+
+    { "id": "paper-audit",
+      "label": "Paper audit: reports, checks, inventories",
+      "dest": "papers/audit",
+      "match": ["checks_*.md", "inventory_*.json", "audit_report*.md"] },
+
+    { "id": "paper-verification",
+      "label": "Paper vs our code: checks and simulators",
+      "dest": "papers/verification",
+      "match": ["paper_check*.md", "ref_simulator*.py", "*sensitivity*.py", "*_vs_paper*.md"] },
+
+    { "id": "global-config",
+      "label": "Global (site-wide) settings",
+      "dest": "config",
+      "match": ["site-config.*", "*.config.json", "*.config.js", "config.json", "settings.json", "*.toml"],
+      "note": "The one source of truth for pages, categories, menus. tools build.py reads it." },
+
+    { "id": "dev-tool",
+      "label": "Website development tool (not published)",
+      "dest": "_dev",
+      "match": ["build*.py", "template*.html", "*.template.html"] },
+
+    { "id": "site-style",
+      "label": "Website stylesheet",
+      "dest": "assets/css",
+      "match": ["*.css"] },
+
+    { "id": "site-script",
+      "label": "Website script",
+      "dest": "assets/js",
+      "match": ["*.js"] },
+
+    { "id": "site-icon",
+      "label": "Website icon",
+      "dest": "assets/icons",
+      "match": ["*.svg", "*.ico"] },
+
+    { "id": "site-page",
+      "label": "Website page (must stay at the project root so its URL does not change)",
+      "dest": "",
+      "match": ["*.html"],
+      "note": "After adding a page also register it in config/site-config.js and run python3 _dev/build.py." }
+  ]
+}

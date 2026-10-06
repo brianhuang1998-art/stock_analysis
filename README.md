@@ -9,11 +9,12 @@
 |---|---|
 | 改網站內容並上線 | 改檔案 → `git add -A` → `git commit -m "更新內容"` → `git push`（見最下方「更新網站流程」） |
 | 新增一個工具頁 | 見「新增一個工具頁（流程）」：複製 `_dev/template.html`，再到 `site-config.js` 登記一筆 |
-| 改某個工具的名稱、說明、所屬分類 | 只改 `assets/js/site-config.js`，commit 時會自動同步到所有頁面 |
+| 改某個工具的名稱、說明、所屬分類 | 只改 `config/site-config.js`，commit 時會自動同步到所有頁面 |
 | 改配色、字體、版面 | 只改 `assets/css/styles.css`（配色變數在最上面） |
 | 改手續費、證交稅、兩平價的算法 | 只改 `assets/js/trade_math.js`，個股、ETF、加權平均成本、目標%數四頁會一起套用 |
 | 改頂部選單、頁尾、回到頂部 | 改 `assets/js/nav.js`（頁尾樣式在 `styles.css` 的 `.site-footer`） |
 | 換 App 圖示或分頁圖示 | 換 `assets/icons/` 裡的檔案（尺寸見該資料夾說明） |
+| 新增任何檔案，不確定放哪裡 | 跟 Claude 說，或執行 `python3 .claude/skills/organize-files/scripts/organize.py where 檔名`；整個專案檢查：`... organize.py check`（見「新增檔案時怎麼分類」） |
 
 ## 網站功能
 
@@ -39,7 +40,6 @@
 ├── assets/                    網頁會載入的資源
 │   ├── css/styles.css         全站樣式
 │   ├── js/                    全站與各頁共用的程式
-│   │   ├── site-config.js     全站設定（頁面、分類、工具清單）
 │   │   ├── nav.js             選單、搜尋、頁尾、回到頂部
 │   │   ├── util.js            共用小工具（儲存、格式、複製）
 │   │   ├── stepper.js         數字欄位 ▲▼ 與點擊全選
@@ -47,6 +47,8 @@
 │   │   ├── trade_math.js      交易計算（手續費、證交稅、兩平價）
 │   │   └── calc.js            個股／ETF 試算頁的畫面邏輯
 │   └── icons/                 favicon 與 App 圖示
+├── config/                    全域設定（全站設定的唯一來源）
+│   └── site-config.js         頁面、分類、工具清單、站名、網址、主題色
 ├── _dev/                      網站開發工具，不會公開（底線開頭的資料夾 GitHub Pages 不發佈）
 │   ├── build.py               依 site-config.js 重新產生各頁共用部分
 │   └── template.html          新增頁面用的範本
@@ -54,7 +56,11 @@
 │   ├── source/                論文 PDF（2006 紙本掃描版）
 │   ├── audit/                 對論文本身的視覺檢核（表格、圖、標籤）
 │   └── verification/          用論文檢查我們的程式（對照表、獨立驗算、順序分析）
-└── .githooks/pre-commit       commit 前自動執行 build
+├── .claude/skills/            Claude Code 的 skill，每個 skill 一個資料夾（必須放在這裡 Claude Code 才找得到）
+│   ├── paper-visual-audit/    論文視覺檢核（表格、圖、標籤與字體）
+│   ├── gk-withdrawal-schedule/ 護欄規則逐年提領表（確定性腳本）
+│   └── organize-files/        新檔案自動分類（規則在 rules.json）
+└── .githooks/pre-commit       commit 前自動執行 build，並檢查檔案是否放對資料夾
 ```
 
 ## 檔案說明
@@ -76,11 +82,11 @@
 | `retirement_withdrawal.html` | 退休提領試算（4%法則）。輸入退休資產、首年提領率、預期年化報酬率（每年固定）、通膨率與預計退休年數，算出首年每月／每年可提領金額、資產可撐幾年、退休結束時剩餘資產，並附「提領率對照」（3%～6%）與逐年明細；輸入不合理時顯示紅字提示與空狀態。版面與動態提領頁相同：頂端「30 秒看懂：什麼是 4% 法則」精簡介紹（含逐年金額示意，並連到動態提領頁），右側「參考區」是可收合的名詞解釋、規則與算式、提領率對照怎麼看、提領率怎麼選、限制，欄位旁的 ⓘ 會展開並跳到對應名詞；底部有「下一步：市場下跌時怎麼辦？」連到動態提領頁。說明中的數字都引自論文（4.0%／4.1%～4.58% 在紙本 p.50，40 年期間不使用決策規則的 3.0%～3.6% 在 Table 2 p.53）。計算腳本寫在頁面內，儲存與格式使用 `util.js`。目前還沒有圖表 |
 | `retirement_dynamic_withdrawal.html` | 退休動態提領試算（Guyton-Klinger 護欄規則）。退休金假設 100% 台股 ETF（如 0050）。輸入退休資產、初始提領率、預期年化報酬率、年化波動率、通膨率、退休年數，可選「蒙地卡羅」或「壓力情境」，規則採 Guyton & Klinger（2006）論文（凍結規則、通膨調整不設上限、保本規則最後 15 年停用），只有「進階設定」可切換凍結與護欄的檢定順序（論文沒明說）。可切換「試算目標」：已知退休資產算每月可領，或已知每月想花多少（含距離退休年數的通膨換算）反推需要準備多少退休金。頁面頂端有「30 秒看懂：固定提領 vs 動態提領」精簡介紹與護欄示意（並連到 4% 法則頁），右側「參考區」是可收合的名詞解釋、規則與算式、模擬方式、反推、限制，欄位旁的 ⓘ 會展開並跳到對應名詞。結果含動態 vs 固定提領的成功率與比較表（含平均與最後一年的購買力）、「資產成長圖」「每年提領率圖」（含上下護欄，蒙地卡羅模式另畫動態提領率的 10%～90% 區間），以及逐年明細（壓力情境會標出每年觸發的規則）。右欄說明三大規則與模擬假設。計算腳本寫在頁面內，圖表使用 `chart.js` |
 
-### 全域設定與共用程式（`assets/`，改一處，全站套用）
+### 全域設定與共用程式（`config/` 與 `assets/`，改一處，全站套用）
 
 | 檔案 | 用途 |
 |---|---|
-| `assets/js/site-config.js` | **全站設定的唯一來源**：站名、網址、主題色、分類、每個工具的名稱／網址／圖示／說明／搜尋關鍵字、哪些是「開發中」。頂部選單、搜尋、麵包屑、頁面標題、說明文字、分享預覽、分類頁與首頁的卡片、離線快取清單，全都從這份產生。注意 `self.SITE =` 後面必須是嚴格 JSON（雙引號、不能有註解或結尾逗號），因為 `_dev/build.py` 要讀它 |
+| `config/site-config.js` | **全站設定的唯一來源**：站名、網址、主題色、分類、每個工具的名稱／網址／圖示／說明／搜尋關鍵字、哪些是「開發中」。頂部選單、搜尋、麵包屑、頁面標題、說明文字、分享預覽、分類頁與首頁的卡片、離線快取清單，全都從這份產生。注意 `self.SITE =` 後面必須是嚴格 JSON（雙引號、不能有註解或結尾逗號），因為 `_dev/build.py` 要讀它 |
 | `assets/css/styles.css` | 全部頁面共用的樣式（配色變數在檔案最上面），改版面風格只要改這一個檔案。各頁共用或專屬的規則放在檔案後半，頁面本身不再有 `<style>` |
 | `assets/js/nav.js` | 每頁共用的外殼：「全部工具 ▾」下拉選單附搜尋框（按 `/` 或 Ctrl／⌘+K 開啟，Enter 前往第一筆，方向鍵選取）、頁尾（右下角顯示最後更新時間）、手機浮動「回到頂部」按鈕、註冊離線快取。頁尾的「最後更新」是用 GitHub API 讀取這個 repo 最新一筆 commit 的時間（台北時間），快取 10 分鐘，讀不到時退回檔案修改時間 |
 | `assets/js/util.js` | 共用小工具 `Util`：`Util.store`（安全的 localStorage）、`Util.fmt`（金額／價格／百分比格式）、`Util.copyText`（複製並顯示「已複製 ✓」）。放在頁首，頁面腳本可直接用 |
@@ -110,14 +116,34 @@
 | `_dev/template.html` | 新增頁面用的範本，已包含輸入欄、結果卡、空狀態、儲存輸入的寫法。放在 `_dev/` 底下不會公開，也不會被 build 處理 |
 | `.claude/skills/paper-visual-audit/` | Claude Code 的 skill：以「LLM 視覺檢核」審查論文 PDF 的**數據（表格）、圖表、標籤與字體**。流程：盤點 PDF → 轉成圖片 → 模型雙次轉錄表格 → 腳本做逐格比對與算術／一致性檢查 → 產出檢核報告。腳本需要 `python3 -m venv .venv-pdf && .venv-pdf/bin/pip install pypdf pypdfium2 pillow`（`.venv-pdf/` 已加入 `.gitignore`）。用法與規則見該資料夾的 `SKILL.md` |
 | `.claude/skills/gk-withdrawal-schedule/` | Claude Code 的 skill：依 Guyton & Klinger（2006）護欄規則，用**確定性的 Python 腳本**產生逐年退休提領表（輸入：資產、初始提領率、年限、每年報酬與通膨序列；輸出：規則門檻、逐年表、觸發次數、成功與購買力）。所有數字由 `scripts/schedule.py` 算出，不讓語言模型心算；支援兩種檢定順序、自訂報酬序列、壓力情境（`--first-years`）。`scripts/verify.py` 用手算案例與 1,200 條隨機路徑對照獨立參考實作。取代原本給外部 LLM 的提示詞。用法見 `SKILL.md` |
+| `.claude/skills/organize-files/` | Claude Code 的 skill：新增、儲存、移動任何檔案時，依 `rules.json` 判斷該放哪個資料夾（skill → `.claude/skills/<名稱>/`、論文 → `papers/…`、全域設定 → `config/`、網頁 → 最外層、樣式／程式／圖示 → `assets/…`、開發工具 → `_dev/`），並能檢查整個專案有沒有放錯、用 `git mv` 移動且改寫指向它的路徑。不確定的檔案不亂猜，會問你並可新增規則。`scripts/selftest.py` 自我測試。用法見 `SKILL.md` |
 | `papers/` | 論文相關檔案，分三個子資料夾（詳見 `papers/README.md`）：`source/` 論文本身（Guyton & Klinger 2006 的紙本掃描版 PDF，*Journal of Financial Planning* 2006 年 3 月號 pp.50–58）；`audit/` 對這份論文的視覺檢核（`report.md` 發現清單、`transcriptions/` 表格轉錄 JSON，每個表格讀兩次、`images/scan/` 證據圖片、`checks_scan.md`、`inventory_scan.json`），由上述 paper-visual-audit skill 產生；`verification/` 拿論文來檢查**我們的程式**（`paper_check.md` 逐條對照、`ref_simulator.py` 獨立驗算、`order_sensitivity.py` 規則順序分析） |
-| `.githooks/pre-commit` | commit 前自動執行 `_dev/build.py` 並把結果一起提交；有 html 沒登記就擋下 commit |
+| `.githooks/pre-commit` | commit 前自動執行 `_dev/build.py` 並把結果一起提交；有 html 沒登記就擋下 commit。另外會執行檔案位置檢查，**只印出警告，不會擋下 commit** |
 | `.gitignore` | 告訴 git 忽略哪些檔案（`.DS_Store`、Python 暫存檔等），不影響網站 |
+
+## 新增檔案時怎麼分類
+
+| 檔案是… | 放到 |
+|---|---|
+| Claude Code skill（`SKILL.md` 與它的腳本、參考資料） | `.claude/skills/<skill 名稱>/`（只有放這裡 Claude Code 才找得到） |
+| 論文 PDF | `papers/source/` |
+| 論文表格的轉錄、檢核報告 | `papers/audit/`（轉錄 JSON 放 `transcriptions/`） |
+| 拿論文檢查我們程式的對照表、驗算、分析 | `papers/verification/` |
+| 全域設定（例如 `site-config.js`） | `config/` |
+| 網頁 `*.html` | 最外層（網址就是檔名，不能搬） |
+| 網站樣式、程式、圖示 | `assets/css/`、`assets/js/`、`assets/icons/` |
+| 網站開發工具（`build*.py`、範本） | `_dev/` |
+| `README.md`、`manifest.json`、`sw.js`、`sitemap.xml`、`.gitignore`、`.githooks/` | 固定在原位（其他工具要求它們在那裡） |
+
+- **新增檔案前**：`python3 .claude/skills/organize-files/scripts/organize.py where 檔名` 會告訴你該放哪裡；請 Claude 建檔時它也會先問這個 skill。
+- **新增之後**：`... organize.py check` 列出放錯位置或無法分類的檔案；`... organize.py apply` 先預覽，`apply --yes` 才真的移動（已追蹤的檔案用 `git mv`，並改寫其他檔案裡指向它的完整路徑；不會覆蓋或刪除任何檔案）。
+- **無法分類的檔案**：不會亂猜；告訴 Claude 它屬於哪一類，會把規則加進 `.claude/skills/organize-files/rules.json`，下次同類檔案就自動歸位，並更新這份 README 的資料夾結構。
+- **注意**：skill 無法監看檔案系統。它會在 Claude 要建立或搬移檔案時、你要求整理時執行；你自己在 Finder 或編輯器新增的檔案，會在 `check` 或下一次 commit 時被發現（commit 只警告，不會擋下）。
 
 ## 新增一個工具頁（流程）
 
 1. 複製 `_dev/template.html` 到**最外層**，改成新檔名（例如 `rebalance_calculator.html`），改標題、輸入欄與計算。
-2. 在 `assets/js/site-config.js` 對應分類的 `tools` 加一筆（`title`、`href`、`icon`、`desc`、`keywords`）。如果原本是「開發中」的佔位項目，把 `"soon": true` 拿掉並補上 `href` 即可。
+2. 在 `config/site-config.js` 對應分類的 `tools` 加一筆（`title`、`href`、`icon`、`desc`、`keywords`）。如果原本是「開發中」的佔位項目，把 `"soon": true` 拿掉並補上 `href` 即可。
 3. commit 時會自動執行 `python3 _dev/build.py`（也可以手動先跑一次預覽）：頁面標題、說明、分享預覽、頂部列與麵包屑、分類頁卡片、sitemap 都會自動補好。選單、搜尋和離線快取不需要 build，直接讀設定檔。
 4. 照「更新網站流程」上傳。
 
