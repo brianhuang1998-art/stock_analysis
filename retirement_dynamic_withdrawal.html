@@ -38,7 +38,7 @@
 
 <main>
   <h1>退休動態提領試算</h1>
-  <p class="subtitle">用 Guyton-Klinger「護欄」三大規則動態調整提領金額，對照固定提領（4%法則）的成功率與資產變化；退休金全部配置台股 ETF（如 0050）</p>
+  <p class="subtitle">用 Guyton-Klinger「護欄」三大規則動態調整提領金額，對照固定提領（4%法則）的成功率與資產變化；退休金全部配置台股 ETF（如 0050）。注意：論文只測試到 80% 股票、1973–2004 年美國資料，100% 股票與台股是外推，請當粗略參考</p>
 
   <div class="layout">
     <div>
@@ -87,7 +87,7 @@
             <p class="input-error" id="err-wr0" hidden></p>
           </div>
           <div>
-            <label for="annualReturn">預期年化報酬率（台股 ETF）</label>
+            <label for="annualReturn">預期年化報酬率（算術平均，台股 ETF）</label>
             <div class="input-wrap">
               <input type="number" id="annualReturn" inputmode="decimal" step="0.5" value="7">
               <span class="unit">%</span>
@@ -101,6 +101,7 @@
               <span class="unit">%</span>
             </div>
             <p class="input-error" id="err-volatility" hidden></p>
+            <p class="note-line" id="geoNote"></p>
           </div>
           <div>
             <label for="inflation">預期通貨膨脹率</label>
@@ -158,6 +159,15 @@
               <select id="inflCap">
                 <option value="none">不設上限（修正版）</option>
                 <option value="6">上限 6%（原版）</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-wide">
+            <label for="order">凍結規則與護欄：誰先檢定？（論文沒有明說）</label>
+            <div class="input-wrap">
+              <select id="order">
+                <option value="freeze" selected>先決定是否凍結，再用凍結後的金額檢定護欄（依論文 p.7 字面）</option>
+                <option value="guardrail">先用含通膨的金額檢定護欄，沒觸發才凍結（依 Table 5 決策樹解讀）</option>
               </select>
             </div>
           </div>
@@ -252,7 +262,7 @@
         <div class="insight assume">
           <h3>1.什麼是動態提領？</h3>
           <p>固定提領（4%法則）不管市場好壞，每年照領、再依通膨調高。動態提領（Guyton-Klinger「護欄」策略）則是<strong>依市場表現與目前提領率，每年微調提領金額</strong>：市場差時少領一點保住本金，市場好時多領一點享受人生。</p>
-          <p>代價是生活費會上下波動；好處是<strong>初始提領率可以更高</strong>。論文（Guyton &amp; Klinger, 2006）用蒙地卡羅模擬得出：股票占 65% 以上的組合，40 年期間初始提領率 5.2%～5.6% 達 99% 成功率，比不使用任何決策規則時的 3.0%～3.6%（論文 Table 2）高很多。</p>
+          <p>代價是生活費會上下波動；好處是<strong>初始提領率可以更高</strong>。論文（Guyton &amp; Klinger, 2006）用蒙地卡羅模擬：在「99% 信心標準」（成功率與購買力維持<strong>都</strong>達 99%）下，股票占 65% 以上、40 年期間的組合，初始提領率摘要寫 5.2%～5.6%；但 Table 6 單一股票 80/10/10 是 4.7%，所以實際約 4.7%～5.6%，視組合而定。比不使用任何決策規則時的 3.0%～3.6%（論文 Table 2）高很多。</p>
 
           <h3>2.三大規則</h3>
           <p>先算出<strong>目前提領率 = 當年提領金額 ÷ 當年年初資產</strong>，再依序檢查：</p>
@@ -260,13 +270,14 @@
             <table class="data-table">
               <thead><tr><th>規則</th><th>條件</th><th>動作</th></tr></thead>
               <tbody>
-                <tr><td>通膨規則</td><td>前一年投資虧損</td><td>今年提領金額不隨通膨調整</td></tr>
+                <tr><td>通膨規則</td><td>前一年投資虧損（原版）；前一年虧損<strong>且</strong>今年提領率高於初始提領率（修正版，頁面預設）</td><td>今年提領金額不隨通膨調整（凍結）</td></tr>
                 <tr><td></td><td>前一年有賺錢</td><td>依通膨調高。<strong>修正版（2006 論文）不設上限</strong>；原版（2004）有 6% 上限（被擋下的不補），可在參數裡切換</td></tr>
                 <tr><td>保本規則</td><td>目前提領率 &gt; 初始提領率 × 120%（上護欄）</td><td>今年提領金額<strong>下調 10%</strong></td></tr>
                 <tr><td>繁榮規則</td><td>目前提領率 &lt; 初始提領率 × 80%（下護欄）</td><td>今年提領金額<strong>上調 10%</strong></td></tr>
               </tbody>
             </table>
           </div>
+          <p><strong>凍結與護欄誰先檢定？論文沒有明說。</strong>頁面預設「先決定是否凍結，再用凍結後的金額檢定護欄」：論文 p.7 說保本規則看的是「using the decision rules in effect」的提領率；而且用論文 Table 6 的凍結次數對照（單一股票約 8～9 次、隨初始提領率增加），這個順序（約 6.7～7.7 次）比另一種（固定約 4.6～4.7 次）接近。另一種解讀是把 Table 5 當決策樹：先用含通膨的金額檢定護欄，沒觸發才凍結，可在參數區切換。兩者的成功率差約 0.3～3.6 個百分點（見專案內 <code>_dev/paper_check.md</code>）。</p>
           <p>例：初始提領率 5% → 上護欄 6%、下護欄 4%。市場大跌、資產縮水，提領率被推到 6% 以上，就下調 10%；市場大漲、提領率掉到 4% 以下，就上調 10%。調整後的金額會成為隔年的基準，之前少領或多領的不補回。</p>
           <p>論文還有第 4 條「投資組合管理規則」，決定要賣股票、債券還是現金來支付生活費。本頁假設退休金<strong>100% 是台股 ETF</strong>（如 0050），沒有債券或現金可以動用，所以這條不適用，下跌時只能賣股票。</p>
 
@@ -290,6 +301,7 @@
             <li><strong>蒙地卡羅</strong>：用「預期年化報酬率」與「年化波動率」隨機產生 4,000 條報酬路徑（對數常態分配，固定亂數種子，所以同樣的輸入每次結果相同）。動態與固定提領<strong>使用同一批路徑</strong>，方便公平比較。成功 = 退休期間資金都沒有用完。</li>
             <li><strong>壓力情境</strong>：退休最初幾年連續下跌，之後每年固定為預期報酬率，看護欄規則一步步怎麼動作（逐年明細會標出每年觸發的規則）。</li>
             <li>每年「年初」先提領，剩下的資產再成長一年。</li>
+            <li><strong>購買力維持</strong>只在「成功的路徑」裡計算（論文 p.8：during each successful simulation），取中位數；比較表另外列出含資金用完路徑的版本供對照。</li>
             <li>通膨固定為你輸入的數字。修正版（2006 論文）取消了 6% 上限（論文稱取消後購買力多維持 10% 以上，成功率沒有下降）；若切換成「上限 6%」，要把通膨設到 6% 以上才看得到差別。</li>
           </ul>
 
@@ -300,11 +312,12 @@
 
           <h3>6.報酬率與波動率填多少？</h3>
           <p>這是你自己的假設，沒有人能保證。預設 7% 與 18% 只是參考值；台股 ETF 的實際報酬與波動請自行查詢長期數據，並多試幾組（例如報酬 5%、7%、9%）。</p>
+          <p><strong>注意：這裡填的是「算術平均」報酬，不是你常看到的「年化報酬率（CAGR，複利年化）」。</strong>論文也是用算術平均與標準差（p.4）。波動會拖累複利，兩者的關係大約是：複利年化 ≈ 算術平均 − 波動率² ÷ 2。例如算術平均 7%、波動 18%，長期只會以約 5.5% 複利成長（參數區下方會直接顯示換算結果）。如果你查到的是某檔 ETF 過去的 CAGR，直接當成這裡的報酬率會<strong>低估</strong>成長；CAGR 8%、波動 18% 約對應算術平均 9.5%。壓力情境與波動率為 0 時，報酬每年固定，兩種平均沒有差別。</p>
 
           <h3>7.沒算進去、但實際會影響結果的東西</h3>
           <ul>
             <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬</li>
-            <li><strong class="neg">通膨不固定</strong>：實際通膨每年不同，醫療、房租漲幅常高於一般物價</li>
+            <li><strong class="neg">通膨不固定</strong>：實際通膨每年不同，醫療、房租漲幅常高於一般物價。論文的通膨是隨機的、且與資產報酬相關，每組情境 14,000 條路徑；本頁通膨固定、4,000 條路徑</li>
             <li><strong class="neg">報酬不是常態分配</strong>：真實市場有更極端的崩跌</li>
             <li><strong class="neg">生活費下調 10% 你要吃得消</strong>：若基本開銷無法削減，請預留現金或其他收入</li>
           </ul>
@@ -322,7 +335,7 @@
 (function(){
   const $ = id => document.getElementById(id);
   const STORAGE_KEY = 'retirementDynamicCalc:' + location.pathname;
-  const FIELDS = ['goal','monthlySpend','yearsToRetire','assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','inflCap','cprExpire'];
+  const FIELDS = ['goal','monthlySpend','yearsToRetire','assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','freezeMode','inflCap','cprExpire','order'];
   const MAX_YEARS = 60;
   const TRIALS = 4000;
   const SEED = 20060301;
@@ -332,6 +345,7 @@
   const CPR_YEARS_BEFORE_END = 15; // 保本規則在退休最後 15 年停用（論文）
   const { money: fmtMoney } = Util.fmt;
   const fmtPct = (n, d) => (n * 100).toFixed(d === undefined ? 1 : d) + '%';
+  const pctOrDash = n => n === null ? '—（沒有成功的路徑）' : fmtPct(n, 0);
 
   const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
@@ -380,15 +394,28 @@
       } else if(!dynamic){
         W = planned;
       } else {
-        const adjusted = W * (1 + cap);
+        const adjusted = W * (1 + cap);                 // 含通膨的金額
         const lost = rets[i - 1] < 0;
-        const freeze = lost && (p.freezeMode === 'original' || adjusted / bal > wr0);
-        W = freeze ? W : adjusted;
-        if(freeze){ o.frozen[i] = 1; o.freezes++; }
-        const cur = W / bal;
         const cprOn = p.cprExpire !== 'yes' || t <= T - CPR_YEARS_BEFORE_END;
-        if(cprOn && cur > wr0 * (1 + GUARD)){ W *= (1 - STEP); o.adj[i] = -1; o.cuts++; }
-        else if(cur < wr0 * (1 - GUARD)){ W *= (1 + STEP); o.adj[i] = 1; o.raises++; }
+        if(p.order === 'guardrail'){
+          // 先用含通膨的金額檢定護欄；兩條護欄都沒觸發，才輪到凍結規則
+          const cur = adjusted / bal;
+          if(cprOn && cur > wr0 * (1 + GUARD)){ W = adjusted * (1 - STEP); o.adj[i] = -1; o.cuts++; }
+          else if(cur < wr0 * (1 - GUARD)){ W = adjusted * (1 + STEP); o.adj[i] = 1; o.raises++; }
+          else {
+            const freeze = lost && (p.freezeMode === 'original' || cur > wr0);
+            W = freeze ? W : adjusted;
+            if(freeze){ o.frozen[i] = 1; o.freezes++; }
+          }
+        } else {
+          // 先決定是否凍結，再用「凍結後」的金額算提領率檢定護欄
+          const freeze = lost && (p.freezeMode === 'original' || adjusted / bal > wr0);
+          W = freeze ? W : adjusted;
+          if(freeze){ o.frozen[i] = 1; o.freezes++; }
+          const cur = W / bal;
+          if(cprOn && cur > wr0 * (1 + GUARD)){ W *= (1 - STEP); o.adj[i] = -1; o.cuts++; }
+          else if(cur < wr0 * (1 - GUARD)){ W *= (1 + STEP); o.adj[i] = 1; o.raises++; }
+        }
       }
       o.wr[i] = W / bal;
       if(W >= bal){
@@ -437,11 +464,16 @@
     const ends = sortedCopy(runs.map(r => r.end[T - 1]));
     const pps = sortedCopy(runs.map(r => r.pp));
     const ppsLast = sortedCopy(runs.map(r => r.ppLast));
+    // 論文 p.8：購買力維持是「每一次成功的模擬」中的中位數，所以另外只取成功的路徑
+    const ok = runs.filter(r => !r.fail);
+    const ppsOk = sortedCopy(ok.map(r => r.pp));
+    const ppsLastOk = sortedCopy(ok.map(r => r.ppLast));
     return {
       years,
       success: runs.filter(r => !r.fail).length / n,
       endMed: percentile(ends, .5), endLo: percentile(ends, .1),
-      ppMed: percentile(pps, .5), ppLastMed: percentile(ppsLast, .5),
+      ppMed: ok.length ? percentile(ppsOk, .5) : null, ppLastMed: ok.length ? percentile(ppsLastOk, .5) : null,
+      ppAllMed: percentile(pps, .5), ppLastAllMed: percentile(ppsLast, .5),
       cuts: runs.reduce((a, r) => a + r.cuts, 0) / n,
       raises: runs.reduce((a, r) => a + r.raises, 0) / n,
       freezes: runs.reduce((a, r) => a + r.freezes, 0) / n,
@@ -528,15 +560,16 @@
     ];
     if(!stress) rows.push(['退休結束時資產（較差的 10% 情境）', fmtMoney(dyn.endLo), fmtMoney(fix.endLo)]);
     rows.push(
-      [`平均購買力維持${med}`, fmtPct(dyn.ppMed, 0), fmtPct(fix.ppMed, 0)],
-      [`最後一年的購買力${med}`, fmtPct(dyn.ppLastMed, 0), fmtPct(fix.ppLastMed, 0)],
+      [`平均購買力維持（${stress ? '' : '中位數、'}僅計成功的路徑，論文定義）`, pctOrDash(dyn.ppMed), pctOrDash(fix.ppMed)],
+      [`最後一年的購買力（${stress ? '' : '中位數、'}僅計成功的路徑，論文定義）`, pctOrDash(dyn.ppLastMed), pctOrDash(fix.ppLastMed)],
+      [`平均購買力維持（${stress ? '' : '中位數、'}含資金用完的路徑）`, fmtPct(dyn.ppAllMed, 0), fmtPct(fix.ppAllMed, 0)],
       [`最後一年每月提領${med}`, fmtMoney(dyn.lastWdMed / 12), fmtMoney(fix.lastWdMed / 12)],
       [stress ? '退休期間被下調／上調／凍結次數' : '平均每條路徑被下調／上調／凍結次數',
         `${dyn.cuts.toFixed(stress ? 0 : 1)}／${dyn.raises.toFixed(stress ? 0 : 1)}／${dyn.freezes.toFixed(stress ? 0 : 1)} 次`, '—']
     );
     $('compareBody').innerHTML = rows.map(r => `
       <tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
-    $('compareNote').textContent = '「平均購買力維持」= 各年（實際提領 ÷ 一般隨通膨調整的計畫提領）的平均；「最後一年的購買力」= 最後一年的同一個比值（論文的 Year 40 PP%）。100% 代表生活水準完全不縮水；資金用完後每年提領為 0，會拉低這兩個數字。';
+    $('compareNote').textContent = (stress ? '' : '蒙地卡羅有抽樣誤差：4,000 條路徑下，成功率約 ±1 個百分點、期末資產中位數約 ±4%（以不同亂數種子重跑量得），所以小數點後的差異不必在意。') + '「平均購買力維持」= 各年（實際提領 ÷ 一般隨通膨調整的計畫提領）的平均；「最後一年的購買力」= 最後一年的同一個比值（論文的 Year 40 PP%）。100% 代表生活水準完全不縮水。論文只在「成功的模擬」裡計算購買力（p.8），所以前兩列只計成功的路徑；最後一列把資金用完的路徑也算進去（那些年提領為 0），供你對照。成功率低的時候，只看成功路徑會讓購買力看起來比較好，請搭配成功率一起看。';
 
     // ----- asset chart: balance at the end of each year (x = 0 is the day you retire)
     const xs0 = Array.from({ length: T + 1 }, (_, i) => i);
@@ -660,7 +693,8 @@
       stressReturn: parseFloat($('stressReturn').value),
       freezeMode: $('freezeMode').value,
       inflCap: $('inflCap').value,
-      cprExpire: $('cprExpire').value
+      cprExpire: $('cprExpire').value,
+      order: $('order').value
     };
     v.wr0Pct = parseFloat($('wr0').value);
 
@@ -685,8 +719,19 @@
       box.textContent = errors[f] || '';
       box.hidden = !errors[f];
     });
-    if(Object.keys(errors).length){ clearAll(); return; }
+    if(Object.keys(errors).length){ $('geoNote').textContent = ''; clearAll(); return; }
     setEmpty(false);
+
+    // 把算術平均換算成長期複利年化（幾何平均），讓使用者知道這組輸入實際會長多快
+    (function(){
+      const m = v.ret / 100, s = v.vol / 100;
+      const sigma2 = Math.log(1 + (s * s) / ((1 + m) * (1 + m)));
+      const geo = (1 + m) * Math.exp(-sigma2 / 2) - 1;
+      const real = (1 + geo) / (1 + v.infl) - 1;
+      $('geoNote').textContent = v.mode === 'stress'
+        ? '壓力情境下報酬固定，不使用波動率。'
+        : `以這組輸入換算，長期複利年化（幾何平均）約 ${(geo * 100).toFixed(1)}%，扣掉 ${v.inf}% 通膨後實質約 ${(real * 100).toFixed(1)}%。`;
+    })();
 
     const T = v.years;
     const dynRuns = [], fixRuns = [];

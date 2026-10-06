@@ -44,15 +44,26 @@ def run(p, rets, dynamic):
         else:
             adj=W*(1+cap)
             neg=rets[i-1]<0
-            freeze = neg and ((not p['modified']) or (adj/bal>w0))
-            W = W if freeze else adj
-            out['frozen'][i]=1 if freeze else 0
-            cur=W/bal
             cpr_on = (not p['expire']) or (t<=T-15)
-            if cpr_on and cur>w0*1.2:
-                W*=0.9; out['adj'][i]=-1
-            elif cur<w0*0.8:
-                W*=1.1; out['adj'][i]=1
+            if p.get('order','freeze')=='guardrail':
+                cur=adj/bal                       # guardrails first, on the inflation-adjusted amount
+                if cpr_on and cur>w0*1.2:
+                    W=adj*0.9; out['adj'][i]=-1
+                elif cur<w0*0.8:
+                    W=adj*1.1; out['adj'][i]=1
+                else:
+                    freeze = neg and ((not p['modified']) or (cur>w0))
+                    W = W if freeze else adj
+                    out['frozen'][i]=1 if freeze else 0
+            else:
+                freeze = neg and ((not p['modified']) or (adj/bal>w0))   # freeze first, guardrails on the frozen amount
+                W = W if freeze else adj
+                out['frozen'][i]=1 if freeze else 0
+                cur=W/bal
+                if cpr_on and cur>w0*1.2:
+                    W*=0.9; out['adj'][i]=-1
+                elif cur<w0*0.8:
+                    W*=1.1; out['adj'][i]=1
         out['wr'][i]=W/bal
         if W>=bal:
             out['wd'][i]=bal; out['end'][i]=0; ppsum+=bal/planned
@@ -75,7 +86,8 @@ def summarize(runs,T):
             endMed=pct(e,.5),endLo=pct(e,.1),endHi=pct(e,.9),
             cutShare=sum(1 for r in runs if r['adj'][i]==-1)/n,raiseShare=sum(1 for r in runs if r['adj'][i]==1)/n,frozenShare=sum(1 for r in runs if r['frozen'][i]==1)/n))
     ends=sorted(r['end'][T-1] for r in runs); pps=sorted(r['pp'] for r in runs); ppl=sorted(r['ppLast'] for r in runs)
-    return dict(years=years,success=sum(1 for r in runs if not r['fail'])/n,endMed=pct(ends,.5),endLo=pct(ends,.1),ppMed=pct(pps,.5),ppLastMed=pct(ppl,.5),
+    okr=[r for r in runs if not r['fail']]; ppsok=sorted(r['pp'] for r in okr); pplok=sorted(r['ppLast'] for r in okr)
+    return dict(years=years,success=sum(1 for r in runs if not r['fail'])/n,endMed=pct(ends,.5),endLo=pct(ends,.1),ppMed=(pct(ppsok,.5) if okr else None),ppLastMed=(pct(pplok,.5) if okr else None),ppAllMed=pct(pps,.5),ppLastAllMed=pct(ppl,.5),
         cuts=sum(r['cuts'] for r in runs)/n,raises=sum(r['raises'] for r in runs)/n,freezes=sum(r['freezes'] for r in runs)/n,
         lastWdMed=years[T-1]['wdMed'],failYear=(runs[0]['fail'] if n==1 else 0))
 
@@ -84,7 +96,7 @@ def simulate(f):
     if f.get('goal')=='spend':
         assets=float(f['monthlySpend'])*(1+float(f['inflation'])/100)**int(f['yearsToRetire'])*12/(float(f['wr0'])/100)
     p=dict(A=assets,w0=float(f['wr0'])/100,infl=float(f['inflation'])/100,T=int(f['years']),
-           modified=f['freezeMode']=='modified',cap6=f['inflCap']=='6',expire=f['cprExpire']=='yes')
+           modified=f['freezeMode']=='modified',cap6=f['inflCap']=='6',expire=f['cprExpire']=='yes',order=f.get('order','freeze'))
     T=p['T']; ret=float(f['annualReturn'])/100
     dyn=[];fix=[]
     if f['mode']=='stress':

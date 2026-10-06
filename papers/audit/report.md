@@ -11,11 +11,11 @@
 
 | Audit | OK | CHECK | NOTE | FAIL |
 |---|---|---|---|---|
-| 1 Data | 4 | 4 | 0 | 0 |
+| 1 Data | 4 | 4 (one minor) | 0 | 0 |
 | 2 Figures | 1 | 0 | 2 | 0 |
 | 3 Labels and fonts | 0 | 0 | 8 | 0 |
 
-No arithmetic failures. Four statements in the summary and conclusion do not match the tables exactly (D-05 to D-08); they may be loose wording rather than errors, so they are marked CHECK for a human decision.
+No arithmetic failures. One table-to-table gap and three statements in the summary and conclusion do not match the tables exactly (D-05 to D-08); they may be loose wording rather than errors, so they are marked CHECK for a human decision.
 
 ## 1. Data audit
 
@@ -25,7 +25,7 @@ No arithmetic failures. Four statements in the summary and conclusion do not mat
 | D-02 | OK | Table 1: each portfolio column sums to 100%, and the equity rows add up to the equity share in the header (50/65/80). | `checks_*.md` |
 | D-03 | OK | Table 2: every "withdrawal enhancement" equals the ratio of the two printed rates minus 1, within rounding of the printed one-decimal rates (e.g. all-3-rules, 65%, 95% POS: 4.3 / 3.1 = +39%). The text's "increases the maximum initial withdrawal rate 30–43 percent" matches the "All 3" rows (30% to 43%). | Table 2 (web p.5, print p.53) |
 | D-04 | OK | Tables 3 and 4: initial WD rate rises and purchasing power falls as the required success level falls. Tables 6 and 7: WD rate rises as the confidence standard falls from 99% to 90%, and every row's success rate and total purchasing power are at least the standard it is listed under. Table 6 single-equity 65/25/10 agrees with the Table 3 curve (e.g. 5.7% ↔ 97% success). | `checks_*.md` |
-| D-05 | **CHECK** | **Table 6 vs Table 4, multi-class 65/25/10.** Table 6 (40 years, same portfolio and rules) says 5.5% gives 99% success and 5.8% gives 99%. Table 4 says 99% success is reached at 7.1%, and 100% success holds up to 6.3%. Gap 1.3–1.6 points. The single-equity pair (Table 3 vs Table 6) agrees within 0.1 point, so only the multi-class pair is inconsistent. Possible explanations: Table 4 and Table 6 use different assumptions that the text does not state, or one table has an error. | Table 4 (web p.10, print p.55), Table 6 (web p.12, print p.56) |
+| D-05 | CHECK (minor) | **Table 6 vs Table 4, multi-class 65/25/10.** Table 6 (40 years) lists 5.5% and 5.8% with a success rate of **99%**; Table 4 (same portfolio and rules) shows **100%** success up to 6.3% and 99% only at 7.1%. In success terms the gap is **about 1 point (99% vs 100%)**. It looks large when read as an initial WD rate (1.3–1.6 points) only because the success curve is flat near 100%. Sampling noise with 14,000 trials is about 0.1 point, so a 1-point rounded gap is more than noise, but small. The extra purchasing-power standard behind Table 6 lowers the WD rate it lists; it does not change the plain success rate printed next to that rate, so it does not explain the gap. Single-equity Tables 3 and 6 agree within 0.1 point. Cause unknown. | Table 4 (web p.10, print p.55), Table 6 (web p.12, print p.56) |
 | D-06 | **CHECK** | Executive summary and conclusion: "5.2–5.6 percent are sustainable at the 99 percent confidence standard for portfolios containing at least 65 percent equities (40 years)". Table 6 has one row outside the range: single-equity 80/10/10 = **4.7%** (also 4.7% in Table 7). May be a loose summary of the multi-class and 65% rows. | Table 6 |
 | D-07 | **CHECK** | Conclusion: "rise to 5.7–6.2 percent at the 95 percent confidence standard (40 years)". Table 6 has two rows outside: single-equity 80/10/10 = **5.6%**, multi-class 65/25/10 = **5.5%**. In the 30-year Table 7 all four rows are inside 5.7–6.2. | Table 6, Table 7 |
 | D-08 | **CHECK** | Executive summary: "with 50 percent equities, maximum initial withdrawal rates drop to as low as 4.6 percent". Table 6 single-equity 50/40/10 at 99% is **4.5%** (the multi-class row is 4.6%). | Table 6 |
@@ -59,3 +59,21 @@ The only figure is Figure 1 "Decision Rule 'Guardrails'". Described blind, befor
 - It shows that the tables were transcribed consistently and that the paper is largely internally consistent. It cannot show the paper's results are right: their inputs are not in the paper.
 - The vision model can misread digits. Here the web and print readings were made from different images and agree in all 466 cells, which is strong evidence for the digits but not proof; anything that matters should be confirmed against the images by a person.
 - Only the passages named in L-06 were compared word by word between the copies. A complete text diff would need OCR of the scan.
+
+## Reviewer comments received (2026-10-06) and how each was handled
+
+A written explanation of the findings was supplied by the project owner (its author is not stated). Each claim is sorted by what the evidence supports. Nothing below changed a finding's level, except D-05 which was re-examined and softened (above).
+
+| Claim in the comment | Status | Why |
+|---|---|---|
+| The numbers behind D-06/D-07/D-08 (Table 6 has 4.7%, 5.6%, 5.5%, 4.5%; the text says 5.2–5.6, 5.7–6.2, 4.6) | **Supported** | Re-read from both copies; the checker reproduces them. |
+| The authors "roughly picked" 5.7 and 6.2 as the range ends, ignoring 5.5 and 5.6 | **Unverified (intent)** | The paper does not say how the range was chosen. The 30-year Table 7 rows for 95% all lie inside 5.7–6.2, so the sentence may mix the two tables or refer to particular portfolios. It stays a CHECK, not a confirmed error. |
+| Table 3 and Table 6 single-equity figures are consistent | **Supported** | Checked (gap about 0.1 point). |
+| Table 4 is "a run anomaly / non-converged extreme value" that scholars "generally" regard as unreliable | **Not supported** | No source is given and nothing in the paper says so. The text (web p.9) presents the higher multi-class rates as a result: "using multiple-equity asset classes produced higher initial withdrawal rates and fewer capital preservation rule cuts". Table 4's own purchasing power (79–93%) shows why those rates are not the paper's recommendation, which is a different reason from "anomaly". |
+| Table 6 is the table the authors finally adopted, because of the dual confidence standard | **Supported** | The text and conclusion use Table 6 (and Table 7) for the recommended rates, and the dual standard (success and purchasing power both at least 99% or 95%) is defined on web p.11. |
+| The dual standard explains the difference between Table 4 and Table 6 | **Partly** | It explains why Table 6's WD rates are lower than the plain-success rates of Tables 3/4. It does not explain the 99% vs 100% success mismatch in D-05 (see above). |
+| For planning use Table 6's 5.2–5.6% | **Caution** | Table 6's own rows for portfolios with at least 65% equities also include 4.7% (single-equity 80/10/10) and 5.5% at the 95% standard; 5.2–5.6% is the summary's range, which is exactly what D-06 questions. The tested allocations are at most 80% equities on 1973–2004 U.S. data, so they do not transfer directly to a 100% equity portfolio. |
+| Table 7 "Year 40 PP%" is a copy-paste error from Table 6 | **Plausible, unverified** | The header is wrong for a 30-year table in both copies; whether it came from copying Table 6 cannot be known. |
+| Table 5 "Intitial" is a typo | **Supported** | Both copies. |
+| The web copy "later" added Table 2's footnotes; the web layout "re-ordered" Table 1 | **Unverified (direction)** | The copies differ (footnotes present only on the web, column order differs), but nothing shows which came first or why. |
+| Figure 1 is a schematic with no axes | **Supported** | Both copies. |

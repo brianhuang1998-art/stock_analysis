@@ -92,6 +92,15 @@ def curve_wd_at(points, success):
             return w0 + (w1 - w0) * (s0 - success) / (s0 - s1)
     return None
 
+
+def success_at(points, wd):
+    """Success level (%) the curve gives at an initial WD rate; 100 below the first point."""
+    if wd <= points[0][0]: return 100.0
+    for (w0, s0), (w1, s1) in zip(points, points[1:]):
+        if w0 <= wd <= w1:
+            return s0 + (s1 - s0) * (wd - w0) / (w1 - w0)
+    return points[-1][1]
+
 def cross_check(t_curve, t6, src, curve_name, group):
     """Table 6 rows (65/25/10) give a success rate for an initial WD rate. Table 3 (single class) and Table 4 (multi class) give the
     same relationship for the same portfolio and rules. A Table 6 row should sit on that curve (horizontal distance <= 0.5 percentage point)."""
@@ -107,8 +116,11 @@ def cross_check(t_curve, t6, src, curve_name, group):
             wd_at = curve_wd_at(pts, s)
             if wd_at is None: continue
             gap = w - wd_at
+            at_w = success_at(pts, w)          # what the other table says the success rate is at this WD rate
             add('OK' if abs(gap) <= 0.5 else 'CHECK', f'{src} Table 6 vs {curve_name} | {group} 65/25/10 | confidence {lab[2]}',
-                f'Table 6 says {w}% gives {s}% success; {curve_name} reaches {s}% success at {wd_at:.1f}% (gap {gap:+.1f} points)')
+                f'Table 6 says {w}% gives {s}% success; {curve_name} reaches {s}% success at {wd_at:.1f}% (WD gap {gap:+.1f} points) '
+                f'and shows about {at_w:.0f}% success at {w}% (success gap {s - at_w:+.0f} point). The curve is flat near 100%, so a one-point success gap looks like a large WD gap; '
+                f'a plain success rate is not changed by the extra purchasing-power standard, so that standard does not explain it.')
 
 def claims(t6, src):
     """Claims in the paper's summary / conclusion that can be tested against Table 6 (40-year)."""
