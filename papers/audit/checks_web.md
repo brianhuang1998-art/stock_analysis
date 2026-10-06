@@ -1,7 +1,0 @@
-| Level | Where | Detail |
-|---|---|---|
-| CHECK | web Table 6 vs Table 4 | Multi-Class Equities 65/25/10 | confidence 95% | Table 6 says 5.5% gives 99% success; Table 4 reaches 99% success at 7.1% (WD gap -1.6 points) and shows about 100% success at 5.5% (success gap -1 point). The curve is flat near 100%, so a one-point success gap looks like a large WD gap; a plain success rate is not changed by the extra purchasing-power standard, so that standard does not explain it. |
-| CHECK | web Table 6 vs Table 4 | Multi-Class Equities 65/25/10 | confidence 90% | Table 6 says 5.8% gives 99% success; Table 4 reaches 99% success at 7.1% (WD gap -1.3 points) and shows about 100% success at 5.8% (success gap -1 point). The curve is flat near 100%, so a one-point success gap looks like a large WD gap; a plain success rate is not changed by the extra purchasing-power standard, so that standard does not explain it. |
-| CHECK | web Table 6 | Executive Summary / Conclusion: "5.2-5.6 percent ... 99 percent confidence ... at least 65 percent equities" | outside the range: One Equity (S&P 500) 80/10/10 = 4.7% |
-| CHECK | web Table 6 | Conclusion: "rise to 5.7-6.2 percent at the 95 percent confidence standard" | outside the range: One Equity (S&P 500) 80/10/10 = 5.6%; Multi-Class Equities 65/25/10 = 5.5% |
-| CHECK | web Table 6 | Executive Summary: "with 50 percent equities ... as low as 4.6 percent" | 99% rows for 50/40/10 give [4.5, 4.6] (min 4.5) |

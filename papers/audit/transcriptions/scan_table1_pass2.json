@@ -1,8 +1,8 @@
 {
  "table": "Table 1",
- "source": "web",
+ "source": "scan",
  "page": 3,
- "pass": 1,
+ "pass": 2,
  "columns": [
   "50% Equities",
   "65% Equities",
@@ -75,6 +75,6 @@
   }
  ],
  "notes": [
-  "column order printed: 50% / 65% / 80%"
+  "printed column order is 65% / 80% / 50%; re-ordered to 50/65/80 here"
  ]
 }

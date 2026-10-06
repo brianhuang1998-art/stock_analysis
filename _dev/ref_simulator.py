@@ -1,4 +1,4 @@
-# Independent reference implementation of the dynamic-withdrawal simulation (written from the rules, not copied from the page's JS).
+# Independent reference implementation of the dynamic-withdrawal simulation (2006 final rules only; written from the rules, not copied from the page's JS).
 # Used to check retirement_dynamic_withdrawal.html and by _dev/order_sensitivity.py. Includes a port of the page's random number generator
 # (mulberry32 + Box-Muller), so with the same seed it reproduces the page's 4,000 random paths.
 # Independent reference implementation written from the rules (not copied from the page's JS)
@@ -27,7 +27,7 @@ def pct(sorted_list,q):
 
 def run(p, rets, dynamic):
     T=p['T']; A=p['A']; w0=p['w0']; infl=p['infl']
-    cap = min(infl,0.06) if p['cap6'] else infl
+    cap = infl                                  # 2006 final version: no cap on the inflation adjustment
     bal=A; W=0.0
     out=dict(start=[0]*T,wd=[0]*T,wr=[1]*T,end=[0]*T,frozen=[0]*T,adj=[0]*T,fail=0,pp=0.0)
     ppsum=0.0
@@ -44,7 +44,7 @@ def run(p, rets, dynamic):
         else:
             adj=W*(1+cap)
             neg=rets[i-1]<0
-            cpr_on = (not p['expire']) or (t<=T-15)
+            cpr_on = t<=T-15                     # capital preservation rule expires 15 years before the end
             if p.get('order','freeze')=='guardrail':
                 cur=adj/bal                       # guardrails first, on the inflation-adjusted amount
                 if cpr_on and cur>w0*1.2:
@@ -52,11 +52,11 @@ def run(p, rets, dynamic):
                 elif cur<w0*0.8:
                     W=adj*1.1; out['adj'][i]=1
                 else:
-                    freeze = neg and ((not p['modified']) or (cur>w0))
+                    freeze = neg and (cur>w0)                       # 2006 modified withdrawal rule
                     W = W if freeze else adj
                     out['frozen'][i]=1 if freeze else 0
             else:
-                freeze = neg and ((not p['modified']) or (adj/bal>w0))   # freeze first, guardrails on the frozen amount
+                freeze = neg and (adj/bal>w0)   # 2006 modified withdrawal rule; freeze first, guardrails on the frozen amount
                 W = W if freeze else adj
                 out['frozen'][i]=1 if freeze else 0
                 cur=W/bal
@@ -96,7 +96,7 @@ def simulate(f):
     if f.get('goal')=='spend':
         assets=float(f['monthlySpend'])*(1+float(f['inflation'])/100)**int(f['yearsToRetire'])*12/(float(f['wr0'])/100)
     p=dict(A=assets,w0=float(f['wr0'])/100,infl=float(f['inflation'])/100,T=int(f['years']),
-           modified=f['freezeMode']=='modified',cap6=f['inflCap']=='6',expire=f['cprExpire']=='yes',order=f.get('order','freeze'))
+           order=f.get('order','freeze'))
     T=p['T']; ret=float(f['annualReturn'])/100
     dyn=[];fix=[]
     if f['mode']=='stress':

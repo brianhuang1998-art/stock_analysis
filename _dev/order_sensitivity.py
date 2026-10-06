@@ -37,7 +37,7 @@ def run(p, rets, order):
     return dict(fail=fail,end=bal,pp=ppsum/T,cuts=cuts,raises=raises,freezes=freezes,wd=wd_total)
 
 def paired(f, n=4000):
-    p=dict(A=float(f['assets']),w0=float(f['wr0'])/100,infl=float(f['inflation'])/100,T=int(f['years']),expire=f['cprExpire']=='yes')
+    p=dict(A=float(f['assets']),w0=float(f['wr0'])/100,infl=float(f['inflation'])/100,T=int(f['years']),expire=True)
     T=p['T']; m=float(f['annualReturn'])/100; s=float(f['volatility'])/100
     sig2=math.log(1+s*s/((1+m)**2)); mu=math.log(1+m)-sig2/2; sig=math.sqrt(sig2)
     nrm=ref.normal_src(ref.mulberry32(20060301))
@@ -53,14 +53,13 @@ def summ(R):
     return dict(success=sum(1 for r in R if not r['fail'])/n, endMed=med([r['end'] for r in R]), ppMed=med([r['pp'] for r in R]),
                 cuts=sum(r['cuts'] for r in R)/n, freezes=sum(r['freezes'] for r in R)/n, raises=sum(r['raises'] for r in R)/n)
 
-base=dict(assets='10000000',wr0='5.3',annualReturn='12',volatility='17',inflation='4.5',years='40',cprExpire='yes')
+base=dict(assets='10000000',wr0='5.3',annualReturn='12',volatility='17',inflation='4.5',years='40')
 cases=[
  ("Gemini prompt example: 40y, IWR 5.3%, 12%/17%/4.5%", base),
  ("same, IWR 5.8%", dict(base,wr0='5.8')),
  ("same, IWR 6.5% (aggressive)", dict(base,wr0='6.5')),
- ("page default: 30y, IWR 5%, 7%/18%/2%", dict(assets='10000000',wr0='5',annualReturn='7',volatility='18',inflation='2',years='30',cprExpire='yes')),
- ("page default, no CPR expiry", dict(assets='10000000',wr0='5',annualReturn='7',volatility='18',inflation='2',years='30',cprExpire='no')),
- ("30y, IWR 4%, 8%/16%/2.5%", dict(assets='10000000',wr0='4',annualReturn='8',volatility='16',inflation='2.5',years='30',cprExpire='yes')),
+ ("page default: 30y, IWR 5%, 7%/18%/2%", dict(assets='10000000',wr0='5',annualReturn='7',volatility='18',inflation='2',years='30')),
+ ("30y, IWR 4%, 8%/16%/2.5%", dict(assets='10000000',wr0='4',annualReturn='8',volatility='16',inflation='2.5',years='30')),
 ]
 print(f"{'case':<52}{'order':<8}{'success':>8}{'endMed(萬)':>11}{'PP':>6}{'cuts':>6}{'frz':>6}{'raise':>6}  paths where they differ")
 for name,f in cases:

@@ -5,7 +5,7 @@
 
 Reads  <source>_table1/2/3/4/6/7.json  (see ../references/transcription_schema.md).
 A missing file is skipped. Every finding has a level:  FAIL (numbers cannot both be right),  CHECK (text and table disagree, a human must decide),  OK.
-The paper's own data cannot be re-derived (it uses 1973-2004 asset-class statistics), so these checks test internal consistency only.
+The paper's own data cannot be re-derived (it uses 1928-2004 and 1973-2004 asset-class statistics), so these checks test internal consistency only.
 """
 import argparse, json, os, sys
 

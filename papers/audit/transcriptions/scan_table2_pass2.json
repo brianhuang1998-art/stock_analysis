@@ -1,8 +1,8 @@
 {
  "table": "Table 2",
- "source": "web",
- "page": 5,
- "pass": 1,
+ "source": "scan",
+ "page": 4,
+ "pass": 2,
  "columns": [
   "MaxWD_90POS",
   "MaxWD_95POS",
@@ -193,6 +193,6 @@
   }
  ],
  "notes": [
-  "web copy: header carries footnote markers WD1, POS2, WR3 and a footnote line (1.WD = withdrawal, 2. POS = probability of success, 3. WR = withdrawal rule)"
+  "no footnote markers or footnote line in the print"
  ]
 }

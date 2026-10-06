@@ -657,3 +657,45 @@ label{
 /* Rules table inside the explanation card: wrap text instead of scrolling */
 .assume .data-table{white-space:normal;margin:8px 0 12px;}
 .assume .data-table th,.assume .data-table td{text-align:left;vertical-align:top;}
+
+/* ---------- 退休頁面：頂端精簡介紹、護欄示意、右側可收合的參考區 ---------- */
+.intro{margin-bottom:20px;}
+.intro h3{font-size:14px;color:var(--navy);margin:0 0 6px;}
+.intro p{font-size:13.5px;line-height:1.7;margin:0 0 8px;}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:12px;}
+@media (max-width:640px){ .intro-grid{grid-template-columns:1fr;gap:6px;} }
+.intro-link{margin:0;}
+.intro-link a{color:var(--accent-strong);font-weight:600;font-size:13px;text-decoration:none;}
+.intro-link a:hover{text-decoration:underline;}
+.guard-demo{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:4px 0 8px;}
+.guard-head{margin:0;padding:8px 12px;background:var(--surface);font-size:12.5px;color:var(--text-muted);}
+.guard-row{display:flex;gap:12px;align-items:baseline;padding:9px 12px;font-size:13px;line-height:1.6;border-top:1px solid var(--border);}
+.guard-row .tag{flex:none;min-width:8.5em;font-weight:700;font-size:12.5px;}
+.guard-row.hi{background:var(--loss-soft);}
+.guard-row.hi .tag{color:var(--loss);}
+.guard-row.mid{background:#fff;}
+.guard-row.lo{background:var(--accent-soft);}
+.guard-row.lo .tag{color:var(--accent-strong);}
+@media (max-width:480px){ .guard-row{flex-direction:column;gap:2px;} .guard-row .tag{min-width:0;} }
+
+.ref-col{display:flex;flex-direction:column;gap:10px;}
+.ref-title{font-size:15px;margin:0 0 2px;color:var(--navy);}
+details.ref{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:0 16px;}
+details.ref > summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--navy);padding:12px 0;list-style:none;}
+details.ref > summary::-webkit-details-marker{display:none;}
+details.ref > summary::before{content:"▸";display:inline-block;width:1.2em;color:var(--text-muted);}
+details.ref[open] > summary::before{content:"▾";}
+details.ref[open]{padding-bottom:12px;}
+details.ref p,details.ref li,details.ref dd{font-size:13px;line-height:1.7;}
+details.ref p{margin:0 0 8px;}
+details.ref ul{margin:6px 0 8px;padding-left:18px;}
+.glossary dt{font-weight:700;font-size:13px;color:var(--navy);margin-top:10px;}
+.glossary dt:first-child{margin-top:0;}
+.glossary dd{margin:2px 0 0;color:var(--text);}
+details.ref .data-table{white-space:normal;margin:6px 0 10px;}
+details.ref .data-table th,details.ref .data-table td{text-align:left;vertical-align:top;}
+.help{display:inline-block;margin-left:2px;color:var(--accent-strong);text-decoration:none;font-weight:700;cursor:pointer;}
+.help:hover{text-decoration:underline;}
+details.adv{border:1px dashed var(--border);border-radius:10px;padding:0 12px;}
+details.adv > summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text-muted);padding:10px 0;}
+details.adv[open]{padding-bottom:12px;}
