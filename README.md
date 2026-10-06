@@ -47,9 +47,13 @@
 │   │   ├── trade_math.js      交易計算（手續費、證交稅、兩平價）
 │   │   └── calc.js            個股／ETF 試算頁的畫面邏輯
 │   └── icons/                 favicon 與 App 圖示
-├── _dev/                      開發用，不會公開（底線開頭的資料夾 GitHub Pages 不發佈）
+├── _dev/                      網站開發工具，不會公開（底線開頭的資料夾 GitHub Pages 不發佈）
 │   ├── build.py               依 site-config.js 重新產生各頁共用部分
 │   └── template.html          新增頁面用的範本
+├── papers/                    論文相關（只放研究資料，不是網站內容）
+│   ├── source/                論文 PDF（2006 紙本掃描版）
+│   ├── audit/                 對論文本身的視覺檢核（表格、圖、標籤）
+│   └── verification/          用論文檢查我們的程式（對照表、獨立驗算、順序分析）
 └── .githooks/pre-commit       commit 前自動執行 build
 ```
 
@@ -101,11 +105,12 @@
 |---|---|
 | `sw.js` | Service worker：網路優先、離線時用快取。頁面清單讀自 `site-config.js`，新增頁面會自動被快取。只在 https／localhost 生效，由 `nav.js` 註冊。必須放在最外層，否則管不到整個網站 |
 | `_dev/build.py` | 讀取 `site-config.js`，重新產生上表的自動產生內容。發現有 html 沒登記到設定檔，會印出警告 |
-| `_dev/ref_simulator.py`、`_dev/order_sensitivity.py` | 動態提領的獨立參考實作（含移植頁面的亂數產生器，同種子可重現頁面的 4,000 條路徑），以及「凍結與護欄檢定順序」的敏感度比較（結果寫在 `_dev/paper_check.md` §6）。執行 `python3 _dev/order_sensitivity.py` |
-| `_dev/paper_check.md` | 「退休動態提領試算」與 Guyton & Klinger 2006 論文的逐條對照檢核：每條規則的論文頁碼、程式位置、驗證結果，以及刻意的簡化與解讀上有空間之處 |
+| `papers/verification/ref_simulator.py`、`order_sensitivity.py` | 動態提領的獨立參考實作（含移植頁面的亂數產生器，同種子可重現頁面的 4,000 條路徑），以及「凍結與護欄檢定順序」的敏感度比較（結果寫在同資料夾的 `paper_check.md` §6）。執行 `python3 papers/verification/order_sensitivity.py` |
+| `papers/verification/paper_check.md` | 「退休動態提領試算」與 Guyton & Klinger 2006 論文的逐條對照檢核：每條規則的論文頁碼、程式位置、驗證結果，以及刻意的簡化與解讀上有空間之處 |
 | `_dev/template.html` | 新增頁面用的範本，已包含輸入欄、結果卡、空狀態、儲存輸入的寫法。放在 `_dev/` 底下不會公開，也不會被 build 處理 |
 | `.claude/skills/paper-visual-audit/` | Claude Code 的 skill：以「LLM 視覺檢核」審查論文 PDF 的**數據（表格）、圖表、標籤與字體**。流程：盤點 PDF → 轉成圖片 → 模型雙次轉錄表格 → 腳本做逐格比對與算術／一致性檢查 → 產出檢核報告。腳本需要 `python3 -m venv .venv-pdf && .venv-pdf/bin/pip install pypdf pypdfium2 pillow`（`.venv-pdf/` 已加入 `.gitignore`）。用法與規則見該資料夾的 `SKILL.md` |
-| `papers/` | 論文 PDF：Guyton & Klinger（2006）的紙本掃描版（9 頁，*Journal of Financial Planning* 2006 年 3 月號 pp.50–58）。`papers/audit/` 是上述 skill 對它的檢核結果：`report.md`（發現清單）、`transcriptions/`（表格轉錄 JSON，每個表格讀兩次：`scan_*.json` 與 `scan_*_pass2.json`）、`images/scan/`（證據圖片）、`checks_scan.md`、`inventory_scan.json` |
+| `.claude/skills/gk-withdrawal-schedule/` | Claude Code 的 skill：依 Guyton & Klinger（2006）護欄規則，用**確定性的 Python 腳本**產生逐年退休提領表（輸入：資產、初始提領率、年限、每年報酬與通膨序列；輸出：規則門檻、逐年表、觸發次數、成功與購買力）。所有數字由 `scripts/schedule.py` 算出，不讓語言模型心算；支援兩種檢定順序、自訂報酬序列、壓力情境（`--first-years`）。`scripts/verify.py` 用手算案例與 1,200 條隨機路徑對照獨立參考實作。取代原本給外部 LLM 的提示詞。用法見 `SKILL.md` |
+| `papers/` | 論文相關檔案，分三個子資料夾（詳見 `papers/README.md`）：`source/` 論文本身（Guyton & Klinger 2006 的紙本掃描版 PDF，*Journal of Financial Planning* 2006 年 3 月號 pp.50–58）；`audit/` 對這份論文的視覺檢核（`report.md` 發現清單、`transcriptions/` 表格轉錄 JSON，每個表格讀兩次、`images/scan/` 證據圖片、`checks_scan.md`、`inventory_scan.json`），由上述 paper-visual-audit skill 產生；`verification/` 拿論文來檢查**我們的程式**（`paper_check.md` 逐條對照、`ref_simulator.py` 獨立驗算、`order_sensitivity.py` 規則順序分析） |
 | `.githooks/pre-commit` | commit 前自動執行 `_dev/build.py` 並把結果一起提交；有 html 沒登記就擋下 commit |
 | `.gitignore` | 告訴 git 忽略哪些檔案（`.DS_Store`、Python 暫存檔等），不影響網站 |
 
@@ -163,7 +168,7 @@
 - **繁榮規則**：目前提領率 < 初始提領率 × 80% → 當年提領 × 1.1
 - **規則來源**：只採 Guyton & Klinger（2006）論文的規則（凍結規則、通膨調整不設上限、保本規則最後 15 年停用、繁榮規則）
 - 調整後的金額是下一年的基準，不補回少領或多領的部分
-- **凍結與護欄的檢定順序**：論文沒明說。預設「先決定是否凍結，再用凍結後的金額檢定護欄」；參數區可切換成「先用含通膨的金額檢定護欄，沒觸發才凍結」。差異與依據見 `_dev/paper_check.md` §6、§7
+- **凍結與護欄的檢定順序**：論文沒明說。預設「先決定是否凍結，再用凍結後的金額檢定護欄」；參數區可切換成「先用含通膨的金額檢定護欄，沒觸發才凍結」。差異與依據見 `papers/verification/paper_check.md` §6、§7
 - 論文第 4 條「投資組合管理規則」（決定賣股票、債券或現金）不適用：本頁假設 100% 股票
 - **報酬率是算術平均**（論文 p.52 也是平均數與標準差），不是複利年化（CAGR）：長期複利年化 ≈ (1+m)·exp(−σ²/2) − 1，參數區下方即時顯示；若手上是 CAGR，算術平均約為 CAGR + 波動率²/2
 - 蒙地卡羅有抽樣誤差（4,000 條路徑：成功率約 ±1 個百分點、期末資產中位數約 ±4%）

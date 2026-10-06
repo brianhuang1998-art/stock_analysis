@@ -1,6 +1,6 @@
 # Visual audit report: Guyton & Klinger (2006), *Decision Rules and Maximum Initial Withdrawal Rates*
 
-- **Audited copy:** `papers/Guytons-Guardrails-Maximum-Inisital-Withdrawal-Rates.pdf`, 9 pages, a scan of the printed *Journal of Financial Planning*, March 2006, pp. 50–58 (ScanSnap, 1272 × 1620 px per page, about 150 dpi, no text layer).
+- **Audited copy:** `papers/source/Guytons-Guardrails-Maximum-Inisital-Withdrawal-Rates.pdf`, 9 pages, a scan of the printed *Journal of Financial Planning*, March 2006, pp. 50–58 (ScanSnap, 1272 × 1620 px per page, about 150 dpi, no text layer).
 - **Read by:** Claude (vision), 2026-10-06. Page images rendered with pypdfium2 and cropped per table; **every table was transcribed twice** from different crops and scales (pass 1 at 2.6x, pass 2 at 3.4x with the larger tables split in halves), then the two passes were compared cell by cell.
 - **Method / scripts:** `.claude/skills/paper-visual-audit/` (`pdf_inventory.py`, `render_pages.py`, `compare_transcriptions.py`, `check_tables.py`). Transcriptions are in `papers/audit/transcriptions/` (`scan_<table>.json` = pass 1, `scan_<table>_pass2.json` = pass 2), evidence crops in `papers/audit/images/scan/`, raw check output in `checks_scan.md`, file inventory in `inventory_scan.json`.
 - **Page numbers** are the printed page numbers: Table 1 p.52, Table 2 p.53, Figure 1 p.54, Tables 3–4 p.55, Tables 5–6 p.56, Table 7 p.57.

@@ -1,7 +1,6 @@
 # Independent reference implementation of the dynamic-withdrawal simulation (2006 final rules only; written from the rules, not copied from the page's JS).
-# Used to check retirement_dynamic_withdrawal.html and by _dev/order_sensitivity.py. Includes a port of the page's random number generator
+# Used to check retirement_dynamic_withdrawal.html, by order_sensitivity.py (same folder) and by the gk-withdrawal-schedule skill. Includes a port of the page's random number generator
 # (mulberry32 + Box-Muller), so with the same seed it reproduces the page's 4,000 random paths.
-# Independent reference implementation written from the rules (not copied from the page's JS)
 import json, math, re, sys
 M=0xFFFFFFFF
 def mulberry32(seed):
