@@ -1,0 +1,236 @@
+{
+ "table": "Table 7",
+ "source": "web",
+ "page": 13,
+ "pass": 1,
+ "columns": [
+  "InitialWD",
+  "SuccessRate",
+  "Cuts",
+  "Freezes",
+  "Raises",
+  "TotalPP",
+  "Year40PP"
+ ],
+ "rows": [
+  {
+   "label": "One Equity (S&P 500) | 50/40/10 | 99%",
+   "values": {
+    "InitialWD": 4.6,
+    "SuccessRate": 100,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 5,
+    "TotalPP": 99,
+    "Year40PP": 104
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 50/40/10 | 95%",
+   "values": {
+    "InitialWD": 4.9,
+    "SuccessRate": 100,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 5,
+    "TotalPP": 96,
+    "Year40PP": 96
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 50/40/10 | 90%",
+   "values": {
+    "InitialWD": 5.2,
+    "SuccessRate": 99,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 4,
+    "TotalPP": 92,
+    "Year40PP": 90
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 65/25/10 | 99%",
+   "values": {
+    "InitialWD": 5.2,
+    "SuccessRate": 99,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 7,
+    "TotalPP": 102,
+    "Year40PP": 111
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 65/25/10 | 95%",
+   "values": {
+    "InitialWD": 5.9,
+    "SuccessRate": 96,
+    "Cuts": 3,
+    "Freezes": 7,
+    "Raises": 6,
+    "TotalPP": 95,
+    "Year40PP": 98
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 65/25/10 | 90%",
+   "values": {
+    "InitialWD": 6.4,
+    "SuccessRate": 92,
+    "Cuts": 3,
+    "Freezes": 7,
+    "Raises": 5,
+    "TotalPP": 92,
+    "Year40PP": 91
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 80/10/10 | 99%",
+   "values": {
+    "InitialWD": 4.7,
+    "SuccessRate": 99,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 9,
+    "TotalPP": 119,
+    "Year40PP": 152
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 80/10/10 | 95%",
+   "values": {
+    "InitialWD": 5.7,
+    "SuccessRate": 95,
+    "Cuts": 3,
+    "Freezes": 6,
+    "Raises": 8,
+    "TotalPP": 107,
+    "Year40PP": 123
+   }
+  },
+  {
+   "label": "One Equity (S&P 500) | 80/10/10 | 90%",
+   "values": {
+    "InitialWD": 6.3,
+    "SuccessRate": 90,
+    "Cuts": 3,
+    "Freezes": 7,
+    "Raises": 7,
+    "TotalPP": 100,
+    "Year40PP": 112
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 50/40/10 | 99%",
+   "values": {
+    "InitialWD": 4.6,
+    "SuccessRate": 100,
+    "Cuts": 1,
+    "Freezes": 4,
+    "Raises": 4,
+    "TotalPP": 100,
+    "Year40PP": 103
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 50/40/10 | 95%",
+   "values": {
+    "InitialWD": 4.9,
+    "SuccessRate": 100,
+    "Cuts": 1,
+    "Freezes": 4,
+    "Raises": 4,
+    "TotalPP": 97,
+    "Year40PP": 100
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 50/40/10 | 90%",
+   "values": {
+    "InitialWD": 5.3,
+    "SuccessRate": 100,
+    "Cuts": 1,
+    "Freezes": 4,
+    "Raises": 3,
+    "TotalPP": 94,
+    "Year40PP": 90
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 65/25/10 | 99%",
+   "values": {
+    "InitialWD": 5.4,
+    "SuccessRate": 99,
+    "Cuts": 1,
+    "Freezes": 5,
+    "Raises": 5,
+    "TotalPP": 99,
+    "Year40PP": 102
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 65/25/10 | 95%",
+   "values": {
+    "InitialWD": 5.7,
+    "SuccessRate": 98,
+    "Cuts": 2,
+    "Freezes": 5,
+    "Raises": 4,
+    "TotalPP": 95,
+    "Year40PP": 96
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 65/25/10 | 90%",
+   "values": {
+    "InitialWD": 5.9,
+    "SuccessRate": 98,
+    "Cuts": 2,
+    "Freezes": 5,
+    "Raises": 4,
+    "TotalPP": 95,
+    "Year40PP": 92
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 80/10/10 | 99%",
+   "values": {
+    "InitialWD": 5.4,
+    "SuccessRate": 99,
+    "Cuts": 2,
+    "Freezes": 5,
+    "Raises": 7,
+    "TotalPP": 107,
+    "Year40PP": 119
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 80/10/10 | 95%",
+   "values": {
+    "InitialWD": 6.2,
+    "SuccessRate": 95,
+    "Cuts": 2,
+    "Freezes": 5,
+    "Raises": 6,
+    "TotalPP": 96,
+    "Year40PP": 99
+   }
+  },
+  {
+   "label": "Multi-Class Equities | 80/10/10 | 90%",
+   "values": {
+    "InitialWD": 6.5,
+    "SuccessRate": 91,
+    "Cuts": 2,
+    "Freezes": 6,
+    "Raises": 5,
+    "TotalPP": 94,
+    "Year40PP": 94
+   }
+  }
+ ],
+ "notes": [
+  "column header reads 'Year 40 PP%' although the table is for a 30-year withdrawal period"
+ ]
+}

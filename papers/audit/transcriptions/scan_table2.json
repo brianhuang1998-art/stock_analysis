@@ -1,0 +1,198 @@
+{
+ "table": "Table 2",
+ "source": "scan",
+ "page": 4,
+ "pass": 1,
+ "columns": [
+  "MaxWD_90POS",
+  "MaxWD_95POS",
+  "Enh_90POS",
+  "Enh_95POS",
+  "WRFreezes_95POS"
+ ],
+ "rows": [
+  {
+   "label": "No Decision Rules | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.3,
+    "Enh_90POS": "N/A",
+    "Enh_95POS": "N/A",
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "No Decision Rules | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.1,
+    "Enh_90POS": "N/A",
+    "Enh_95POS": "N/A",
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "No Decision Rules | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.0,
+    "Enh_90POS": "N/A",
+    "Enh_95POS": "N/A",
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Portfolio Management Rule | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.3,
+    "Enh_90POS": 0,
+    "Enh_95POS": 0,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Portfolio Management Rule | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.3,
+    "Enh_90POS": 0,
+    "Enh_95POS": 6,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Portfolio Management Rule | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 3.6,
+    "MaxWD_95POS": 3.2,
+    "Enh_90POS": 0,
+    "Enh_95POS": 7,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Inflation Rule | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.1,
+    "MaxWD_95POS": 3.7,
+    "Enh_90POS": 14,
+    "Enh_95POS": 12,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Inflation Rule | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.1,
+    "MaxWD_95POS": 3.6,
+    "Enh_90POS": 14,
+    "Enh_95POS": 16,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Inflation Rule | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.0,
+    "MaxWD_95POS": 3.4,
+    "Enh_90POS": 11,
+    "Enh_95POS": 13,
+    "WRFreezes_95POS": "N/A"
+   }
+  },
+  {
+   "label": "Original Withdrawal Rule | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.3,
+    "MaxWD_95POS": 3.9,
+    "Enh_90POS": 19,
+    "Enh_95POS": 18,
+    "WRFreezes_95POS": 6
+   }
+  },
+  {
+   "label": "Original Withdrawal Rule | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.5,
+    "MaxWD_95POS": 4.0,
+    "Enh_90POS": 25,
+    "Enh_95POS": 29,
+    "WRFreezes_95POS": 7
+   }
+  },
+  {
+   "label": "Original Withdrawal Rule | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.4,
+    "MaxWD_95POS": 3.9,
+    "Enh_90POS": 22,
+    "Enh_95POS": 30,
+    "WRFreezes_95POS": 8
+   }
+  },
+  {
+   "label": "Modified Withdrawal Rule | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.3,
+    "MaxWD_95POS": 3.9,
+    "Enh_90POS": 19,
+    "Enh_95POS": 19,
+    "WRFreezes_95POS": 3
+   }
+  },
+  {
+   "label": "Modified Withdrawal Rule | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.3,
+    "MaxWD_95POS": 3.9,
+    "Enh_90POS": 19,
+    "Enh_95POS": 26,
+    "WRFreezes_95POS": 3
+   }
+  },
+  {
+   "label": "Modified Withdrawal Rule | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.3,
+    "MaxWD_95POS": 3.8,
+    "Enh_90POS": 19,
+    "Enh_95POS": 27,
+    "WRFreezes_95POS": 3
+   }
+  },
+  {
+   "label": "All 3 (Modified Withdrawal) Rules | 50% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.7,
+    "MaxWD_95POS": 4.3,
+    "Enh_90POS": 31,
+    "Enh_95POS": 30,
+    "WRFreezes_95POS": 2
+   }
+  },
+  {
+   "label": "All 3 (Modified Withdrawal) Rules | 65% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.8,
+    "MaxWD_95POS": 4.3,
+    "Enh_90POS": 33,
+    "Enh_95POS": 39,
+    "WRFreezes_95POS": 2
+   }
+  },
+  {
+   "label": "All 3 (Modified Withdrawal) Rules | 80% Equities (Multi-Class)",
+   "values": {
+    "MaxWD_90POS": 4.8,
+    "MaxWD_95POS": 4.3,
+    "Enh_90POS": 33,
+    "Enh_95POS": 43,
+    "WRFreezes_95POS": 3
+   }
+  }
+ ],
+ "notes": [
+  "scan copy: no footnote markers and no footnote line under this table (checked the bottom of the table and the page); WD, POS and WR are not defined here"
+ ]
+}

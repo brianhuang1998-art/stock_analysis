@@ -1,0 +1,116 @@
+{
+ "table": "Table 3",
+ "source": "scan",
+ "page": 6,
+ "pass": 1,
+ "columns": [
+  "InitialWD",
+  "Cuts",
+  "Raises",
+  "TotalPP",
+  "Year40PP"
+ ],
+ "rows": [
+  {
+   "label": "PMR, WR, CPR Only | 100% Success",
+   "values": {
+    "InitialWD": 5.0,
+    "Cuts": 2,
+    "Raises": "NA",
+    "TotalPP": 83,
+    "Year40PP": 76
+   }
+  },
+  {
+   "label": "PMR, WR, CPR Only | 99% Success",
+   "values": {
+    "InitialWD": 5.5,
+    "Cuts": 3,
+    "Raises": "NA",
+    "TotalPP": 79,
+    "Year40PP": 70
+   }
+  },
+  {
+   "label": "PMR, WR, CPR Only | 98% Success",
+   "values": {
+    "InitialWD": 5.9,
+    "Cuts": 3,
+    "Raises": "NA",
+    "TotalPP": 77,
+    "Year40PP": 67
+   }
+  },
+  {
+   "label": "PMR, WR, CPR Only | 95% Success",
+   "values": {
+    "InitialWD": 6.4,
+    "Cuts": 4,
+    "Raises": "NA",
+    "TotalPP": 74,
+    "Year40PP": 62
+   }
+  },
+  {
+   "label": "PMR, WR, CPR Only | 90% Success",
+   "values": {
+    "InitialWD": 7.0,
+    "Cuts": 4,
+    "Raises": "NA",
+    "TotalPP": 70,
+    "Year40PP": 57
+   }
+  },
+  {
+   "label": "PMR, WR, CPR, PR | 100% Success",
+   "values": {
+    "InitialWD": 4.6,
+    "Cuts": 3,
+    "Raises": 10,
+    "TotalPP": 114,
+    "Year40PP": 140
+   }
+  },
+  {
+   "label": "PMR, WR, CPR, PR | 99% Success",
+   "values": {
+    "InitialWD": 5.1,
+    "Cuts": 3,
+    "Raises": 9,
+    "TotalPP": 104,
+    "Year40PP": 118
+   }
+  },
+  {
+   "label": "PMR, WR, CPR, PR | 98% Success",
+   "values": {
+    "InitialWD": 5.4,
+    "Cuts": 4,
+    "Raises": 9,
+    "TotalPP": 99,
+    "Year40PP": 108
+   }
+  },
+  {
+   "label": "PMR, WR, CPR, PR | 95% Success",
+   "values": {
+    "InitialWD": 6.0,
+    "Cuts": 4,
+    "Raises": 8,
+    "TotalPP": 91,
+    "Year40PP": 91
+   }
+  },
+  {
+   "label": "PMR, WR, CPR, PR | 90% Success",
+   "values": {
+    "InitialWD": 6.5,
+    "Cuts": 5,
+    "Raises": 7,
+    "TotalPP": 84,
+    "Year40PP": 79
+   }
+  }
+ ],
+ "notes": []
+}

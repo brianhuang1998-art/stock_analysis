@@ -1,0 +1,80 @@
+{
+ "table": "Table 1",
+ "source": "scan",
+ "page": 3,
+ "pass": 1,
+ "columns": [
+  "50% Equities",
+  "65% Equities",
+  "80% Equities"
+ ],
+ "rows": [
+  {
+   "label": "Cash",
+   "values": {
+    "50% Equities": 10,
+    "65% Equities": 10,
+    "80% Equities": 10
+   }
+  },
+  {
+   "label": "Fixed Income",
+   "values": {
+    "50% Equities": 40,
+    "65% Equities": 25,
+    "80% Equities": 10
+   }
+  },
+  {
+   "label": "U.S. Large Cap Value",
+   "values": {
+    "50% Equities": 10,
+    "65% Equities": 13,
+    "80% Equities": 15
+   }
+  },
+  {
+   "label": "U.S. Large Cap Growth",
+   "values": {
+    "50% Equities": 10,
+    "65% Equities": 13,
+    "80% Equities": 15
+   }
+  },
+  {
+   "label": "U.S. Small Cap Value",
+   "values": {
+    "50% Equities": 7,
+    "65% Equities": 9,
+    "80% Equities": 10
+   }
+  },
+  {
+   "label": "U.S. Small Cap Growth",
+   "values": {
+    "50% Equities": 7,
+    "65% Equities": 9,
+    "80% Equities": 10
+   }
+  },
+  {
+   "label": "International Equities",
+   "values": {
+    "50% Equities": 11,
+    "65% Equities": 15,
+    "80% Equities": 20
+   }
+  },
+  {
+   "label": "Real Estate",
+   "values": {
+    "50% Equities": 5,
+    "65% Equities": 6,
+    "80% Equities": 10
+   }
+  }
+ ],
+ "notes": [
+  "column order printed: 65% / 80% / 50% (values re-ordered to 50/65/80 for comparison)"
+ ]
+}

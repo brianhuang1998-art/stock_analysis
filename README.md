@@ -101,8 +101,11 @@
 |---|---|
 | `sw.js` | Service worker：網路優先、離線時用快取。頁面清單讀自 `site-config.js`，新增頁面會自動被快取。只在 https／localhost 生效，由 `nav.js` 註冊。必須放在最外層，否則管不到整個網站 |
 | `_dev/build.py` | 讀取 `site-config.js`，重新產生上表的自動產生內容。發現有 html 沒登記到設定檔，會印出警告 |
+| `_dev/ref_simulator.py`、`_dev/order_sensitivity.py` | 動態提領的獨立參考實作（含移植頁面的亂數產生器，同種子可重現頁面的 4,000 條路徑），以及「凍結與護欄檢定順序」的敏感度比較（結果寫在 `_dev/paper_check.md` §6）。執行 `python3 _dev/order_sensitivity.py` |
 | `_dev/paper_check.md` | 「退休動態提領試算」與 Guyton & Klinger 2006 論文的逐條對照檢核：每條規則的論文頁碼、程式位置、驗證結果，以及刻意的簡化與解讀上有空間之處 |
 | `_dev/template.html` | 新增頁面用的範本，已包含輸入欄、結果卡、空狀態、儲存輸入的寫法。放在 `_dev/` 底下不會公開，也不會被 build 處理 |
+| `.claude/skills/paper-visual-audit/` | Claude Code 的 skill：以「LLM 視覺檢核」審查論文 PDF 的**數據（表格）、圖表、標籤與字體**。流程：盤點 PDF → 轉成圖片 → 模型雙次轉錄表格 → 腳本做逐格比對與算術／一致性檢查 → 產出檢核報告。腳本需要 `python3 -m venv .venv-pdf && .venv-pdf/bin/pip install pypdf pypdfium2 pillow`（`.venv-pdf/` 已加入 `.gitignore`）。用法與規則見該資料夾的 `SKILL.md` |
+| `papers/` | 論文 PDF（Guyton & Klinger 2006 的網頁存檔版與紙本掃描版，是同一篇）。`papers/audit/` 是上述 skill 對這兩份的檢核結果：`report.md`（發現清單）、`transcriptions/`（表格轉錄 JSON）、`images/`（證據圖片）、`checks_*.md`、`inventory_*.json` |
 | `.githooks/pre-commit` | commit 前自動執行 `_dev/build.py` 並把結果一起提交；有 html 沒登記就擋下 commit |
 | `.gitignore` | 告訴 git 忽略哪些檔案（`.DS_Store`、Python 暫存檔等），不影響網站 |
 
