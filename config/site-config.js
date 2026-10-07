@@ -150,7 +150,7 @@ self.SITE = {
           "soon": true
         },
         {
-          "title": "退休提領試算（4%法則）",
+          "title": "退休固定提領試算",
           "href": "retirement_withdrawal.html",
           "icon": "🏖️",
           "desc": "輸入退休資產與提領率，估算能撐幾年、每月可提領多少。",

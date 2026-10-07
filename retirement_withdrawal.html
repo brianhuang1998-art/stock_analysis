@@ -12,12 +12,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Brian工具箱">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>退休提領試算（4%法則） - 股息與現金流規劃 | Brian工具箱</title>
+<title>退休固定提領試算 - 股息與現金流規劃 | Brian工具箱</title>
 <meta name="description" content="輸入退休資產與提領率，估算能撐幾年、每月可提領多少。">
 <link rel="canonical" href="https://brianhuang1998-art.github.io/stock_analysis/retirement_withdrawal.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Brian工具箱">
-<meta property="og:title" content="退休提領試算（4%法則） - 股息與現金流規劃 | Brian工具箱">
+<meta property="og:title" content="退休固定提領試算 - 股息與現金流規劃 | Brian工具箱">
 <meta property="og:description" content="輸入退休資產與提領率，估算能撐幾年、每月可提領多少。">
 <meta property="og:url" content="https://brianhuang1998-art.github.io/stock_analysis/retirement_withdrawal.html">
 <meta property="og:image" content="https://brianhuang1998-art.github.io/stock_analysis/assets/icons/icon-512.png">
@@ -32,12 +32,12 @@
 <!-- BUILD:TOPBAR -->
 <div class="topbar">
   <a class="home-link" href="./" aria-label="回首頁"><span class="dot"></span><span class="brand">Brian工作室</span></a>
-  <nav class="crumbs" aria-label="麵包屑"><a href="./">🏠 首頁</a><span>›</span><a href="dividend_cashflow.html">股息與現金流規劃</a><span>›</span><a class="here" aria-current="page" href="retirement_withdrawal.html">退休提領試算（4%法則）</a></nav>
+  <nav class="crumbs" aria-label="麵包屑"><a href="./">🏠 首頁</a><span>›</span><a href="dividend_cashflow.html">股息與現金流規劃</a><span>›</span><a class="here" aria-current="page" href="retirement_withdrawal.html">退休固定提領試算</a></nav>
 </div>
 <!-- /BUILD:TOPBAR -->
 
 <main>
-  <h1>退休提領試算（4%法則）</h1>
+  <h1>退休固定提領試算</h1>
   <p class="subtitle">輸入退休資產與提領率，估算每月可領多少、資金能撐幾年（每年報酬固定、提領金額只隨通膨調高）</p>
 
   <section class="card intro" aria-labelledby="introTitle">
@@ -58,7 +58,7 @@
       <p class="guard-head">舉例：資產 1,000 萬、提領率 4%、通膨 2%</p>
       <div class="guard-row mid"><span class="tag">第 1 年</span><span>1,000 萬 × 4% = <strong>40 萬</strong>（每月約 3.3 萬）</span></div>
       <div class="guard-row mid"><span class="tag">第 2 年</span><span>40 萬 × 1.02 = <strong>40.8 萬</strong></span></div>
-      <div class="guard-row mid"><span class="tag">第 10 年</span><span>40 萬 × 1.02<sup>9</sup> ≈ <strong>47.8 萬</strong>（金額變多，但買到的東西和第 1 年一樣多）</span></div>
+      <div class="guard-row mid"><span class="tag">第 10 年</span><span>40 萬 × 1.02<sup>9</sup> ≈ <strong>47.8 萬</strong>（金額變多，但買到的東西和第 1 年一樣多，相當於生活水準和第 1 年一樣）</span></div>
     </div>
     <p class="foot-note">4% 的來源：Bengen（1994–1997）發現，30 年期間要有 100% 成功率，最大初始提領率約 4.1%～4.58%；Trinity 研究（1998）發現 4.0% 在 1926–1995 年的各個 30 年期間幾乎都不會用完（以上是 Guyton &amp; Klinger 2006 第 50 頁的引述，都是美國歷史資料）。只是粗略試算，不是投資建議。名詞與算式請看右側「參考區」（手機在頁面最下方）。</p>
   </section>
@@ -167,6 +167,7 @@
               <tr>
                 <th>年度</th>
                 <th>年初資產</th>
+                <th>每月提領（含通膨）</th>
                 <th>當年提領（含通膨）</th>
                 <th>年底資產</th>
               </tr>
@@ -221,7 +222,7 @@
 
       <details class="ref" id="ref-compare">
         <summary>提領率對照怎麼看</summary>
-        <p>「提領率對照」固定比較 3%、3.5%、4%、4.5%、5%、6%：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
+        <p>「提領率對照」固定比較 3%、4%、5%、6%：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
       </details>
 
       <details class="ref" id="ref-choose">
@@ -256,7 +257,7 @@
   const STORAGE_KEY = 'retirementCalc:' + location.pathname;
   const FIELDS = ['assets','withdrawRate','annualReturn','inflation','years'];
   const MAX_YEARS = 100;
-  const COMPARE_RATES = [3, 3.5, 4, 4.5, 5, 6];
+  const COMPARE_RATES = [3, 4, 5, 6];
   const { money: fmtMoney } = Util.fmt;
 
   const saved = Util.store.getJSON(STORAGE_KEY);
@@ -347,6 +348,7 @@
       <tr>
         <td>第 ${row.year} 年</td>
         <td>${fmtMoney(row.start)}</td>
+        <td>${fmtMoney(row.withdraw / 12)}</td>
         <td>${fmtMoney(row.withdraw)}</td>
         <td class="${row.depleted ? 'gain-neg' : ''}">${row.depleted ? '用完' : fmtMoney(row.end)}</td>
       </tr>
