@@ -23,6 +23,9 @@
   --disabled-text:#8a98a6;
   --radius:14px;
 }
+/* 提領率相關頁面不套用台股習慣：綠＝正向、紅＝負面 */
+body.theme-us{--up:#029e6d;--up-soft:#d2f6e6;--down:#ef5b52;--down-soft:#fde6e4;}
+body.theme-us .chart-legend i.l-band{background:rgba(0,201,140,.2);}
 *{box-sizing:border-box;}
 body{
   margin:0;
