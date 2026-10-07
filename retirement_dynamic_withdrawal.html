@@ -352,6 +352,7 @@
   </div>
 </main>
 
+<script src="assets/js/mc.js"></script>
 <script src="assets/js/chart.js"></script>
 <script>
 (function(){
@@ -359,8 +360,7 @@
   const STORAGE_KEY = 'retirementDynamicCalc:' + location.pathname;
   const FIELDS = ['goal','monthlySpend','yearsToRetire','assets','wr0','annualReturn','volatility','inflation','years','mode','stressYears','stressReturn','order'];
   const MAX_YEARS = 60;
-  const TRIALS = 4000;
-  const SEED = 20060301;
+  const { percentile, sortedCopy } = MC;
   const GUARD = 0.2;               // 護欄：初始提領率 ±20%
   const STEP = 0.1;                // 保本 / 繁榮規則：一次調整 10%
   const CPR_YEARS_BEFORE_END = 15; // 保本規則在退休最後 15 年停用（2006 論文 p.54）
@@ -371,23 +371,6 @@
   const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
 
-
-  /* ---------- random numbers: seeded so the same inputs always give the same answer ---------- */
-  function mulberry32(a){
-    return function(){
-      a |= 0; a = a + 0x6D2B79F5 | 0;
-      let t = Math.imul(a ^ a >>> 15, 1 | a);
-      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    };
-  }
-  function normalSource(rand){
-    return function(){
-      let u = 0;
-      while(u === 0) u = rand();
-      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rand());
-    };
-  }
 
   /* ---------- one retirement path ---------- */
   // rets[t-1] is the market return of year t (as a fraction). Withdrawals happen on the first day of each year.
@@ -455,17 +438,6 @@
   }
 
   /* ---------- helpers ---------- */
-  function percentile(sorted, q){
-    const pos = (sorted.length - 1) * q;
-    const lo = Math.floor(pos), hi = Math.ceil(pos);
-    return sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo);
-  }
-  function sortedCopy(arr){
-    const a = Float64Array.from(arr);
-    a.sort();
-    return a;
-  }
-
   // Turn a list of runs into per-year statistics. With one run (stress test) every percentile is just that run.
   function summarize(runs, T){
     const n = runs.length;
@@ -757,18 +729,10 @@
       dynRuns.push(runPath(v, rets, true));
       fixRuns.push(runPath(v, rets, false));
     } else {
-      // Log-normal yearly returns with the requested arithmetic mean and standard deviation
-      const m = v.ret / 100, s = v.vol / 100;
-      const sigma2 = Math.log(1 + (s * s) / ((1 + m) * (1 + m)));
-      const mu = Math.log(1 + m) - sigma2 / 2;
-      const sigma = Math.sqrt(sigma2);
-      const normal = normalSource(mulberry32(SEED));
-      const rets = new Float64Array(T);
-      for(let k = 0; k < TRIALS; k++){
-        for(let i = 0; i < T; i++) rets[i] = Math.exp(mu + sigma * normal()) - 1;
+      MC.forEachPath({ years: T, ret: v.ret, vol: v.vol }, rets => {
         dynRuns.push(runPath(v, rets, true));
         fixRuns.push(runPath(v, rets, false));
-      }
+      });
     }
     const dyn = summarize(dynRuns, T); dyn.runs = dynRuns;
     const fix = summarize(fixRuns, T); fix.runs = fixRuns;

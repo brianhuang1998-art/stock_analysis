@@ -38,7 +38,7 @@
 
 <main>
   <h1>退休固定提領試算</h1>
-  <p class="subtitle">輸入退休資產與提領率，估算每月可領多少、資金能撐幾年（每年報酬固定、提領金額只隨通膨調高）</p>
+  <p class="subtitle">輸入退休資產與提領率，估算每月可領多少、資金能撐幾年（預設每年報酬固定，可加入市場波動；提領金額只隨通膨調高）</p>
 
   <section class="card intro" aria-labelledby="introTitle">
     <h2 id="introTitle">30 秒看懂：什麼是 4% 法則</h2>
@@ -50,7 +50,7 @@
       </div>
       <div>
         <h3>優點與盲點</h3>
-        <p><strong>優點</strong>：簡單，每年的生活費可預期。<strong>盲點</strong>：它完全不看市場。市場連續下跌時，同樣的金額佔資產的比例會越來越高，錢可能提早用完。本頁每年報酬固定，<strong>看不出這個風險</strong>。</p>
+        <p><strong>優點</strong>：簡單，每年的生活費可預期。<strong>盲點</strong>：它完全不看市場。市場連續下跌時，同樣的金額佔資產的比例會越來越高，錢可能提早用完。預設每年報酬固定，<strong>看不出這個風險</strong>；把「市場假設」改成「加入市場波動」，就能看到成功率與資產的可能範圍。</p>
         <p class="intro-link"><a href="retirement_dynamic_withdrawal.html">→ 想看市場下跌時怎麼調整？「退休動態提領試算」</a></p>
       </div>
     </div>
@@ -108,6 +108,24 @@
             </div>
             <p class="input-error" id="err-years" hidden></p>
           </div>
+          <div class="field-wide">
+            <label for="mode">市場假設 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與百分位區間">ⓘ</a></label>
+            <div class="input-wrap">
+              <select id="mode">
+                <option value="fixed">每年報酬固定（簡單版，看不出市場波動的風險）</option>
+                <option value="mc">加入市場波動：4,000 條隨機路徑，看成功率與區間</option>
+              </select>
+            </div>
+          </div>
+          <div id="volatilityBox" hidden>
+            <label for="volatility">年化波動率（報酬每年上下震盪的幅度） <a class="help" href="#g-vol" aria-label="名詞解釋：年化波動率">ⓘ</a></label>
+            <div class="input-wrap">
+              <input type="number" id="volatility" inputmode="decimal" step="1" value="18">
+              <span class="unit">%</span>
+            </div>
+            <p class="input-error" id="err-volatility" hidden></p>
+            <p class="note-line" id="geoNote"></p>
+          </div>
         </div>
       </div>
 
@@ -124,13 +142,14 @@
             <div class="v mono" id="sumYearly">--</div>
           </div>
           <div class="tile wide" id="sumLastTile">
-            <div class="k">資產可以撐多久</div>
+            <div class="k" id="sumLastedLabel">資產可以撐多久</div>
             <div class="v mono" id="sumLasted">--</div>
             <div class="sub" id="sumVerdict"></div>
           </div>
           <div class="tile">
             <div class="k" id="sumEndLabel">退休結束時剩餘資產</div>
             <div class="v mono" id="sumEnd">--</div>
+            <div class="sub" id="sumEndSub"></div>
           </div>
           <div class="tile">
             <div class="k">最後一年每月提領（含通膨）</div>
@@ -139,23 +158,39 @@
         </div>
       </div>
 
+      <div class="card" id="assetChartCard" hidden>
+        <h2>資產成長圖</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會畫出退休金隨年數的變化。</p>
+        <div class="chart-wrap" id="assetChart">
+          <div class="chart-legend" id="assetLegend"></div>
+          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下退休金餘額的中位數與 10%～90% 區間折線圖"></svg>
+          <div class="chart-tip" hidden></div>
+        </div>
+        <p class="foot-note" id="assetNote" style="margin-top:10px;"></p>
+      </div>
+
+      <div class="card" id="rateChartCard" hidden>
+        <h2>每年提領率圖</h2>
+        <p class="empty-hint">輸入有效的參數後，這裡會畫出每年的提領率。</p>
+        <div class="chart-wrap" id="rateChart">
+          <div class="chart-legend" id="rateLegend"></div>
+          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下每年提領率的中位數與 10%～90% 區間折線圖"></svg>
+          <div class="chart-tip" hidden></div>
+        </div>
+        <p class="foot-note" id="rateNote" style="margin-top:10px;"></p>
+      </div>
+
       <div class="card">
         <h2>提領率對照</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會比較不同提領率。</p>
         <p class="note-line">其他參數維持不變，只改提領率：</p>
         <div class="table-wrap">
           <table class="data-table">
-            <thead>
-              <tr>
-                <th>提領率</th>
-                <th>首年每月可領</th>
-                <th>資產可撐</th>
-                <th>撐得到退休年數？</th>
-              </tr>
-            </thead>
+            <thead id="rateHead"></thead>
             <tbody id="rateBody"></tbody>
           </table>
         </div>
+        <p class="foot-note" id="rateFoot"></p>
       </div>
 
       <div class="card">
@@ -163,23 +198,16 @@
         <p class="empty-hint">輸入有效的參數後，這裡會列出逐年明細。</p>
         <div class="table-wrap">
           <table class="data-table">
-            <thead>
-              <tr>
-                <th>年度</th>
-                <th>年初資產</th>
-                <th>每月提領（含通膨）</th>
-                <th>當年提領（含通膨）</th>
-                <th>年底資產</th>
-              </tr>
-            </thead>
+            <thead id="yearlyHead"></thead>
             <tbody id="yearlyBody"></tbody>
           </table>
         </div>
+        <p class="foot-note" id="yearlyNote"></p>
       </div>
 
       <div class="card">
         <h2>下一步：市場下跌時怎麼辦？</h2>
-        <p class="note-line" style="margin:0 0 10px;">這頁假設每年報酬固定，所以看不到「退休初期遇到大跌」的風險。動態提領會在市場差時少領一點、好時多領一點，並用蒙地卡羅模擬估計成功率。</p>
+        <p class="note-line" style="margin:0 0 10px;">這頁的提領金額不看市場，只隨通膨調高。動態提領會在市場差時少領一點、好時多領一點，並用蒙地卡羅模擬估計成功率。</p>
         <p class="intro-link"><a href="retirement_dynamic_withdrawal.html">→ 前往「退休動態提領試算」</a></p>
       </div>
     </div>
@@ -201,7 +229,11 @@
           <dt>資產可以撐多久</dt>
           <dd>資金用完之前的年數。含小數：完整年數 + 最後一年剩下的資產 ÷ 當年應提領的金額。超過 100 年顯示「100 年以上」。</dd>
           <dt id="g-seq">順序風險</dt>
-          <dd>同樣的長期平均報酬，如果大跌發生在退休初期，傷害遠大於發生在後期，因為你一邊賣資產生活、一邊遇到下跌。論文也指出，資金用完的情況多半是退休初期遇到不利的報酬或高通膨（Guyton &amp; Klinger 2006，第 53 頁）。本頁每年報酬固定，看不出這個風險。</dd>
+          <dd>同樣的長期平均報酬，如果大跌發生在退休初期，傷害遠大於發生在後期，因為你一邊賣資產生活、一邊遇到下跌。論文也指出，資金用完的情況多半是退休初期遇到不利的報酬或高通膨（Guyton &amp; Klinger 2006，第 53 頁）。預設的「每年報酬固定」看不出這個風險；改成「加入市場波動」後，較差的 10% 情境就反映了這種風險（假設各年報酬互相獨立，仍比真實市場平順）。</dd>
+          <dt id="g-vol">年化波動率</dt>
+          <dd>報酬每年上下震盪的幅度（標準差）。波動率 18% 且平均報酬 7% 表示：大約三分之二的年份報酬落在 -11%～25%。台股大盤長期約 15%～20%，只用於「加入市場波動」模式。</dd>
+          <dt id="g-mc">蒙地卡羅與百分位區間</dt>
+          <dd>用你設定的報酬率與波動率隨機產生 4,000 條報酬路徑（固定亂數種子，同樣輸入每次結果相同），每條都照同樣的提領規則算一遍。<strong>成功率</strong> = 資金撐過退休年數的路徑比例。<strong>10%～90% 區間</strong>不是統計上的信賴區間，而是「把 4,000 條路徑由小排到大，第 10 到第 90 百分位」：有 80% 的情境落在這個範圍內。<strong>中位數</strong>是正中間那一條，一半比它好、一半比它差。</dd>
           <dt>固定提領 vs 動態提領</dt>
           <dd>固定提領（本頁）：金額只隨通膨調高，不看市場。動態提領：依市場表現與目前提領率調整金額，可在「退休動態提領試算」看到。</dd>
         </dl>
@@ -220,6 +252,17 @@
         </ul>
       </details>
 
+      <details class="ref" id="ref-mc">
+        <summary>加入市場波動怎麼算</summary>
+        <ul>
+          <li>每年報酬是對數常態分布，平均與標準差等於你輸入的「預期年化報酬率」與「年化波動率」，各年互相獨立。</li>
+          <li>共 4,000 條路徑，亂數種子固定，所以輸入不變、結果就不變；抽樣誤差約為成功率 ±1 個百分點。</li>
+          <li>提領規則和固定報酬模式相同：每年年初領「首年提領 × 通膨調整」，不看市場，剩下的資產再依當年隨機報酬成長。</li>
+          <li><strong>成功</strong> = 退休期間資金都沒有用完；成功率 95% 以上標為綠色。</li>
+          <li>提領率對照的四個提領率使用同一批隨機路徑。</li>
+        </ul>
+      </details>
+
       <details class="ref" id="ref-compare">
         <summary>提領率對照怎麼看</summary>
         <p>「提領率對照」固定比較 3%、4%、5%、6%：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
@@ -232,13 +275,13 @@
           <li><strong>預計超過 40 年（例如提早退休）</strong>：論文 Table 2（40 年期間、不使用任何決策規則）顯示，90%～95% 成功率下的最大初始提領率約 <strong>3.0%～3.6%</strong>，所以想領得更久，3%～3.5% 比較保守。</li>
           <li><strong>有勞保、勞退或租金等其他收入</strong>：可以適度提高，因為不必完全靠這筆資產。</li>
         </ul>
-        <p>以上研究都是美國歷史資料、以 50%～80% 股票的組合為主；本頁每年報酬固定，算出的「撐得到」也不等於論文的「成功率」。建議多試幾組報酬率與通膨率（例如報酬 3%、5%、7%），看結果差多少。</p>
+        <p>以上研究都是美國歷史資料、以 50%～80% 股票的組合為主；「每年報酬固定」模式算出的「撐得到」不等於論文的「成功率」；「加入市場波動」的成功率是以對數常態隨機報酬模擬的，也和論文的歷史資料不同。建議多試幾組報酬率與通膨率（例如報酬 3%、5%、7%），看結果差多少。</p>
       </details>
 
       <details class="ref" id="ref-limits">
         <summary>沒算進去的東西與限制</summary>
         <ul>
-          <li><strong class="neg">市場波動與順序風險</strong>：本頁假設每年報酬固定。實際上退休初期遇到大跌，傷害遠大於後期大跌。</li>
+          <li><strong class="neg">市場波動與順序風險</strong>：「每年報酬固定」模式看不出這點；「加入市場波動」模式雖然有模擬，但假設各年報酬互相獨立、服從對數常態，真實市場有更極端的崩跌，也有連續下跌。</li>
           <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬。</li>
           <li><strong class="neg">醫療與長照等大額支出</strong>：不會每年平均發生。</li>
           <li><strong class="neg">通膨不一定固定</strong>：醫療、房租的漲幅常高於一般物價。</li>
@@ -251,14 +294,21 @@
   </div>
 </main>
 
+<script src="assets/js/mc.js"></script>
+<script src="assets/js/chart.js"></script>
 <script>
 (function(){
   const $ = id => document.getElementById(id);
   const STORAGE_KEY = 'retirementCalc:' + location.pathname;
-  const FIELDS = ['assets','withdrawRate','annualReturn','inflation','years'];
+  const FIELDS = ['assets','withdrawRate','annualReturn','inflation','years','mode','volatility'];
   const MAX_YEARS = 100;
   const COMPARE_RATES = [3, 4, 5, 6];
+  const OK_SHARE = 0.95;            // 成功率達這個比例才標成「撐得到」
   const { money: fmtMoney } = Util.fmt;
+  const { percentile, sortedCopy } = MC;
+  const fmtPct = (n, d) => (n * 100).toFixed(d === undefined ? 1 : d) + '%';
+  const legendItem = (cls, text) => `<span><i class="${cls}"></i>${text}</span>`;
+  const fmtAxisMoney = n => n >= 1e8 ? +(n / 1e8).toFixed(1) + ' 億' : n >= 1e4 ? +(n / 1e4).toFixed(0) + ' 萬' : String(Math.round(n));
 
   const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
@@ -272,6 +322,7 @@
     if(!isFinite(v.inf)) e.inflation = '請輸入預期通貨膨脹率。';
     else if(v.inf <= -100) e.inflation = '通貨膨脹率要大於 -100%。';
     if(!Number.isInteger(v.years) || v.years < 1 || v.years > MAX_YEARS) e.years = `預計退休年數請輸入 1～${MAX_YEARS} 的整數。`;
+    if(v.mode === 'mc' && (!isFinite(v.vol) || v.vol < 0 || v.vol > 100)) e.volatility = '年化波動率請輸入 0～100 之間的數字。';
     return e;
   }
 
@@ -295,9 +346,107 @@
     return { first, rows, lasted: null };
   }
 
+  // Same rules, but with a random return for every year. Returns the year the money ran out (0 = it did not) and the final balance.
+  // rec (optional) = { k, start, wr, end }: per-year columns, one slot per path k, filled in for the percentile charts.
+  function walk(assets, ratePct, infPct, rets, T, rec){
+    const first = assets * ratePct / 100;
+    let bal = assets, fail = 0;
+    for(let i = 0; i < T; i++){
+      const want = first * Math.pow(1 + infPct / 100, i);
+      let start = bal, wr = 1, end = 0;
+      if(bal > 0){
+        wr = Math.min(1, want / bal);
+        if(want >= bal){ if(!fail) fail = i + 1; bal = 0; }
+        else { bal = (bal - want) * (1 + rets[i]); end = bal; }
+      }
+      if(rec){ rec.start[i][rec.k] = start; rec.wr[i][rec.k] = wr; rec.end[i][rec.k] = end; }
+    }
+    return { fail, end: bal };
+  }
+
+  // 4,000 random paths: per-year percentiles for the chosen rate, and success / median final balance for every comparison rate (same paths).
+  function runMC(v){
+    const T = v.years, N = MC.TRIALS;
+    const mk = () => Array.from({ length: T }, () => new Float64Array(N));
+    const rec = { k: 0, start: mk(), wr: mk(), end: mk() };
+    const cmp = COMPARE_RATES.map(rate => ({ rate, ok: 0, ends: new Float64Array(N) }));
+    let ok = 0;
+    MC.forEachPath({ years: T, ret: v.ret, vol: v.vol }, rets => {
+      const r = walk(v.assets, v.rate, v.inf, rets, T, rec);
+      if(!r.fail) ok++;
+      cmp.forEach(c => {
+        const x = walk(v.assets, c.rate, v.inf, rets, T);
+        if(!x.fail) c.ok++;
+        c.ends[rec.k] = x.end;
+      });
+      rec.k++;
+    });
+    const years = [];
+    for(let i = 0; i < T; i++){
+      const s = sortedCopy(rec.start[i]), w = sortedCopy(rec.wr[i]), e = sortedCopy(rec.end[i]);
+      years.push({
+        startMed: percentile(s, .5),
+        wrLo: percentile(w, .1), wrMed: percentile(w, .5), wrHi: percentile(w, .9),
+        endLo: percentile(e, .1), endMed: percentile(e, .5), endHi: percentile(e, .9)
+      });
+    }
+    cmp.forEach(c => { c.success = c.ok / N; c.endMed = percentile(sortedCopy(c.ends), .5); });
+    return { success: ok / N, years, cmp, trials: N };
+  }
+
   const fmtYears = n => n === null ? `${MAX_YEARS} 年以上` : (Math.round(n * 10) / 10) + ' 年';
 
-  const setEmpty = on => Util.setEmpty(['sumMonthly', 'rateBody', 'yearlyBody'], on);
+  const setEmpty = on => Util.setEmpty(['sumMonthly', 'rateBody', 'yearlyBody', 'assetChartCard', 'rateChartCard'], on);
+
+  function clearAll(){
+    setEmpty(true);
+    ['sumMonthly','sumYearly','sumLasted','sumEnd','sumLastMonthly'].forEach(id => { $(id).textContent = '--'; });
+    $('sumLasted').classList.remove('profit', 'loss');
+    $('sumVerdict').textContent = '';
+    $('sumEndSub').textContent = '';
+    $('rateBody').innerHTML = '';
+    $('yearlyBody').innerHTML = '';
+    LineChart.clear($('assetChart'));
+    LineChart.clear($('rateChart'));
+  }
+
+  function renderCharts(v, mc){
+    const T = v.years;
+    const xs0 = Array.from({ length: T + 1 }, (_, i) => i);
+    const endOf = key => [v.assets].concat(mc.years.map(y => y[key]));
+    const med = endOf('endMed'), lo = endOf('endLo'), hi = endOf('endHi');
+    LineChart.draw($('assetChart'), {
+      xs: xs0,
+      xLabel: n => n === 0 ? '退休' : n + ' 年',
+      yFormat: fmtAxisMoney,
+      bands: [{ cls: 'band-dynamic', lo, hi }],
+      series: [{ cls: 's-dynamic', values: med }],
+      tooltip: i => `<b>${i === 0 ? '退休當天' : `第 ${i} 年底`}</b><br>中位數　${fmtMoney(med[i])}` +
+        (i > 0 ? `<br><span class="tip-muted">10%～90%：${fmtMoney(lo[i])} ～ ${fmtMoney(hi[i])}</span>` : '')
+    });
+    $('assetLegend').innerHTML = legendItem('l-dynamic', '年底資產（中位數）') + legendItem('l-band', '10%～90% 區間');
+    $('assetNote').textContent = `實線是 ${mc.trials.toLocaleString()} 條隨機路徑每一年的中位數（一半的人比它好、一半比它差）；色塊是 80% 的情境所在範圍（第 10 到第 90 百分位）。提領金額固定隨通膨調高，不看市場，所以較差的路徑會提早見底。`;
+
+    const xs1 = Array.from({ length: T }, (_, i) => i + 1);
+    const wMed = mc.years.map(y => y.wrMed), wLo = mc.years.map(y => y.wrLo), wHi = mc.years.map(y => y.wrHi);
+    const base = v.rate / 100;
+    const rateMax = LineChart.niceMax(Math.max(base * 2, Math.min(Math.max(...wHi), base * 4)));
+    const clipped = wHi.some(x => x > rateMax);
+    LineChart.draw($('rateChart'), {
+      xs: xs1,
+      xLabel: n => n + ' 年',
+      yFormat: n => (n * 100).toFixed(1) + '%',
+      yMax: rateMax,
+      hlines: [{ value: base, cls: 'hline-base', label: `初始 ${fmtPct(base)}` }],
+      bands: [{ cls: 'band-dynamic', lo: wLo, hi: wHi }],
+      series: [{ cls: 's-dynamic', values: wMed }],
+      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>提領率中位數　${fmtPct(wMed[i], 2)}` +
+        `<br><span class="tip-muted">10%～90%：${fmtPct(wLo[i], 2)} ～ ${fmtPct(wHi[i], 2)}</span>`
+    });
+    $('rateLegend').innerHTML = legendItem('l-dynamic', '提領率（中位數）') + legendItem('l-band', '10%～90% 區間');
+    $('rateNote').textContent = '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的路徑算 100%）。金額是固定隨通膨調高的，所以資產掉得越多，提領率就越高；色塊上緣代表較差的 10% 情境。' +
+      (clipped ? ' 超出圖表上緣的部分被截斷，滑鼠移到該年（手機點一下）可看到實際數字。' : '');
+  }
 
   function update(){
     const v = {
@@ -305,46 +454,89 @@
       rate: parseFloat($('withdrawRate').value),
       ret: parseFloat($('annualReturn').value),
       inf: parseFloat($('inflation').value),
-      years: Number($('years').value)
+      years: Number($('years').value),
+      mode: $('mode').value,
+      vol: parseFloat($('volatility').value)
     };
     const data = {};
     FIELDS.forEach(f => { data[f] = $(f).value; });
     Util.store.setJSON(STORAGE_KEY, data);
+
+    const isMC = v.mode === 'mc';
+    $('volatilityBox').hidden = !isMC;
+    $('assetChartCard').hidden = !isMC;
+    $('rateChartCard').hidden = !isMC;
 
     const errors = validate(v);
     FIELDS.forEach(f => {
       $('err-' + f).textContent = errors[f] || '';
       $('err-' + f).hidden = !errors[f];
     });
-    if(Object.keys(errors).length){
-      setEmpty(true);
-      ['sumMonthly','sumYearly','sumLasted','sumEnd','sumLastMonthly'].forEach(id => { $(id).textContent = '--'; });
-      $('sumLasted').classList.remove('profit', 'loss');
-      $('sumVerdict').textContent = '';
-      $('rateBody').innerHTML = '';
-      $('yearlyBody').innerHTML = '';
-      return;
-    }
+    if(Object.keys(errors).length){ $('geoNote').textContent = ''; clearAll(); return; }
     setEmpty(false);
 
+    // 算術平均換算成長期複利年化（幾何平均）
+    if(isMC){
+      const m = v.ret / 100, s = v.vol / 100;
+      const sigma2 = Math.log(1 + (s * s) / ((1 + m) * (1 + m)));
+      const geo = (1 + m) * Math.exp(-sigma2 / 2) - 1;
+      const real = (1 + geo) / (1 + v.inf / 100) - 1;
+      $('geoNote').textContent = `以這組輸入換算，長期複利年化（幾何平均）約 ${(geo * 100).toFixed(1)}%，扣掉 ${v.inf}% 通膨後實質約 ${(real * 100).toFixed(1)}%。`;
+    } else {
+      $('geoNote').textContent = '';
+    }
+
     const r = simulate(v.assets, v.rate, v.ret, v.inf);
-    const shown = r.rows.slice(0, v.years);
+    const T = v.years;
+    const shown = r.rows.slice(0, T);
     const last = shown[shown.length - 1];
-    const enough = r.lasted === null || r.lasted >= v.years;
+    const mc = isMC ? runMC(v) : null;
+    const enough = isMC ? mc.success >= OK_SHARE : (r.lasted === null || r.lasted >= T);
 
     $('sumMonthly').textContent = fmtMoney(r.first / 12);
     $('sumYearly').textContent = fmtMoney(r.first);
-    $('sumLasted').textContent = fmtYears(r.lasted);
     $('sumLasted').classList.toggle('profit', enough);
     $('sumLasted').classList.toggle('loss', !enough);
-    $('sumVerdict').textContent = enough
-      ? `撐得過預計的 ${v.years} 年退休期間。`
-      : `撐不到預計的 ${v.years} 年，約在第 ${r.rows.length} 年用完。`;
-    $('sumEndLabel').textContent = `退休 ${v.years} 年後剩餘資產`;
-    $('sumEnd').textContent = fmtMoney(enough ? last.end : 0);
-    $('sumLastMonthly').textContent = fmtMoney(last.planned / 12);
+    $('sumLastMonthly').textContent = fmtMoney(r.first * Math.pow(1 + v.inf / 100, T - 1) / 12);
+    if(isMC){
+      const lastY = mc.years[T - 1];
+      $('sumLastedLabel').textContent = `撐過 ${T} 年退休期間的機率`;
+      $('sumLasted').textContent = fmtPct(mc.success);
+      $('sumVerdict').textContent = `${mc.trials.toLocaleString()} 條隨機路徑中，約 ${Math.round(mc.success * mc.trials).toLocaleString()} 條撐到第 ${T} 年。`;
+      $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產（中位數）`;
+      $('sumEnd').textContent = fmtMoney(lastY.endMed);
+      $('sumEndSub').textContent = `較差的 10% 情境：${fmtMoney(lastY.endLo)}；較好的 10%：${fmtMoney(lastY.endHi)}`;
+      renderCharts(v, mc);
+    } else {
+      $('sumLastedLabel').textContent = '資產可以撐多久';
+      $('sumLasted').textContent = fmtYears(r.lasted);
+      $('sumVerdict').textContent = enough
+        ? `撐得過預計的 ${T} 年退休期間。`
+        : `撐不到預計的 ${T} 年，約在第 ${r.rows.length} 年用完。`;
+      $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產`;
+      $('sumEnd').textContent = fmtMoney(enough ? last.end : 0);
+      $('sumEndSub').textContent = '';
+    }
 
-    $('yearlyBody').innerHTML = shown.map(row => `
+    // ----- yearly table
+    if(isMC){
+      $('yearlyHead').innerHTML = '<tr><th>年度</th><th>年初資產（中位數）</th><th>每月提領（含通膨）</th><th>當年提領（含通膨）</th><th>年底資產（中位數）</th><th>年底資產 10%～90%</th></tr>';
+      $('yearlyBody').innerHTML = mc.years.map((y, i) => {
+        const planned = r.first * Math.pow(1 + v.inf / 100, i);
+        return `
+      <tr>
+        <td>第 ${i + 1} 年</td>
+        <td>${fmtMoney(y.startMed)}</td>
+        <td>${fmtMoney(planned / 12)}</td>
+        <td>${fmtMoney(planned)}</td>
+        <td class="${y.endMed <= 0 ? 'gain-neg' : ''}">${y.endMed <= 0 ? '用完' : fmtMoney(y.endMed)}</td>
+        <td>${fmtMoney(y.endLo)} ～ ${fmtMoney(y.endHi)}</td>
+      </tr>`;
+      }).join('');
+      $('yearlyNote').textContent = '每一欄都是該年度所有路徑各自的中位數（欄與欄分別取中位數）。提領金額是計畫金額，沒有因為市場好壞調整；「用完」代表該年度有一半以上的路徑資金已用完。';
+    } else {
+      $('yearlyHead').innerHTML = '<tr><th>年度</th><th>年初資產</th><th>每月提領（含通膨）</th><th>當年提領（含通膨）</th><th>年底資產</th></tr>';
+      $('yearlyBody').innerHTML = shown.map(row => `
       <tr>
         <td>第 ${row.year} 年</td>
         <td>${fmtMoney(row.start)}</td>
@@ -353,19 +545,40 @@
         <td class="${row.depleted ? 'gain-neg' : ''}">${row.depleted ? '用完' : fmtMoney(row.end)}</td>
       </tr>
     `).join('');
+      $('yearlyNote').textContent = '';
+    }
 
-    $('rateBody').innerHTML = COMPARE_RATES.map(rate => {
-      const c = simulate(v.assets, rate, v.ret, v.inf);
-      const ok = c.lasted === null || c.lasted >= v.years;
-      const mark = rate === v.rate ? ' <strong>（目前設定）</strong>' : '';
-      return `
+    // ----- rate comparison
+    if(isMC){
+      $('rateHead').innerHTML = '<tr><th>提領率</th><th>首年每月可領</th><th>撐過退休期間的機率</th><th>退休結束資產（中位數）</th></tr>';
+      $('rateBody').innerHTML = mc.cmp.map(c => {
+        const ok = c.success >= OK_SHARE;
+        const mark = c.rate === v.rate ? ' <strong>（目前設定）</strong>' : '';
+        return `
+      <tr>
+        <td>${c.rate}%${mark}</td>
+        <td>${fmtMoney(v.assets * c.rate / 100 / 12)}</td>
+        <td class="${ok ? 'gain-pos' : 'gain-neg'}">${fmtPct(c.success)}</td>
+        <td>${fmtMoney(c.endMed)}</td>
+      </tr>`;
+      }).join('');
+      $('rateFoot').textContent = `成功率 ${fmtPct(OK_SHARE, 0)} 以上標示為綠色。四個提領率使用同一批隨機路徑，所以差異只來自提領率。`;
+    } else {
+      $('rateHead').innerHTML = '<tr><th>提領率</th><th>首年每月可領</th><th>資產可撐</th><th>撐得到退休年數？</th></tr>';
+      $('rateBody').innerHTML = COMPARE_RATES.map(rate => {
+        const c = simulate(v.assets, rate, v.ret, v.inf);
+        const ok = c.lasted === null || c.lasted >= T;
+        const mark = rate === v.rate ? ' <strong>（目前設定）</strong>' : '';
+        return `
       <tr>
         <td>${rate}%${mark}</td>
         <td>${fmtMoney(c.first / 12)}</td>
         <td>${fmtYears(c.lasted)}</td>
         <td class="${ok ? 'gain-pos' : 'gain-neg'}">${ok ? '撐得到' : '撐不到'}</td>
       </tr>`;
-    }).join('');
+      }).join('');
+      $('rateFoot').textContent = '';
+    }
   }
 
   document.querySelectorAll('a.help').forEach(a => a.addEventListener('click', e => {
@@ -377,7 +590,10 @@
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }));
 
-  FIELDS.forEach(f => $(f).addEventListener('input', update));
+  FIELDS.forEach(f => {
+    $(f).addEventListener('input', update);
+    $(f).addEventListener('change', update);
+  });
   update();
 })();
 </script>
