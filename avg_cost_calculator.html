@@ -323,10 +323,7 @@
   }
 
   const { money: fmtMoney, price: fmtPrice, signedMoney: fmtSigned, pct: fmtPct } = Util.fmt;
-  function setSign(el, n){
-    el.classList.toggle('profit', n > 0);
-    el.classList.toggle('loss', n < 0);
-  }
+  const { setSign } = Util;
 
 
   function renderInsight(d){
@@ -364,14 +361,7 @@
     $('insightBody').innerHTML = '<ul>' + items.map(t => `<li>${t}</li>`).join('') + '</ul>';
   }
 
-  function positionLabel(el, p){
-    const trackW = $('gaugeTrack').clientWidth;
-    el.style.transform = 'none';
-    el.style.left = '0px';
-    const w = el.offsetWidth;
-    const left = Math.max(0, Math.min(trackW - w, p / 100 * trackW - w / 2));
-    el.style.left = left + 'px';
-  }
+  const { positionLabel } = Util;
 
   function renderGauge(bep, current, taxPct, tradable){
     if(bep === null){

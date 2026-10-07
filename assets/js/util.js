@@ -1,4 +1,4 @@
-// Shared helpers for every calculator page: safe localStorage, number formatting, copy-to-clipboard.
+// Shared helpers for every calculator page: safe localStorage, number formatting, copy-to-clipboard, small DOM helpers.
 // Loaded in <head> (via the BUILD:HEAD block), so page scripts can use Util right away.
 window.Util = (function(){
   const store = {
@@ -46,5 +46,25 @@ window.Util = (function(){
     }
   }
 
-  return { store, fmt, copyText };
+  // Colours an element green/red by the sign of n
+  function setSign(el, n){
+    el.classList.toggle('profit', n > 0);
+    el.classList.toggle('loss', n < 0);
+  }
+
+  // Greys out the cards that contain the given element ids while the inputs are empty/invalid
+  function setEmpty(ids, on){
+    ids.forEach(id => document.getElementById(id).closest('.card').classList.toggle('is-empty', on));
+  }
+
+  // Centres a gauge label under its marker at p % of #gaugeTrack, keeping it inside the track
+  function positionLabel(el, p){
+    const trackW = document.getElementById('gaugeTrack').clientWidth;
+    el.style.transform = 'none';
+    el.style.left = '0px';
+    const w = el.offsetWidth;
+    el.style.left = Math.max(0, Math.min(trackW - w, p / 100 * trackW - w / 2)) + 'px';
+  }
+
+  return { store, fmt, copyText, setSign, setEmpty, positionLabel };
 })();

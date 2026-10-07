@@ -96,9 +96,7 @@
     }).join('');
   }
 
-  function setEmpty(on){
-    [$('downList'), $('upList')].forEach(l => l.closest('.card').classList.toggle('is-empty', on));
-  }
+  const setEmpty = on => Util.setEmpty(['downList', 'upList'], on);
 
   function update(){
     const base = parseFloat($('basePrice').value);

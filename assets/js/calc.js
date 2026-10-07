@@ -108,13 +108,7 @@ function updateCalculator(){
   $('gaugeTrack').style.setProperty('--be-pct', bePct + '%');
 
   // Keep each label fully inside the track instead of letting a long label spill past the card edge
-  function positionLabel(el, p){
-    const trackW = $('gaugeTrack').clientWidth;
-    el.style.transform = 'none';
-    el.style.left = '0px';
-    const w = el.offsetWidth;
-    el.style.left = Math.max(0, Math.min(trackW - w, p / 100 * trackW - w / 2)) + 'px';
-  }
+  const { positionLabel } = Util;
 
   const mBe = $('markerBe'), lBe = $('labelBe'), mSell = $('markerSell'), lSell = $('labelSell');
   mBe.style.left = bePct + '%';

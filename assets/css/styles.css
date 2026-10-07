@@ -540,15 +540,9 @@ label{
 .chart-svg text{font-family:var(--font-main);font-size:11px;fill:var(--text-muted);}
 .chart-svg .grid{stroke:var(--border);stroke-width:1;}
 .chart-svg .axis{stroke:var(--text-muted);stroke-width:1;opacity:.5;}
-.chart-svg .line-invested{fill:none;stroke:var(--navy-2);stroke-width:2;stroke-dasharray:5 4;}
-.chart-svg .line-assets{fill:none;stroke:var(--accent-strong);stroke-width:2.5;stroke-linejoin:round;}
-.chart-svg .line-assets.neg{stroke:var(--loss);}
 .chart-svg .area-assets{fill:var(--accent);opacity:.14;}
 .chart-svg .area-assets.neg{fill:var(--loss);}
 .chart-svg .cursor{stroke:var(--navy);stroke-width:1;opacity:.35;}
-.chart-svg .dot-invested{fill:var(--navy-2);stroke:#fff;stroke-width:2;}
-.chart-svg .dot-assets{fill:var(--accent-strong);stroke:#fff;stroke-width:2;}
-.chart-svg .dot-assets.neg{fill:var(--loss);}
 .chart-tip{
   position:absolute;top:0;left:0;z-index:2;pointer-events:none;
   min-width:150px;padding:8px 10px;
@@ -640,6 +634,8 @@ label{
 .chart-svg .s-dynamic,.chart-svg .s-fixed{fill:none;stroke-linejoin:round;}
 .chart-svg .s-dynamic{stroke:var(--accent-strong);stroke-width:2.5;}
 .chart-svg .s-fixed{stroke:var(--navy-2);stroke-width:2;stroke-dasharray:5 4;}
+.chart-svg .s-dynamic.neg{stroke:var(--loss);}
+.chart-svg circle.dot.s-dynamic.neg{fill:var(--loss);}
 .chart-svg circle.dot{stroke:#fff;stroke-width:2;}
 .chart-svg circle.dot.s-dynamic{fill:var(--accent-strong);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
 .chart-svg circle.dot.s-fixed{fill:var(--navy-2);stroke:#fff;stroke-width:2;stroke-dasharray:none;}

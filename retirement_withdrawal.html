@@ -296,9 +296,7 @@
 
   const fmtYears = n => n === null ? `${MAX_YEARS} 年以上` : (Math.round(n * 10) / 10) + ' 年';
 
-  function setEmpty(on){
-    ['sumMonthly', 'rateBody', 'yearlyBody'].forEach(id => $(id).closest('.card').classList.toggle('is-empty', on));
-  }
+  const setEmpty = on => Util.setEmpty(['sumMonthly', 'rateBody', 'yearlyBody'], on);
 
   function update(){
     const v = {

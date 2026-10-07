@@ -523,9 +523,7 @@
   }
 
   /* ---------- rendering ---------- */
-  function setEmpty(on){
-    ['sumMonthly', 'assetChartCard', 'rateChartCard', 'tableCard'].forEach(id => $(id).closest('.card').classList.toggle('is-empty', on));
-  }
+  const setEmpty = on => Util.setEmpty(['sumMonthly', 'assetChartCard', 'rateChartCard', 'tableCard'], on);
 
   function clearAll(){
     setEmpty(true);
