@@ -85,7 +85,7 @@
             <p class="input-error" id="err-withdrawRate" hidden></p>
           </div>
           <div>
-            <label for="annualReturn">預期年化報酬率（每年固定） <a class="help" href="#g-return" aria-label="名詞解釋：預期年化報酬率">ⓘ</a></label>
+            <label for="annualReturn">預期年化報酬率 <a class="help" href="#g-return" aria-label="名詞解釋：預期年化報酬率">ⓘ</a></label>
             <div class="input-wrap">
               <input type="number" id="annualReturn" inputmode="decimal" step="0.5" value="5">
               <span class="unit">%</span>
@@ -225,7 +225,7 @@
           <dt>通膨調整</dt>
           <dd>每年的提領金額 = 去年的金額 × (1 + 通膨率)，讓購買力維持不變。</dd>
           <dt id="g-return">預期年化報酬率</dt>
-          <dd>本頁每年的報酬都是這個固定數字，所以算術平均和複利年化沒有差別。實際市場每年起伏很大，不會這麼平順。</dd>
+          <dd>「每年報酬固定」模式：每年報酬都是這個數字，算術平均和複利年化沒有差別。「加入市場波動」模式：它是每年報酬的算術平均，實際長期複利年化會比它低一些（頁面會幫你換算）。實際市場每年起伏很大，不會這麼平順。</dd>
           <dt>資產可以撐多久</dt>
           <dd>資金用完之前的年數。含小數：完整年數 + 最後一年剩下的資產 ÷ 當年應提領的金額。超過 100 年顯示「100 年以上」。</dd>
           <dt id="g-seq">順序風險</dt>
@@ -493,6 +493,7 @@
     const shown = r.rows.slice(0, T);
     const last = shown[shown.length - 1];
     const mc = isMC ? runMC(v) : null;
+    const deflator = Math.pow(1 + v.inf / 100, T);   // 退休期末的名目金額換回今日購買力
     const enough = isMC ? mc.success >= OK_SHARE : (r.lasted === null || r.lasted >= T);
 
     $('sumMonthly').textContent = fmtMoney(r.first / 12);
@@ -507,7 +508,7 @@
       $('sumVerdict').textContent = `${mc.trials.toLocaleString()} 條隨機路徑中，約 ${Math.round(mc.success * mc.trials).toLocaleString()} 條撐到第 ${T} 年。`;
       $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產（中位數）`;
       $('sumEnd').textContent = fmtMoney(lastY.endMed);
-      $('sumEndSub').textContent = `較差的 10% 情境：${fmtMoney(lastY.endLo)}；較好的 10%：${fmtMoney(lastY.endHi)}`;
+      $('sumEndSub').textContent = `較差的 10% 情境：${fmtMoney(lastY.endLo)}；較好的 10%：${fmtMoney(lastY.endHi)}；中位數約合今日購買力 ${fmtMoney(lastY.endMed / deflator)}`;
       renderCharts(v, mc);
     } else {
       $('sumLastedLabel').textContent = '資產可以撐多久';
@@ -517,7 +518,7 @@
         : `撐不到預計的 ${T} 年，約在第 ${r.rows.length} 年用完。`;
       $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產`;
       $('sumEnd').textContent = fmtMoney(enough ? last.end : 0);
-      $('sumEndSub').textContent = '';
+      $('sumEndSub').textContent = `名目金額，約合今日購買力 ${fmtMoney((enough ? last.end : 0) / deflator)}`;
     }
 
     // ----- yearly table
