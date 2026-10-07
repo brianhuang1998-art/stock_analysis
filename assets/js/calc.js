@@ -89,14 +89,14 @@ function updateCalculator(){
 
   $('sumFeeDiscountLabel').textContent = $('feeDiscount').value;
   $('sumPnl').innerHTML = fmtSigned(sel.netPnl) + ' <small>元</small>';
-  $('sumPnl').style.color = sel.netPnl >= 0 ? 'var(--accent-strong)' : 'var(--loss)';
+  $('sumPnl').style.color = sel.netPnl >= 0 ? 'var(--up)' : 'var(--down)';
 
   $('sumPnlFull').innerHTML = fmtSigned(selFull.netPnl) + ' <small>元</small>';
-  $('sumPnlFull').style.color = selFull.netPnl >= 0 ? 'var(--accent-strong)' : 'var(--loss)';
+  $('sumPnlFull').style.color = selFull.netPnl >= 0 ? 'var(--up)' : 'var(--down)';
 
   const pnlSavings = sel.netPnl - selFull.netPnl;
   $('sumPnlDiff').innerHTML = fmtSigned(pnlSavings) + ' <small>元</small>';
-  $('sumPnlDiff').style.color = pnlSavings >= 0 ? 'var(--accent-strong)' : 'var(--loss)';
+  $('sumPnlDiff').style.color = pnlSavings >= 0 ? 'var(--up)' : 'var(--down)';
 
   const lo = Math.min(buyPrice, selFull.breakeven, sellPrice) * 0.985;
   const hi = Math.max(buyPrice, selFull.breakeven, sellPrice) * 1.015;

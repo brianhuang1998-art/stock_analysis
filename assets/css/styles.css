@@ -13,6 +13,11 @@
   --accent-soft:#d2f6e6;
   --loss:#ef5b52;
   --loss-soft:#fde6e4;
+  /* 台股習慣：紅漲（盈利）、綠跌（虧損）。--loss 僅用於錯誤／警示 */
+  --up:#ef5b52;
+  --up-soft:#fde6e4;
+  --down:#029e6d;
+  --down-soft:#d2f6e6;
   --disabled-bg:#eceff1;
   --disabled-border:#dde3e7;
   --disabled-text:#8a98a6;
@@ -280,8 +285,8 @@ label{
 .tile .k{font-size:12px;color:var(--text-muted);margin-bottom:6px;}
 .tile .v{font-size:22px;font-weight:700;}
 .tile .v small{font-size:13px;font-weight:500;margin-left:2px;}
-.tile.profit .v{color:var(--accent-strong);}
-.tile.loss .v{color:var(--loss);}
+.tile.profit .v{color:var(--up);}
+.tile.loss .v{color:var(--down);}
 .tile.wide{grid-column:span 3;}
 @media (max-width:640px){ .tile.wide{grid-column:span 2;} }
 .pnl-compare{
@@ -351,15 +356,15 @@ label{
   margin-top:4px;padding-top:10px;border-top:1.5px solid var(--border);border-bottom:none;
 }
 .rc-row.total .rv{font-size:16px;}
-.rc-row.total .rv.profit{color:var(--accent-strong);}
-.rc-row.total .rv.loss{color:var(--loss);}
+.rc-row.total .rv.profit{color:var(--up);}
+.rc-row.total .rv.loss{color:var(--down);}
 
 .gauge-wrap{margin-top:8px;}
 .gauge-track{
   position:relative;
   height:10px;
   border-radius:999px;
-  background:linear-gradient(to right, var(--loss-soft) 0%, var(--loss-soft) var(--be-pct), var(--accent-soft) var(--be-pct), var(--accent-soft) 100%);
+  background:linear-gradient(to right, var(--down-soft) 0%, var(--down-soft) var(--be-pct), var(--up-soft) var(--be-pct), var(--up-soft) 100%);
   margin:48px 0 26px;
 }
 .marker{
@@ -369,8 +374,8 @@ label{
   box-shadow:0 0 0 1.5px var(--border);
 }
 .marker.be{background:var(--navy);}
-.marker.sell{background:var(--accent-strong);}
-.marker.sell.loss{background:var(--loss);}
+.marker.sell{background:var(--up);}
+.marker.sell.loss{background:var(--down);}
 .marker-label{
   position:absolute;
   transform:translateX(-50%);
@@ -381,8 +386,8 @@ label{
 }
 .marker-label.be-label{bottom:calc(100% + 10px);color:var(--navy);text-align:center;white-space:normal;width:max-content;max-width:100%;}
 .marker-label.sell-label{top:16px;}
-.marker-label.sell-label.profit{color:var(--accent-strong);}
-.marker-label.sell-label.loss{color:var(--loss);}
+.marker-label.sell-label.profit{color:var(--up);}
+.marker-label.sell-label.loss{color:var(--down);}
 .marker-label .lbl-note{
   display:block;
   margin-top:2px;
@@ -401,8 +406,8 @@ label{
 }
 .insight ul{margin:8px 0 0;padding-left:18px;}
 .insight li{margin-bottom:4px;}
-.insight strong{color:var(--accent-strong);}
-.insight strong.neg{color:var(--loss);}
+.insight strong{color:var(--up);}
+.insight strong.neg{color:var(--down);}
 
 .rate-list{display:flex;flex-direction:column;gap:14px;}
 .rate-item{
@@ -540,8 +545,8 @@ label{
 .chart-svg text{font-family:var(--font-main);font-size:11px;fill:var(--text-muted);}
 .chart-svg .grid{stroke:var(--border);stroke-width:1;}
 .chart-svg .axis{stroke:var(--text-muted);stroke-width:1;opacity:.5;}
-.chart-svg .area-assets{fill:var(--accent);opacity:.14;}
-.chart-svg .area-assets.neg{fill:var(--loss);}
+.chart-svg .area-assets{fill:var(--up);opacity:.14;}
+.chart-svg .area-assets.neg{fill:var(--down);}
 .chart-svg .cursor{stroke:var(--navy);stroke-width:1;opacity:.35;}
 .chart-tip{
   position:absolute;top:0;left:0;z-index:2;pointer-events:none;
@@ -555,8 +560,8 @@ label{
 
 /* ---------- Rules shared by several calculator pages (moved out of the per-page <style> blocks) ---------- */
 .tool-card .icon.sm{font-size:14px;}
-.v.profit{color:var(--accent-strong);}
-.v.loss{color:var(--loss);}
+.v.profit{color:var(--up);}
+.v.loss{color:var(--down);}
 .input-error{margin:6px 0 0;font-size:12.5px;color:var(--loss);}
 .input-wrap input:disabled{background:var(--disabled-bg);border-color:var(--disabled-border);color:var(--disabled-text);cursor:not-allowed;}
 .tile .sub{font-size:12px;color:var(--text-muted);margin-top:4px;}
@@ -577,8 +582,8 @@ label{
 }
 .lot-table tr:last-child td,.dca-table tr:last-child td,.data-table tr:last-child td{border-bottom:none;}
 .lot-table td.avg{color:var(--navy);font-weight:700;}
-.dca-table td.gain-pos,.data-table td.gain-pos{color:var(--accent-strong);font-weight:600;}
-.dca-table td.gain-neg,.data-table td.gain-neg{color:var(--loss);font-weight:600;}
+.dca-table td.gain-pos,.data-table td.gain-pos{color:var(--up);font-weight:600;}
+.dca-table td.gain-neg,.data-table td.gain-neg{color:var(--down);font-weight:600;}
 
 /* 觀念說明 / 計算假設 text blocks */
 .assume h3{font-size:14px;color:var(--navy);margin:20px 0 6px;}
@@ -624,29 +629,29 @@ label{
 .pct-row:last-child{border-bottom:none;}
 .pct-row .pk{color:var(--text-muted);text-align:left;font-family:var(--font-main);}
 .pct-row .pv{font-weight:700;color:var(--navy);text-align:right;font-family:var(--font-main);font-variant-numeric:tabular-nums;}
-.pct-row.down .pv{color:var(--loss);}
-.pct-row.up .pv{color:var(--accent-strong);}
+.pct-row.down .pv{color:var(--down);}
+.pct-row.up .pv{color:var(--up);}
 .pct-row .exact{display:block;font-size:11px;font-weight:500;color:var(--text-muted);}
 .type-wrap{margin-top:12px;}
 .type-wrap select{text-align:center;}
 
 /* ---------- Line chart series (assets/js/chart.js) and its legend ---------- */
 .chart-svg .s-dynamic,.chart-svg .s-fixed{fill:none;stroke-linejoin:round;}
-.chart-svg .s-dynamic{stroke:var(--accent-strong);stroke-width:2.5;}
+.chart-svg .s-dynamic{stroke:var(--up);stroke-width:2.5;}
 .chart-svg .s-fixed{stroke:var(--navy-2);stroke-width:2;stroke-dasharray:5 4;}
-.chart-svg .s-dynamic.neg{stroke:var(--loss);}
-.chart-svg circle.dot.s-dynamic.neg{fill:var(--loss);}
+.chart-svg .s-dynamic.neg{stroke:var(--down);}
+.chart-svg circle.dot.s-dynamic.neg{fill:var(--down);}
 .chart-svg circle.dot{stroke:#fff;stroke-width:2;}
-.chart-svg circle.dot.s-dynamic{fill:var(--accent-strong);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
+.chart-svg circle.dot.s-dynamic{fill:var(--up);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
 .chart-svg circle.dot.s-fixed{fill:var(--navy-2);stroke:#fff;stroke-width:2;stroke-dasharray:none;}
-.chart-svg .band-dynamic{fill:var(--accent);opacity:.16;}
+.chart-svg .band-dynamic{fill:var(--up);opacity:.16;}
 .chart-svg .hline-guard{stroke:var(--loss);stroke-width:1.2;stroke-dasharray:4 4;}
 .chart-svg .hline-base{stroke:var(--text-muted);stroke-width:1;stroke-dasharray:2 4;opacity:.7;}
 .chart-svg .hline-label{font-size:10.5px;}
-.chart-legend i.l-dynamic{border-color:var(--accent-strong);}
+.chart-legend i.l-dynamic{border-color:var(--up);}
 .chart-legend i.l-fixed{border-color:var(--navy-2);border-top-style:dashed;}
 .chart-legend i.l-guard{border-color:var(--loss);border-top-style:dashed;border-top-width:2px;}
-.chart-legend i.l-band{height:10px;border:none;background:rgba(0,201,140,.2);border-radius:3px;}
+.chart-legend i.l-band{height:10px;border:none;background:rgba(239,91,82,.2);border-radius:3px;}
 .chart-tip .tip-muted{color:#b9d3c8;}
 .field-wide{grid-column:1 / -1;}
 
@@ -667,11 +672,11 @@ label{
 .guard-head{margin:0;padding:8px 12px;background:var(--surface);font-size:12.5px;color:var(--text-muted);}
 .guard-row{display:flex;gap:12px;align-items:baseline;padding:9px 12px;font-size:13px;line-height:1.6;border-top:1px solid var(--border);}
 .guard-row .tag{flex:none;min-width:8.5em;font-weight:700;font-size:12.5px;}
-.guard-row.hi{background:var(--loss-soft);}
-.guard-row.hi .tag{color:var(--loss);}
+.guard-row.hi{background:var(--down-soft);}
+.guard-row.hi .tag{color:var(--down);}
 .guard-row.mid{background:#fff;}
-.guard-row.lo{background:var(--accent-soft);}
-.guard-row.lo .tag{color:var(--accent-strong);}
+.guard-row.lo{background:var(--up-soft);}
+.guard-row.lo .tag{color:var(--up);}
 @media (max-width:480px){ .guard-row{flex-direction:column;gap:2px;} .guard-row .tag{min-width:0;} }
 
 .ref-col{display:flex;flex-direction:column;gap:10px;}
