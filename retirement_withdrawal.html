@@ -469,8 +469,10 @@
 
     const errors = validate(v);
     FIELDS.forEach(f => {
-      $('err-' + f).textContent = errors[f] || '';
-      $('err-' + f).hidden = !errors[f];
+      const box = $('err-' + f);
+      if(!box) return;
+      box.textContent = errors[f] || '';
+      box.hidden = !errors[f];
     });
     if(Object.keys(errors).length){ $('geoNote').textContent = ''; clearAll(); return; }
     setEmpty(false);
