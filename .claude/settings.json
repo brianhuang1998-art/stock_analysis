@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(brew --version:*)",
+      "Bash(brew list:*)",
+      "Bash(brew info:*)",
+      "Bash(brew install poppler:*)",
+      "Bash(/opt/homebrew/bin/brew --version:*)",
+      "Bash(/opt/homebrew/bin/brew list:*)",
+      "Bash(/opt/homebrew/bin/brew info:*)",
+      "Bash(/opt/homebrew/bin/brew install poppler:*)",
+      "Bash(pdftoppm:*)",
+      "Bash(pdftotext:*)",
+      "Bash(pdfinfo:*)",
+      "Bash(pdfimages:*)",
+      "Bash(/opt/homebrew/bin/pdftoppm:*)",
+      "Bash(/opt/homebrew/bin/pdftotext:*)",
+      "Bash(/opt/homebrew/bin/pdfinfo:*)",
+      "Bash(/opt/homebrew/bin/pdfimages:*)"
+    ]
+  }
+}
