@@ -168,7 +168,7 @@
           </div>
           <details class="field-wide adv">
             <summary>進階設定</summary>
-            <label for="order">凍結規則與護欄：誰先檢定？（論文沒有明說）</label>
+            <label for="order">提領規則（凍結）與護欄：誰先檢定？（論文沒有明說）</label>
             <div class="input-wrap">
               <select id="order">
                 <option value="freeze" selected>先決定是否凍結，再用凍結後的金額檢定護欄（依論文 p.54 字面）</option>
@@ -215,6 +215,30 @@
           </table>
         </div>
         <p class="foot-note" id="compareNote"></p>
+      </div>
+
+      <div class="card" id="maxRateCard" hidden>
+        <h2>最大初始提領率（信心標準）</h2>
+        <p class="note-line" style="margin:0 0 10px;">論文的主要結論：在 99%、95%、90% 信心標準下，最大的初始提領率是多少。以你目前的報酬率、波動率、通膨、退休年數與檢定順序，掃描不同的初始提領率，找出<strong>成功率與購買力中位數都達標</strong>的最大值（論文 Table 6、7）。這個結果不受上方「初始提領率」欄位影響。</p>
+        <button type="button" class="copy-btn" id="maxRateBtn">計算最大初始提領率</button>
+        <p class="foot-note" id="maxRateStatus"></p>
+        <div class="table-wrap" id="maxRateWrap" hidden>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>信心標準</th>
+                <th>動態提領：最大初始提領率</th>
+                <th>成功率</th>
+                <th>下調／凍結／上調（平均次數）</th>
+                <th>總購買力（中位數）</th>
+                <th>最後一年購買力（中位數）</th>
+                <th>固定提領：最大初始提領率</th>
+              </tr>
+            </thead>
+            <tbody id="maxRateBody"></tbody>
+          </table>
+        </div>
+        <p class="foot-note" id="maxRateNote"></p>
       </div>
 
       <div class="card" id="assetChartCard">
@@ -268,8 +292,12 @@
           <dd>目前提領率高於上護欄時，今年提領金額<strong>下調 10%</strong>，避免資金耗盡。計畫的最後 15 年不啟用。</dd>
           <dt>繁榮規則</dt>
           <dd>目前提領率低於下護欄時，今年提領金額<strong>上調 10%</strong>，避免錢多到花不完。</dd>
-          <dt>凍結（通膨規則）</dt>
-          <dd>前一年投資虧損，而且今年的提領率高於初始提領率，今年就<strong>不隨通膨調高</strong>（維持去年金額，之後也不補回）。</dd>
+          <dt>提領規則（凍結）</dt>
+          <dd>論文的「提領規則」（Withdrawal Rule）：前一年投資虧損，而且今年的提領率高於初始提領率，今年就<strong>不隨通膨調高</strong>（維持去年金額，之後也不補回）。</dd>
+          <dt>通膨規則</dt>
+          <dd>論文的「通膨規則」（Inflation Rule）：每年依通膨（CPI）調高提領金額。論文原版有 6% 的上限，2006 這篇<strong>取消上限</strong>，本頁也不設上限。</dd>
+          <dt id="g-confidence">信心標準（99%／95%／90%）</dt>
+          <dd>論文 p.56：選一個初始提領率，讓<strong>成功率</strong>與<strong>購買力維持的中位數</strong>「兩者都」至少達到該百分比。例如 95% 信心標準 = 成功率 ≥ 95% 且購買力中位數 ≥ 95%。99% 適合想要幾乎萬無一失的人；95% 容許一點風險、換更高的初始提領率；90% 論文也列出，但較不建議。</dd>
           <dt>成功率</dt>
           <dd>退休期間資金都沒有用完的路徑佔多少比例。</dd>
           <dt id="g-pp">購買力維持</dt>
@@ -292,8 +320,8 @@
           <table class="data-table">
             <thead><tr><th>規則</th><th>條件</th><th>動作</th></tr></thead>
             <tbody>
-              <tr><td>通膨規則</td><td>前一年投資虧損，且今年提領率高於初始提領率</td><td>今年提領金額不隨通膨調整（凍結，不補回）</td></tr>
-              <tr><td></td><td>其他情況</td><td>依通膨調高，<strong>不設上限</strong></td></tr>
+              <tr><td>提領規則（凍結）</td><td>前一年投資虧損，且今年提領率高於初始提領率</td><td>今年提領金額不隨通膨調整（凍結，不補回）</td></tr>
+              <tr><td>通膨規則</td><td>其他情況</td><td>依通膨（CPI）調高，<strong>不設上限</strong>（論文原版有 6% 上限，2006 版取消）</td></tr>
               <tr><td>保本規則</td><td>目前提領率 &gt; 初始 × 120%</td><td>今年提領金額 <strong>× 0.9</strong>（最後 15 年停用）</td></tr>
               <tr><td>繁榮規則</td><td>目前提領率 &lt; 初始 × 80%</td><td>今年提領金額 <strong>× 1.1</strong></td></tr>
             </tbody>
@@ -368,6 +396,11 @@
   const fmtPct = (n, d) => (n * 100).toFixed(d === undefined ? 1 : d) + '%';
   const pctOrDash = n => n === null ? '—（沒有成功的路徑）' : fmtPct(n, 0);
 
+  // 論文 p.56：信心標準 = 成功率「與」購買力維持的中位數都至少達到該百分比
+  const STANDARDS = [0.99, 0.95, 0.90];
+  const confidenceOf = (success, pp) => pp === null ? null : (STANDARDS.find(s => success >= s && pp >= s) ?? null);
+  const levelText = level => level === null ? '未達 90% 信心標準' : `達 ${Math.round(level * 100)}% 信心標準`;
+
   const saved = Util.store.getJSON(STORAGE_KEY);
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
 
@@ -379,9 +412,16 @@
              frozen: new Uint8Array(T), adj: new Int8Array(T), fail: 0, cuts: 0, raises: 0, freezes: 0, pp: 0, ppLast: 0 };
   }
 
-  function runPath(p, rets, dynamic){
+  // reuse (optional) = a run object to overwrite instead of allocating a new one; used by the max-initial-rate search
+  function resetRun(o){
+    o.frozen.fill(0); o.adj.fill(0);
+    o.fail = o.cuts = o.raises = o.freezes = o.pp = o.ppLast = 0;
+    return o;
+  }
+
+  function runPath(p, rets, dynamic, reuse){
     const T = p.years;
-    const o = emptyRun(T);
+    const o = reuse ? resetRun(reuse) : emptyRun(T);
     const wr0 = p.wr0;
     const infl = p.infl;
     let bal = p.assets;
@@ -401,7 +441,7 @@
         const lost = rets[i - 1] < 0;
         const cprOn = t <= T - CPR_YEARS_BEFORE_END;     // 保本規則最後 15 年停用
         if(p.order === 'guardrail'){
-          // 先用含通膨的金額檢定護欄；兩條護欄都沒觸發，才輪到凍結規則
+          // 先用含通膨的金額檢定護欄；兩條護欄都沒觸發，才輪到提領規則（凍結）
           const cur = adjusted / bal;
           if(cprOn && cur > wr0 * (1 + GUARD)){ W = adjusted * (1 - STEP); o.adj[i] = -1; o.cuts++; }
           else if(cur < wr0 * (1 - GUARD)){ W = adjusted * (1 + STEP); o.adj[i] = 1; o.raises++; }
@@ -474,6 +514,89 @@
     };
   }
 
+  /* ---------- 最大初始提領率（論文 Table 6、7） ---------- */
+  const SCAN_START = 10;   // 單位 0.1%：從 1.0% 開始
+  const SCAN_MAX = 250;    // 掃到 25.0% 為止
+  const COARSE = 5;        // 先以 0.5% 粗掃，再以 0.1% 細找（論文表格也是 0.1% 一格）
+  let maxRateCtx = null;   // 最近一次蒙地卡羅的參數與報酬路徑
+
+  // 同一批路徑上，對每個初始提領率回報成功率與購買力中位數（只計成功路徑）；結果依提領率快取
+  function searchMaxRates(ctx){
+    const { v, paths } = ctx;
+    const T = v.years, N = paths.length / T;
+    const scratch = emptyRun(T);
+    const cache = { dyn: new Map(), fix: new Map() };
+    const evalAt = (tenths, dynamic) => {
+      const store = dynamic ? cache.dyn : cache.fix;
+      if(!store.has(tenths)){
+        const q = { ...v, wr0: tenths / 1000 };
+        const ppOk = [];
+        for(let k = 0; k < N; k++){
+          const o = runPath(q, paths.subarray(k * T, (k + 1) * T), dynamic, scratch);
+          if(!o.fail) ppOk.push(o.pp);
+        }
+        store.set(tenths, { success: ppOk.length / N, ppMed: ppOk.length ? percentile(sortedCopy(ppOk), .5) : null });
+      }
+      return store.get(tenths);
+    };
+    const meetsDyn = std => t => { const r = evalAt(t, true); return r.ppMed !== null && r.success >= std && r.ppMed >= std; };
+    const meetsFix = std => t => evalAt(t, false).success >= std;
+    // 最大的 t（單位 0.1%）：t 達標，且往下一格就不達標；1.0% 就不達標回傳 null
+    const findMax = meets => {
+      if(!meets(SCAN_START)) return null;
+      let t = SCAN_START;
+      while(t + COARSE <= SCAN_MAX && meets(t + COARSE)) t += COARSE;
+      while(t < SCAN_MAX && meets(t + 1)) t++;
+      return t;
+    };
+    return STANDARDS.map(std => {
+      const dynT = findMax(meetsDyn(std)), fixT = findMax(meetsFix(std));
+      let stats = null;
+      if(dynT !== null){
+        const q = { ...v, wr0: dynT / 1000 };
+        const runs = [];
+        for(let k = 0; k < N; k++) runs.push(runPath(q, paths.subarray(k * T, (k + 1) * T), true));
+        stats = summarize(runs, T);
+      }
+      return { std, dynT, fixT, stats };
+    });
+  }
+
+  const fmtMaxRate = t => t === null ? `低於 ${fmtPct(SCAN_START / 1000)}` : t >= SCAN_MAX ? `${fmtPct(SCAN_MAX / 1000)} 以上` : fmtPct(t / 1000);
+
+  function showMaxRates(){
+    if(!maxRateCtx) return;
+    $('maxRateStatus').textContent = '計算中…';
+    $('maxRateBtn').disabled = true;
+    setTimeout(() => {
+      const ctx = maxRateCtx;
+      const rows = searchMaxRates(ctx);
+      $('maxRateBody').innerHTML = rows.map(r => `
+      <tr>
+        <td>${Math.round(r.std * 100)}%</td>
+        <td><strong>${fmtMaxRate(r.dynT)}</strong></td>
+        <td>${r.stats ? fmtPct(r.stats.success) : '—'}</td>
+        <td>${r.stats ? `${r.stats.cuts.toFixed(1)}／${r.stats.freezes.toFixed(1)}／${r.stats.raises.toFixed(1)}` : '—'}</td>
+        <td>${r.stats ? pctOrDash(r.stats.ppMed) : '—'}</td>
+        <td>${r.stats ? pctOrDash(r.stats.ppLastMed) : '—'}</td>
+        <td>${fmtMaxRate(r.fixT)}</td>
+      </tr>`).join('');
+      $('maxRateWrap').hidden = false;
+      $('maxRateStatus').textContent = '';
+      $('maxRateNote').textContent = `信心標準（論文 p.56）：成功率與購買力中位數（只計成功路徑）都要至少達到該百分比。表中的數字是「該提領率及更低的提領率都達標」的最大值，以 0.1% 為一格；固定提領只看成功率（它的購買力恆為 100%），所以數字不受購買力限制。這裡用 ${ctx.v.years} 年、報酬 ${ctx.v.ret}%、波動 ${ctx.v.vol}%、通膨 ${ctx.v.inf}% 的假設與 ${(ctx.paths.length / ctx.v.years).toLocaleString()} 條路徑；論文是 40 年與 30 年、14,000 條以歷史資料統計出的路徑，數字不能直接和論文比較。` +
+        (ctx.v.years <= CPR_YEARS_BEFORE_END ? ` 退休年數不超過 ${CPR_YEARS_BEFORE_END} 年時，保本規則整段停用（論文 p.54），動態提領只剩凍結與繁榮規則，最大初始提領率可能比固定提領還低。` : '');
+      $('maxRateBtn').disabled = false;
+    }, 30);
+  }
+
+  function resetMaxRates(){
+    $('maxRateWrap').hidden = true;
+    $('maxRateBody').innerHTML = '';
+    $('maxRateStatus').textContent = '';
+    $('maxRateNote').textContent = '';
+    $('maxRateBtn').disabled = false;
+  }
+
   function validate(v){
     const e = {};
     if(v.goal === 'spend'){
@@ -503,6 +626,8 @@
     $('sumSuccess').classList.remove('profit', 'loss');
     $('sumSuccessSub').textContent = '';
     $('needTile').hidden = true;
+    $('maxRateCard').hidden = true;
+    maxRateCtx = null;
     $('compareBody').innerHTML = '';
     $('compareNote').textContent = '';
     $('yearlyHead').innerHTML = '';
@@ -528,7 +653,8 @@
     }
     $('sumMonthly').textContent = fmtMoney(first / 12);
     $('sumYearly').textContent = fmtMoney(first);
-    const okDyn = dyn.success >= 0.95;
+    const levelDyn = confidenceOf(dyn.success, dyn.ppMed), levelFix = confidenceOf(fix.success, fix.ppMed);
+    const okDyn = stress ? !dyn.failYear : levelDyn !== null && levelDyn >= 0.95;   // 綠色 = 達到 95%（含）以上的信心標準
     $('sumSuccess').classList.toggle('profit', okDyn);
     $('sumSuccess').classList.toggle('loss', !okDyn);
     if(stress){
@@ -538,7 +664,7 @@
     } else {
       $('sumSuccessLabel').textContent = '動態提領成功率';
       $('sumSuccess').textContent = fmtPct(dyn.success);
-      $('sumSuccessSub').textContent = '固定提領：' + fmtPct(fix.success);
+      $('sumSuccessSub').innerHTML = `購買力中位數 ${pctOrDash(dyn.ppMed)}（只計成功路徑）<br><strong>${levelText(levelDyn)}</strong>（成功率與購買力都要達標）<br>固定提領：成功率 ${fmtPct(fix.success)}，${levelText(levelFix)}`;
     }
 
     const med = stress ? '' : '（中位數）';
@@ -548,6 +674,7 @@
         stress ? (fix.failYear ? `第 ${fix.failYear} 年用完` : '撐得過') : fmtPct(fix.success)],
       [`退休 ${T} 年後剩餘資產${med}`, fmtMoney(dyn.endMed), fmtMoney(fix.endMed)]
     ];
+    if(!stress) rows.splice(1, 0, ['信心標準（成功率與購買力中位數都要達標）', levelText(levelDyn), levelText(levelFix)]);
     if(!stress) rows.push(['退休結束時資產（較差的 10% 情境）', fmtMoney(dyn.endLo), fmtMoney(fix.endLo)]);
     rows.push(
       [`平均購買力維持（${stress ? '' : '中位數、'}僅計成功的路徑，論文定義）`, pctOrDash(dyn.ppMed), pctOrDash(fix.ppMed)],
@@ -559,7 +686,7 @@
     );
     $('compareBody').innerHTML = rows.map(r => `
       <tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
-    $('compareNote').textContent = (stress ? '' : '蒙地卡羅有抽樣誤差：4,000 條路徑下，成功率約 ±1 個百分點、期末資產中位數約 ±4%（以不同亂數種子重跑量得），所以小數點後的差異不必在意。') + '「平均購買力維持」= 各年（實際提領 ÷ 一般隨通膨調整的計畫提領）的平均；「最後一年的購買力」= 最後一年的同一個比值（論文的 Year 40 PP%）。100% 代表生活水準完全不縮水。論文只在「成功的模擬」裡計算購買力（p.8），所以前兩列只計成功的路徑；最後一列把資金用完的路徑也算進去（那些年提領為 0），供你對照。成功率低的時候，只看成功路徑會讓購買力看起來比較好，請搭配成功率一起看。';
+    $('compareNote').textContent = (stress ? '' : '蒙地卡羅有抽樣誤差：4,000 條路徑下，成功率約 ±1 個百分點、期末資產中位數約 ±4%（以不同亂數種子重跑量得），所以小數點後的差異不必在意。') + '「平均購買力維持」= 各年（實際提領 ÷ 一般隨通膨調整的計畫提領）的平均；「最後一年的購買力」= 最後一年的同一個比值（論文的 Year 40 PP%）。100% 代表生活水準完全不縮水。論文只在「成功的模擬」裡計算購買力（p.54–55），所以前兩列只計成功的路徑；最後一列把資金用完的路徑也算進去（那些年提領為 0），供你對照。成功率低的時候，只看成功路徑會讓購買力看起來比較好，請搭配成功率一起看。';
 
     // ----- asset chart: balance at the end of each year (x = 0 is the day you retire)
     const xs0 = Array.from({ length: T + 1 }, (_, i) => i);
@@ -724,12 +851,16 @@
 
     const T = v.years;
     const dynRuns = [], fixRuns = [];
+    let paths = null;
     if(stress){
       const rets = Array.from({ length: T }, (_, i) => (i < v.stressYears ? v.stressReturn : v.ret) / 100);
       dynRuns.push(runPath(v, rets, true));
       fixRuns.push(runPath(v, rets, false));
     } else {
+      paths = new Float64Array(MC.TRIALS * T);
+      let k = 0;
       MC.forEachPath({ years: T, ret: v.ret, vol: v.vol }, rets => {
+        paths.set(rets, k++ * T);
         dynRuns.push(runPath(v, rets, true));
         fixRuns.push(runPath(v, rets, false));
       });
@@ -737,6 +868,11 @@
     const dyn = summarize(dynRuns, T); dyn.runs = dynRuns;
     const fix = summarize(fixRuns, T); fix.runs = fixRuns;
     render(v, dyn, fix);
+
+    // 最大初始提領率：只在蒙地卡羅模式提供；輸入一變動就清掉舊結果，按鈕才重算
+    resetMaxRates();
+    $('maxRateCard').hidden = stress;
+    maxRateCtx = stress ? null : { v: { ...v }, paths };
   }
 
   document.querySelectorAll('a.help').forEach(a => a.addEventListener('click', e => {
@@ -747,6 +883,8 @@
     if(box) box.open = true;
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }));
+
+  $('maxRateBtn').addEventListener('click', showMaxRates);
 
   FIELDS.forEach(f => {
     $(f).addEventListener('input', update);
