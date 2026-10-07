@@ -677,7 +677,8 @@ label{
 .guard-row .tag{flex:none;min-width:8.5em;font-weight:700;font-size:12.5px;}
 .guard-row.hi{background:var(--down-soft);}
 .guard-row.hi .tag{color:var(--down);}
-.guard-row.mid{background:#fff;}
+.guard-row.mid{background:#e8f1fb;}
+.guard-row.mid .tag{color:var(--navy-2);}
 .guard-row.lo{background:var(--up-soft);}
 .guard-row.lo .tag{color:var(--up);}
 @media (max-width:480px){ .guard-row{flex-direction:column;gap:2px;} .guard-row .tag{min-width:0;} }
