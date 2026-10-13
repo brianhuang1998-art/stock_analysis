@@ -244,10 +244,25 @@
       <div class="card" id="assetChartCard">
         <h2>資產成長圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出退休金隨年數的變化。</p>
-        <div class="chart-wrap" id="assetChart">
-          <div class="chart-legend" id="assetLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="動態提領與固定提領的退休金餘額折線圖"></svg>
-          <div class="chart-tip" hidden></div>
+        <div class="chart-split">
+          <div class="chart-wrap" id="assetChart">
+            <div class="chart-legend" id="assetLegend"></div>
+            <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="動態提領與固定提領的退休金餘額折線圖"></svg>
+            <div class="chart-tip" hidden></div>
+          </div>
+          <div class="chart-help">
+            <h3>圖如何解讀</h3>
+            <p>回答：退休後，我的錢會剩多少？動態提領和固定提領誰撐得比較好？</p>
+            <ul>
+              <li><strong>兩條線</strong>：動態提領（會依市場調整金額）與固定提領（金額只隨通膨調高、不看市場），用同樣的市場報酬比較。</li>
+              <li class="mc-only"><strong>實線是中位數</strong>：電腦模擬 4,000 種未來，每個時間點把所有人的資產由少到多排隊，中間那位就是中位數，可當成「普通運氣」。</li>
+              <li class="mc-only"><strong>淡綠色區塊</strong>：動態提領中，去掉最倒楣與最幸運各 10%，其餘 80% 的人落在的範圍。區塊越寬，運氣影響越大。</li>
+              <li class="stress-only" hidden><strong>壓力情境</strong>：只有一條確定的路徑，前幾年先遇到下跌，之後恢復，所以沒有區塊；看的是「早期崩盤」傷害有多大。</li>
+              <li><strong>動態提領</strong>在市場差時少領、市場好時多領：下跌期間資產掉得比較慢，但好的情境會花得比固定提領多，所以中間那條線不一定比固定提領高，要和成功率一起看。</li>
+              <li><strong>線碰到 0</strong>＝資金用完。固定提領下跌期間照領，所以比較容易先見底。</li>
+              <li class="mc-only">重點看淡綠區塊的<strong>下緣</strong>，不要只看中間那條線。</li>
+            </ul>
+          </div>
         </div>
         <p class="foot-note" id="assetNote" style="margin-top:10px;"></p>
       </div>
@@ -255,10 +270,26 @@
       <div class="card" id="rateChartCard">
         <h2>每年提領率圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出每年的提領率與上下護欄。</p>
-        <div class="chart-wrap" id="rateChart">
-          <div class="chart-legend" id="rateLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="動態提領與固定提領的每年提領率折線圖，含上下護欄"></svg>
-          <div class="chart-tip" hidden></div>
+        <div class="chart-split">
+          <div class="chart-wrap" id="rateChart">
+            <div class="chart-legend" id="rateLegend"></div>
+            <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="動態提領與固定提領的每年提領率折線圖，含上下護欄"></svg>
+            <div class="chart-tip" hidden></div>
+          </div>
+          <div class="chart-help">
+            <h3>圖如何解讀</h3>
+            <p>回答：我每年領的錢占當時資產的幾 %？護欄有沒有發揮作用？</p>
+            <ul>
+              <li><strong>提領率 = 當年提領金額 ÷ 當年年初資產</strong>。</li>
+              <li><strong>三條橫線</strong>：中間是初始提領率；上下各一條護欄（初始 ±20%）。</li>
+              <li><strong>提領率碰到上護欄</strong>：代表領得太吃緊，動態提領會把金額砍 10%，把提領率拉回來。</li>
+              <li><strong>提領率掉到下護欄以下</strong>：代表資產成長很多，動態提領會加碼 10%。</li>
+              <li class="mc-only"><strong>動態線（中位數）</strong>通常貼近初始提領率、碰不到護欄，因為護欄是在比較好或比較差的個別路徑上動作；請看<strong>淡綠區塊的上下緣</strong>。區塊上緣可能暫時略高於上護欄，因為一次只調整 10%。</li>
+              <li class="stress-only" hidden><strong>壓力情境</strong>：可以看到下跌期間動態提領率被護欄拉回、固定提領率一路飆高。</li>
+              <li><strong>固定提領線</strong>沒有護欄：資產一跌，提領率就自動升高；報酬很高時則會下降。往上爬到 100% 就是錢領完了。</li>
+            </ul>
+            <p class="chart-help-tip">搭配資產成長圖看：一個看「錢還剩多少」，一個看「領得有多吃緊」。</p>
+          </div>
         </div>
         <p class="foot-note" id="rateNote" style="margin-top:10px;"></p>
       </div>
@@ -540,6 +571,8 @@
   function render(v, dyn, fix){
     const T = v.years;
     const stress = v.mode === 'stress';
+    document.querySelectorAll('.mc-only').forEach(el => { el.hidden = stress; });
+    document.querySelectorAll('.stress-only').forEach(el => { el.hidden = !stress; });
     const first = v.assets * v.wr0;
 
     $('needTile').hidden = v.goal !== 'spend';
