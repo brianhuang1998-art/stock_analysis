@@ -191,10 +191,26 @@
       <div class="card" id="assetChartCard">
         <h2>資產成長圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出退休金隨年數的變化。</p>
-        <div class="chart-wrap" id="assetChart">
-          <div class="chart-legend" id="assetLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下退休金餘額隨年數變化的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
-          <div class="chart-tip" hidden></div>
+        <div class="chart-split">
+          <div class="chart-wrap" id="assetChart">
+            <div class="chart-legend" id="assetLegend"></div>
+            <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下退休金餘額隨年數變化的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
+            <div class="chart-tip" hidden></div>
+          </div>
+          <div class="chart-help">
+            <h3>圖如何解讀</h3>
+            <p>回答：退休後，我的錢會剩多少？</p>
+            <ul>
+              <li class="fixed-only"><strong>這條線</strong>：照固定報酬一路算下來，每年年初先領、剩下的再成長。資金用完後顯示 0。</li>
+              <li class="mc-only" hidden>電腦隨機模擬 4,000 種未來市場，每個時間點把這 4,000 個人的資產由少到多排隊。</li>
+              <li class="mc-only" hidden><strong>實線（中位數）</strong>：排在正中間的人，一半比他多、一半比他少，可當成「普通運氣」。</li>
+              <li class="mc-only" hidden><strong>淡色區塊</strong>：去掉最倒楣與最幸運各 10%，其餘 80% 的人落在的範圍。上緣是運氣好，下緣是運氣差。</li>
+              <li class="mc-only" hidden><strong>下緣碰到 0</strong>：代表有一成以上的人在那之前已經把錢領完；區塊越寬，運氣的影響越大。</li>
+              <li><strong>往下掉</strong>代表領的比賺的多；<strong>往上</strong>代表報酬超過提領。</li>
+              <li class="fixed-only">這條線看不出市場起伏的風險；改成「加入市場波動」可以看到較差的情境。</li>
+              <li class="mc-only" hidden>重點看<strong>下緣</strong>，不是只看中間那條線。</li>
+            </ul>
+          </div>
         </div>
         <p class="foot-note" id="assetNote" style="margin-top:10px;"></p>
       </div>
@@ -202,10 +218,26 @@
       <div class="card" id="rateChartCard">
         <h2>每年提領率圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出每年的提領率。</p>
-        <div class="chart-wrap" id="rateChart">
-          <div class="chart-legend" id="rateLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下每年提領率的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
-          <div class="chart-tip" hidden></div>
+        <div class="chart-split">
+          <div class="chart-wrap" id="rateChart">
+            <div class="chart-legend" id="rateLegend"></div>
+            <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下每年提領率的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
+            <div class="chart-tip" hidden></div>
+          </div>
+          <div class="chart-help">
+            <h3>圖如何解讀</h3>
+            <p>回答：我每年領的錢，占當時手上資產的幾 %？有沒有越領越吃緊？</p>
+            <ul>
+              <li><strong>提領率 = 當年提領金額 ÷ 當年年初資產</strong>。領的金額每年固定加通膨，資產卻會變，所以提領率每年不同。</li>
+              <li><strong>虛線</strong>：你設定的首年提領率，當作基準。</li>
+              <li class="fixed-only"><strong>這條線</strong>往上爬，代表資產成長追不上每年多領的金額；到 100% 就是錢領完了。</li>
+              <li class="mc-only" hidden><strong>實線（中位數）</strong>：普通運氣的人。往上爬，代表越領越吃緊。</li>
+              <li class="mc-only" hidden><strong>淡色區塊上緣</strong>：運氣差的那 10%。衝得很高代表一年領掉資產的大部分；到 100% 就是錢領完了。</li>
+              <li>一般經驗：從 4% 一路升到 6%、8%，就該警覺。</li>
+              <li>這也是固定提領的盲點：金額不看市場，資產下跌時提領率會自動變高。</li>
+            </ul>
+            <p class="chart-help-tip">搭配資產成長圖看：一個看「錢還剩多少」，一個看「領得有多吃緊」。</p>
+          </div>
         </div>
         <p class="foot-note" id="rateNote" style="margin-top:10px;"></p>
       </div>
@@ -450,6 +482,8 @@
 
     const isMC = v.mode === 'mc';
     $('volatilityBox').hidden = !isMC;
+    document.querySelectorAll('.mc-only').forEach(el => { el.hidden = !isMC; });
+    document.querySelectorAll('.fixed-only').forEach(el => { el.hidden = isMC; });
 
     const errors = validate(v);
     FIELDS.forEach(f => {

@@ -142,6 +142,16 @@ h1{
 @media (max-width:860px){
   .layout{grid-template-columns:1fr;}
 }
+/* 圖表左、「圖如何解讀」右（窄螢幕改上下排） */
+.chart-split{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px;align-items:start;}
+.chart-help{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.65;color:var(--text);}
+.chart-help h3{font-size:14px;margin:0 0 6px;color:var(--navy);}
+.chart-help p{margin:0 0 6px;}
+.chart-help ul{margin:0;padding-left:18px;}
+.chart-help li{margin-bottom:4px;}
+.chart-help li[hidden]{display:none;}
+.chart-help .chart-help-tip{margin:8px 0 0;color:var(--text-muted);font-size:12.5px;}
+@media (max-width:860px){ .chart-split{grid-template-columns:minmax(0,1fr);} }
 /* 只有主內容一欄（退休固定、動態提領頁已移除右側參考區） */
 .layout.layout-single{grid-template-columns:minmax(0,1fr);}
 
