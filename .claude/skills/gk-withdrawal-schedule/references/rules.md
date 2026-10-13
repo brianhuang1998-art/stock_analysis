@@ -1,33 +1,33 @@
-# Rules implemented (Guyton & Klinger 2006, printed page numbers)
+# 已實作的規則（Guyton & Klinger 2006，紙本頁碼）
 
-Notation: A = starting assets, IWR = initial withdrawal rate, W(t) = withdrawal in year t, B(t) = assets at the start of year t, T = plan length in years, r(t) = total return of year t, i(t) = inflation of year t.
+符號：A = 起始資產，IWR = 初始提領率，W(t) = 第 t 年的提領，B(t) = 第 t 年年初資產，T = 計畫年數，r(t) = 第 t 年總報酬，i(t) = 第 t 年通膨率。
 
-| # | Rule | Paper | In `schedule.py` |
+| # | 規則 | 論文 | `schedule.py` 中的做法 |
 |---|---|---|---|
-| 1 | Withdraw on the first day of the year; the rest then earns the year's return | p.52 | end(t) = (B(t) − W(t)) × (1 + r(t)); B(t+1) = end(t) |
-| 2 | Year 1 withdrawal = A × IWR | p.50 | W(1) = A × IWR |
-| 3 | Withdrawals rise with last year's inflation; **no 6% cap** (the cap was dropped) | p.50, p.51, p.55 | base(t) = W(t−1) × (1 + i(t−1)) |
-| 4 | Freeze (modified withdrawal rule): no inflation increase after a year with a negative total return **and** when this year's withdrawal rate would be above the IWR; no make-up | p.52 | freeze if r(t−1) < 0 and base(t) / B(t) > IWR |
-| 5 | Capital preservation: current rate more than 20% above the IWR → this year's withdrawal reduced by 10% | p.54 | rate > IWR × 1.2 → × 0.9 |
-| 6 | Capital preservation expires 15 years before the end of the plan | p.54 | active only if T − t + 1 > 15 (remaining years including this one) |
-| 7 | Prosperity: current rate more than 20% below the IWR → this year's withdrawal raised by 10% | p.54 | rate < IWR × 0.8 → × 1.1 |
-| 8 | The adjusted amount is the basis for next year; nothing is made up | p.54 | prev_w = W(t) |
-| 9 | Success = money left at the end | p.52 | no year with W ≥ opening assets |
-| 10 | Purchasing power: only in successful simulations; total and year-N | p.54–55 | planned(t) = A × IWR × Π(1 + i(k)), k < t; ratio = W(t) / planned(t); total = mean over years |
-| 11 | Portfolio management rule (which asset to sell) | p.51 | not applicable: single asset |
+| 1 | 每年第一天提領；剩下的資產再賺當年報酬 | p.52 | end(t) = (B(t) − W(t)) × (1 + r(t))；B(t+1) = end(t) |
+| 2 | 第 1 年提領 = A × IWR | p.50 | W(1) = A × IWR |
+| 3 | 提領隨前一年通膨調升；**沒有 6% 上限**（上限已取消） | p.50、p.51、p.55 | base(t) = W(t−1) × (1 + i(t−1)) |
+| 4 | 凍結（修正版提領規則）：前一年總報酬為負，**而且**今年的提領率會高於 IWR，就不做通膨調升；不補回 | p.52 | 若 r(t−1) < 0 且 base(t) / B(t) > IWR 則凍結 |
+| 5 | 保本規則：目前提領率高於 IWR 超過 20% → 今年提領減少 10% | p.54 | 提領率 > IWR × 1.2 → × 0.9 |
+| 6 | 保本規則在計畫結束前 15 年停用 | p.54 | 只有 T − t + 1 > 15（含本年的剩餘年數）時啟用 |
+| 7 | 繁榮規則：目前提領率低於 IWR 超過 20% → 今年提領增加 10% | p.54 | 提領率 < IWR × 0.8 → × 1.1 |
+| 8 | 調整後的金額是明年的基準；不補回 | p.54 | prev_w = W(t) |
+| 9 | 成功 = 期末還有錢 | p.52 | 沒有任何一年 W ≥ 年初資產 |
+| 10 | 購買力：只在成功的模擬中計算；總計與第 N 年 | p.54–55 | planned(t) = A × IWR × Π(1 + i(k))，k < t；比率 = W(t) / planned(t)；總計 = 各年平均 |
+| 11 | 投資組合管理規則（決定賣哪類資產） | p.51 | 不適用：單一資產 |
 
-"Current rate" = this year's withdrawal ÷ opening assets B(t).
+「目前提領率」= 今年提領 ÷ 年初資產 B(t)。
 
-## Order of the freeze and the guardrails (not settled by the paper)
-- `freeze`: freeze decision → rate on the frozen amount → guardrails. A year can show both "凍結" and "保本".
-- `guardrail`: rate on base(t) → if above the upper guardrail (and the rule is active): base × 0.9; else if below the lower: base × 1.1; else freeze test; else base. At most one tag per year.
-The column "試算提領率" is base(t) / B(t), the rate before any freeze.
+## 凍結與護欄的順序（論文沒有定論）
+- `freeze`：凍結判斷 → 用凍結後的金額算提領率 → 護欄。同一年可能同時出現「凍結」與「保本」。
+- `guardrail`：用 base(t) 算提領率 → 高於上護欄（且規則啟用）：base × 0.9；否則低於下護欄：base × 1.1；否則做凍結檢定；否則 base。每年最多一個標記。
+「試算提領率」欄是 base(t) / B(t)，也就是任何凍結之前的提領率。
 
-## Edge cases (all fixed in the code)
-- Thresholds are strict: a rate exactly equal to IWR × 1.2 or × 0.8 does not trigger; a return of exactly 0% is not negative.
-- Year 1 has no tests.
-- If W(t) ≥ B(t) the plan fails: the withdrawal is whatever is left, the money is 0 afterwards, later rows read "資金已用完", and purchasing power is not reported for a failed run (the paper only measures successful ones); an all-years figure that includes the zeros is printed for reference.
-- Nothing is rounded during the calculation; money is displayed in whole yuan (halves round up, as on the website).
-- A yearly return of −100% or lower is rejected.
-- A one-year plan or a plan of 15 years or less never uses the capital preservation rule.
-- Hand-worked cases and random comparisons are in `scripts/verify.py`.
+## 邊界情況（程式碼中都已固定）
+- 門檻是嚴格的：提領率剛好等於 IWR × 1.2 或 × 0.8 不會觸發；報酬剛好 0% 不算負。
+- 第 1 年不做任何檢定。
+- 若 W(t) ≥ B(t) 即計畫失敗：提領的是剩下的全部，之後資產為 0，後面各列顯示「資金已用完」，失敗的路徑不報購買力（論文只衡量成功的路徑）；另外印出一個含零值的全年度數字供參考。
+- 計算過程不做任何四捨五入；金額顯示為整數元（0.5 進位，與網站相同）。
+- 單年報酬為 −100% 或更低會被拒絕。
+- 只有 1 年的計畫，或 15 年以內的計畫，永遠不使用保本規則。
+- 手算案例與隨機比對放在 `scripts/verify.py`。

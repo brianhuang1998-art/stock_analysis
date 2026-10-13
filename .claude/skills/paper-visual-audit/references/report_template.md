@@ -1,19 +1,19 @@
-# Visual audit report: <paper>
+# 視覺審核報告：<論文>
 
-- Audited copies: <file names, pages, kind (scan / text layer)>
-- Date / model used for reading the images: <...>
-- Method: images rendered with pypdfium2 at <scale>x; tables transcribed in <n> independent passes; scripts: compare_transcriptions.py, check_tables.py, pdf_inventory.py
+- 審核的版本：<檔名、頁數、類型（掃描／文字層）>
+- 日期／讀圖所用的模型：<...>
+- 方法：圖片以 <scale> 倍用 pypdfium2 轉出；表格做了 <n> 次獨立轉錄；腳本：compare_transcriptions.py、check_tables.py、pdf_inventory.py
 
-## Summary
-| Audit | OK | CHECK | FAIL | NOTE | Not verifiable |
+## 摘要
+| 審核 | OK | CHECK | FAIL | NOTE | 無法驗證 |
 |---|---|---|---|---|---|
-| 1 Data | | | | | |
-| 2 Figures | | | | | |
-| 3 Labels and fonts | | | | | |
+| 1 資料 | | | | | |
+| 2 圖 | | | | | |
+| 3 標籤與字型 | | | | | |
 
-## Findings
-For each finding: ID, level, location (copy, page, table/figure, row/column), what was read, what was expected, evidence image path, status (needs human confirmation / resolved).
+## 發現
+每一項發現要有：編號、等級、位置（版本、頁碼、表／圖、列／欄）、讀到什麼、預期是什麼、證據圖片路徑、狀態（需要人確認／已解決）。
 
-## What this audit cannot show
-- It checks whether the paper is internally consistent and was transcribed correctly. It cannot re-derive the paper's results (the inputs, e.g. historical asset-class statistics, are not in the paper).
-- A vision model can misread digits; every number that matters was read at least twice and any disagreement resolved against the image by a person.
+## 這個審核無法證明的事
+- 它檢查的是論文是否內部一致、轉錄是否正確。它無法重新推導論文的結果（輸入資料，例如各資產類別的歷史統計，不在論文裡）。
+- 視覺模型可能讀錯數字；每個重要的數字都至少讀過兩次，任何不一致都由人對照圖片解決。

@@ -1,65 +1,65 @@
 ---
 name: paper-visual-audit
-description: LLM-powered visual audit of a research paper PDF (data in tables, figures, labels and fonts). Use when the user wants to verify a paper's tables and numbers, check its figures against the text, compare two copies of a paper (e.g. a web capture vs a print scan), check labels/footnotes/fonts, or check that our code and web page agree with a paper. Renders pages to images, has the vision model transcribe tables twice, then runs deterministic consistency checks and writes an audit report. Built for Guyton & Klinger (2006) in papers/, usable for any paper PDF.
+description: 以大型語言模型對研究論文 PDF 做視覺審核（表格資料、圖、標籤與字型）。當使用者想驗證論文的表格與數字、核對圖與內文是否一致、比對同一篇論文的兩份版本（例如網頁擷取 vs 紙本掃描）、檢查標籤／註腳／字型，或檢查我們的程式與網頁是否與論文一致時使用。流程：把頁面轉成圖片，讓視覺模型把表格轉錄兩次，再執行確定性的一致性檢查並寫出審核報告。為 papers/ 內的 Guyton & Klinger（2006）而建，也可用於任何論文 PDF。
 ---
 
-# Paper visual audit
+# 論文視覺審核
 
-Goal: find out whether a paper's numbers, figures and labels are **read correctly and consistent with each other**, using page images the model looks at, plus scripts that do the arithmetic. The model does the reading; scripts do the checking. A model can misread digits, so nothing is trusted from one pass.
+目標：用模型看得到的頁面圖片，加上負責運算的腳本，找出論文的數字、圖與標籤是否**讀對了、彼此一致**。模型負責閱讀，腳本負責檢查。模型可能讀錯數字，所以任何東西都不能只讀一次就相信。
 
-This audit cannot re-derive a paper's results (their inputs are usually not in the paper). It can show that a table was transcribed correctly, that it is internally consistent, that the text's claims match the tables, that two copies agree, and that figures and labels match the text.
+這個審核無法重新推導論文的結果（輸入資料通常不在論文裡）。它能證明的是：某張表被正確轉錄、表本身內部一致、內文的說法與表格相符、兩份版本相符，以及圖與標籤和內文相符。
 
-## Setup (once)
+## 設定（只需一次）
 
-No poppler needed. From the project root:
+不需要 poppler。在專案根目錄：
 
 ```bash
 python3 -m venv .venv-pdf
 .venv-pdf/bin/pip install pypdf pypdfium2 pillow
 ```
 
-Run the scripts with `.venv-pdf/bin/python .claude/skills/paper-visual-audit/scripts/<script>.py`.
-Put all outputs in `papers/audit/` (`images/`, `transcriptions/`, `report.md`).
+用 `.venv-pdf/bin/python .claude/skills/paper-visual-audit/scripts/<script>.py` 執行腳本。
+所有輸出放在 `papers/audit/`（`images/`、`transcriptions/`、`report.md`）。
 
-## Workflow
+## 工作流程
 
-### Step 0. Inventory
-`pdf_inventory.py <pdf>` for every copy. It says whether there is a text layer or only a scan, which pages carry embedded images (tables and figures are often pictures with no extractable text), and which fonts are used and embedded. Decide per copy: text layer → search it; scan or embedded picture → read it as an image.
-If two PDFs may be the same paper, compare title, authors, page headers before treating them as two sources.
+### 步驟 0. 盤點
+對每一份版本執行 `pdf_inventory.py <pdf>`。它會告訴你：有文字層還是只有掃描、哪些頁面含有嵌入圖片（表格與圖常常是沒有可抽取文字的圖片），以及用了哪些字型、是否嵌入。每份版本各自決定：有文字層 → 直接搜尋；掃描或嵌入圖片 → 當成圖片來讀。
+如果兩份 PDF 可能是同一篇論文，先比對標題、作者、頁首，再決定把它們當成兩個來源。
 
-### Step 1. Render
-- Embedded pictures: `extract_images.py <pdf> --out papers/audit/images/<copy> --upscale 2.5` (native resolution, upscaled).
-- Scans / whole pages: `render_pages.py <pdf> --out ... --pages 4,7 --scale 2.2`, then cut each table or figure with `--crop page:x0,y0,x1,y1:name` (fractions of the page). One table per image, never cutting a row.
-- Open each image with the Read tool so the model actually sees it.
+### 步驟 1. 轉成圖片
+- 嵌入圖片：`extract_images.py <pdf> --out papers/audit/images/<copy> --upscale 2.5`（原始解析度，再放大）。
+- 掃描檔／整頁：`render_pages.py <pdf> --out ... --pages 4,7 --scale 2.2`，再用 `--crop page:x0,y0,x1,y1:name`（頁面比例）切出每張表或圖。一張圖只放一張表，絕不切斷任何一列。
+- 用 Read 工具打開每一張圖，讓模型真的看到它。
 
-### Step 2. Data audit (tables)
-1. **Transcribe** each table into the JSON format in `references/transcription_schema.md`. Copy numbers exactly as printed; unreadable cell → `null` plus a note; never correct a number that looks wrong (that is a finding, not an edit).
-2. **Second, independent pass**: re-read from a different crop or scale without looking at pass 1. Save as `<source>_<table>_pass2.json`.
-3. `compare_transcriptions.py a.json b.json` for pass 1 vs pass 2, and for copy vs copy. Resolve each DIFF by looking at the image again.
-4. `check_tables.py papers/audit/transcriptions --source <copy>` runs the arithmetic and consistency checks (enhancement = rate ratio − 1 within rounding; rates rise as the confidence standard falls; success rate and purchasing power meet the standard they are listed under) and tests the text's claims against the tables (summary, body, conclusion).
-5. Trace text-only numbers ("30-43 percent", "60 percent fewer freezes") to a table or label them "not verifiable".
+### 步驟 2. 資料審核（表格）
+1. **轉錄**：把每張表轉錄成 `references/transcription_schema.md` 的 JSON 格式。數字照印刷的原樣抄；讀不清楚的格子填 `null` 並加註；絕不修正看起來有問題的數字（那是發現，不是要改的東西）。
+2. **第二次獨立讀取**：從不同的裁切或縮放重讀，不要看第一次的結果。存成 `<source>_<table>_pass2.json`。
+3. 用 `compare_transcriptions.py a.json b.json` 比對第一次與第二次，以及版本與版本之間。每個 DIFF 都要回頭看圖解決。
+4. 執行 `check_tables.py papers/audit/transcriptions --source <copy>`，跑算術與一致性檢查（增幅 = 比率 − 1，在四捨五入誤差內；信心標準越低，比率越高；成功率與購買力要達到它所列的標準），並用表格檢驗內文的說法（摘要、本文、結論）。
+5. 把只出現在內文的數字（「30-43 percent」、「60 percent fewer freezes」）追溯到某張表，追不到就標為「無法驗證」。
 
-### Step 3. Figure audit
-1. Look at the figure image **before** reading the caption or the paragraph that cites it, and write a blind description: axes, lines, labels, what increases or decreases.
-2. Compare the description with the text's specification (e.g. Figure 1: guardrails at 20% above and below the initial withdrawal rate, capital preservation above, prosperity below, withdrawal rule between).
-3. Check figure number, caption, in-text reference, units and axis labels.
-4. If our own charts are part of the audit, take a screenshot (needs a browser) and check axis units, legend, reference lines and clipped values the same way.
+### 步驟 3. 圖的審核
+1. **先看圖**，再讀說明文字或引用它的段落，並寫下盲測描述：座標軸、線條、標籤、什麼上升或下降。
+2. 把描述與內文的規格比對（例如 Figure 1：護欄在初始提領率上下 20%，上方是保本，下方是繁榮，中間是提領規則）。
+3. 檢查圖號、說明文字、內文引用、單位與座標軸標籤。
+4. 若審核範圍包含我們自己的圖表，截圖（需要瀏覽器），用同樣方式檢查座標單位、圖例、參考線與被裁掉的值。
 
-### Step 4. Label and font audit
-Use `references/audit_checklist.md` section 3: table headers vs content, units, footnote markers and their footnotes, abbreviations defined at first use and used for one thing only, numbering of tables and figures, fonts and embedding from `pdf_inventory.py`, legibility and resolution of embedded images, and wording differences between copies.
+### 步驟 4. 標籤與字型審核
+使用 `references/audit_checklist.md` 第 3 節：表頭與內容是否相符、單位、註腳符號與註腳內容、縮寫是否在首次出現時定義且只用於一種意思、表與圖的編號、`pdf_inventory.py` 回報的字型與嵌入情形、嵌入圖片的清晰度與解析度，以及各版本之間的用字差異。
 
-### Step 5. Report
-Write `papers/audit/report.md` from `references/report_template.md`. Every finding has an ID, a level (OK / NOTE / CHECK / FAIL), the copy and page, what was read, what was expected, and the path of the evidence image. State plainly what is **not verifiable**.
+### 步驟 5. 報告
+依 `references/report_template.md` 寫 `papers/audit/report.md`。每一項發現都要有編號、等級（OK / NOTE / CHECK / FAIL）、版本與頁碼、讀到什麼、預期是什麼，以及證據圖片的路徑。明確寫出什麼是**無法驗證**的。
 
-## Rules
-- A finding is a **CHECK** (a human decides), not an error, when the text may simply be loose ("portfolios with at least 65 percent equities") while a table row differs. Say why it might be intentional.
-- Prefer the print scan over a web capture when copies disagree on wording or a number, and say which copy each statement comes from.
-- Cite page numbers of the copy you read; web captures and print pages use different numbers.
-- Do not present a vision-model reading as ground truth. Two passes agreeing and the scripts passing is the bar; a person confirms anything that matters.
-- Keep the audit read-only with respect to the code and the website. If the paper contradicts our code, report it; fixing the code is a separate step the user approves.
+## 規則
+- 當內文可能只是寫得寬鬆（例如「portfolios with at least 65 percent equities」），而某一列表格不同時，這是 **CHECK**（由人判斷），不是錯誤。要說明為什麼可能是有意的。
+- 版本之間用字或數字不一致時，優先採用紙本掃描，不用網頁擷取，並說明每一個說法出自哪個版本。
+- 引用你所讀版本的頁碼；網頁擷取與紙本的頁碼不同。
+- 不要把視覺模型的讀取結果當成事實。兩次讀取一致、腳本檢查通過，才算達標；重要的內容要由人確認。
+- 審核對程式與網站只讀不寫。若論文與我們的程式矛盾，只回報；修改程式是另一步，要使用者同意。
 
-## Files
-- `scripts/pdf_inventory.py`, `render_pages.py`, `extract_images.py`: inspect and render.
-- `scripts/compare_transcriptions.py`: cell-by-cell comparison of two transcriptions.
-- `scripts/check_tables.py`: consistency checks written for Guyton & Klinger (2006) Tables 2, 6, 7 (extend `claims()` and the table checks for other papers).
-- `references/transcription_schema.md`, `audit_checklist.md`, `report_template.md`.
+## 檔案
+- `scripts/pdf_inventory.py`、`render_pages.py`、`extract_images.py`：檢查與轉圖。
+- `scripts/compare_transcriptions.py`：逐格比對兩份轉錄。
+- `scripts/check_tables.py`：為 Guyton & Klinger（2006）的 Table 2、6、7 寫的一致性檢查（用於其他論文時，要擴充 `claims()` 與各表檢查）。
+- `references/transcription_schema.md`、`audit_checklist.md`、`report_template.md`。

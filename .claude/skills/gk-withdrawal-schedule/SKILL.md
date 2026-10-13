@@ -1,63 +1,63 @@
 ---
 name: gk-withdrawal-schedule
-description: Compute an exact year-by-year retirement withdrawal schedule with the Guyton & Klinger (2006) guardrail rules (freeze rule, capital preservation, prosperity, no inflation cap) for a person's assets, initial withdrawal rate, planning horizon and a return and inflation path. Use when the user asks for a year-by-year withdrawal table or schedule, wants to replay a historical or stress path (for example a 1973-style early crash) through the guardrail rules, wants the effect of a specific return sequence, or wants a schedule produced by another model checked. It runs a deterministic script; never do this arithmetic by hand or in your head.
+description: 依 Guyton & Klinger（2006）護欄規則（凍結規則、保本規則、繁榮規則、通膨不設上限），為指定的資產、初始提領率、規劃年數，以及報酬與通膨路徑，精確算出逐年的退休提領表。當使用者要求逐年提領表或提領時間表、想把歷史或壓力路徑（例如 1973 年式的早期崩盤）套進護欄規則、想看特定報酬順序的影響，或想檢查另一個模型產出的提領表時使用。它執行確定性的腳本；絕不要用手算或心算這些數字。
 ---
 
-# Guyton-Klinger year-by-year withdrawal schedule
+# Guyton-Klinger 逐年提領表
 
-Turns assets, an initial withdrawal rate and a return/inflation path into the table "year, opening assets, rule triggered, withdrawal, withdrawal rate, closing assets". **Every number comes from `scripts/schedule.py`.** Do not compute any row yourself: forty years of compounding and conditional rules are exactly where a language model makes silent mistakes.
+把資產、初始提領率與報酬／通膨路徑，變成「年份、年初資產、觸發規則、提領金額、提領率、年底資產」的表格。**每一個數字都來自 `scripts/schedule.py`。** 不要自己算任何一列：四十年的複利加上條件式規則，正是語言模型最容易默默算錯的地方。
 
-The rules are those of Guyton & Klinger (2006), *Decision Rules and Maximum Initial Withdrawal Rates*, J. Financial Planning, March 2006 (page numbers below are the printed ones; the scan is `papers/source/Guytons-Guardrails-Maximum-Inisital-Withdrawal-Rates.pdf`). Only the 2006 rules exist here. Details, edge cases and page references: `references/rules.md`. Output format: `references/output_format.md`.
+規則出自 Guyton & Klinger（2006），*Decision Rules and Maximum Initial Withdrawal Rates*，J. Financial Planning，2006 年 3 月（下文頁碼為紙本頁碼；掃描檔是 `papers/source/Guytons-Guardrails-Maximum-Inisital-Withdrawal-Rates.pdf`）。這裡只實作 2006 年版規則。細節、邊界情況與頁碼出處見 `references/rules.md`；輸出格式見 `references/output_format.md`。
 
-## 1. Collect the inputs
-Ask for anything missing; do not invent values. Defaults only where stated.
+## 1. 收集輸入
+缺什麼就問，不要自行編造數值；只有標明的項目才有預設值。
 
-| Input | Meaning | Default |
+| 輸入 | 意義 | 預設 |
 |---|---|---|
-| `--assets` | retirement assets on day one (e.g. 10000000) | ask |
-| `--iwr` | initial withdrawal rate in percent (5.3 means 5.3%) | ask |
-| `--years` | planning horizon in years (the paper uses 40 and 30) | ask |
-| `--returns` | annual **total return of the whole portfolio**, percent. One number = the same every year; or one value per year (comma list or a file) | ask |
-| `--inflation` | annual inflation, percent; one number or one per year. The value for year *t* is applied to year *t*+1's withdrawal ("last year's inflation") | ask |
-| `--order` | `freeze` (default) or `guardrail`: see section 4 | `freeze` |
-| `--start-age` | age in year 1; adds an age column | optional |
-| `--first-years N --first-return=X` | stress shortcut: the first N years return X%, the rest use `--returns` | optional |
+| `--assets` | 退休第一天的退休資產（例如 10000000） | 要問 |
+| `--iwr` | 初始提領率，百分比（5.3 代表 5.3%） | 要問 |
+| `--years` | 規劃年數（論文用 40 與 30） | 要問 |
+| `--returns` | 每年**整個投資組合的總報酬**，百分比。給一個數字＝每年相同；或每年一個值（逗號分隔或檔案） | 要問 |
+| `--inflation` | 每年通膨率，百分比；一個數字或每年一個值。第 *t* 年的值用於第 *t*+1 年的提領（「前一年通膨」） | 要問 |
+| `--order` | `freeze`（預設）或 `guardrail`：見第 4 節 | `freeze` |
+| `--start-age` | 第 1 年的年齡；會多一欄年齡 | 選填 |
+| `--first-years N --first-return=X` | 壓力情境捷徑：前 N 年報酬為 X%，其餘年份用 `--returns` | 選填 |
 
-The portfolio is treated as a single asset. The paper's portfolio management rule (which asset to sell) therefore does not apply; say so if the user's portfolio is not 100% in one asset class.
+投資組合視為單一資產，因此論文的投資組合管理規則（決定賣哪一類資產）不適用；若使用者的組合不是 100% 單一資產類別，要明確說明這點。
 
-## 2. Run the script
-From the project root (Python 3, standard library only):
+## 2. 執行腳本
+在專案根目錄執行（Python 3，只用標準函式庫）：
 
 ```bash
 python3 .claude/skills/gk-withdrawal-schedule/scripts/schedule.py \
   --assets 10000000 --iwr 5.3 --years 40 --returns 7 --inflation 2.5
 ```
 
-- Negative numbers need the `=` form: `--returns=-15,7,-3`, `--first-return=-15`.
-- A series with one value per year can be a file: `--returns returns.txt` (commas, spaces or newlines).
-- `--json` prints rows and summary as JSON.
-- Stress example, first three years −15% then 7%: `--returns 7 --first-years 3 --first-return=-15`.
+- 負數要用 `=` 的寫法：`--returns=-15,7,-3`、`--first-return=-15`。
+- 每年一個值的序列可以放檔案：`--returns returns.txt`（逗號、空白或換行分隔）。
+- `--json` 會把各列與摘要以 JSON 輸出。
+- 壓力範例，前三年 −15%，之後 7%：`--returns 7 --first-years 3 --first-return=-15`。
 
-## 3. Report the result
-1. Show the output tables as they are (rule thresholds, year-by-year table, summary). Do not retype or "tidy" the numbers.
-2. In plain Chinese, say which years triggered which rule and why (use the "trial rate" and "actual rate" columns), and what the summary means: counts of cuts, raises and freezes; success or the year the money ran out; purchasing power.
-3. State which **order** was used and that the paper does not settle it.
-4. Say it is **one return path, not a probability**. For probabilities use the website's Monte Carlo page (`retirement_dynamic_withdrawal.html`).
-5. Mention what is not modelled: taxes, fees, other income, one-off expenses, and the portfolio management rule.
+## 3. 回報結果
+1. 原樣呈現輸出的表格（規則門檻、逐年表、摘要）。不要重打或「整理」數字。
+2. 用白話中文說明哪幾年觸發了哪條規則、為什麼（用「試算提領率」與「實際提領率」兩欄），以及摘要的意義：下調、上調、凍結的次數；成功，或資金用完的年份；購買力。
+3. 說明使用了哪一種**檢定順序**，並指出論文沒有定論。
+4. 說明這是**一條報酬路徑，不是機率**。要看機率，請用網站的蒙地卡羅頁面（`retirement_dynamic_withdrawal.html`）。
+5. 提到未納入模型的項目：稅、費用、其他收入、一次性支出，以及投資組合管理規則。
 
-## 4. The order of the freeze and the guardrails
-The paper does not say whether the freeze (withdrawal rule) or the guardrails are tested first.
-- `freeze` (default, same as the website): decide the freeze first, then test the guardrails on the frozen amount. Basis: p.54 says the capital preservation rule looks at the rate "using the decision rules in effect"; also the paper's Table 6 freeze counts are closer to this order.
-- `guardrail`: test the guardrails on the inflation-adjusted amount first and freeze only if neither guardrail fires (reads Table 5 as a decision tree). A capital-preservation year then still includes the inflation increase.
-On the same random paths the second order gives a success rate about 0.3–3.6 percentage points lower (`papers/verification/paper_check.md` §6). Offer to run both when the difference matters.
+## 4. 凍結與護欄的檢定順序
+論文沒有說明要先檢定凍結（提領規則）還是先檢定護欄。
+- `freeze`（預設，與網站相同）：先決定是否凍結，再用凍結後的金額檢定護欄。依據：p.54 說保本規則看的是「現行規則調整後」的提領率；而且論文 Table 6 的凍結次數與這個順序較接近。
+- `guardrail`：先用含通膨調整的金額檢定護欄，兩條護欄都沒觸發才凍結（把 Table 5 讀成決策樹）。這樣保本規則觸發的那一年，仍然包含通膨調升。
+在同一批隨機路徑上，第二種順序的成功率約低 0.3～3.6 個百分點（`papers/verification/paper_check.md` §6）。差異重要時，主動提議兩種都跑。
 
-## 5. Checking a schedule made elsewhere
-If the user pastes a table (for example from another model), run the script with the same inputs and compare row by row. List the first row that differs, which number, and which rule explains it (often the order in section 4, a wrong 15-year cutoff, a 6% inflation cap that the 2006 paper removed, or an inflation rate taken from the wrong year). Do not "split the difference".
+## 5. 檢查別處產生的提領表
+如果使用者貼上一張表（例如來自另一個模型），用相同輸入跑腳本，逐列比對。列出第一個不同的列、哪個數字，以及哪條規則可以解釋（常見原因：第 4 節的順序、錯誤的 15 年截止點、2006 年版已取消的 6% 通膨上限，或取到錯誤年份的通膨率）。不要「折衷取中間值」。
 
-## 6. After changing the script
-Run `python3 .claude/skills/gk-withdrawal-schedule/scripts/verify.py`. It checks three cases worked out by hand and 1,200 random schedules against the project's independent simulator (`papers/verification/ref_simulator.py`, which the website is also verified against). All checks must pass before the results are trusted.
+## 6. 修改腳本之後
+執行 `python3 .claude/skills/gk-withdrawal-schedule/scripts/verify.py`。它會檢查三個手算過的案例，以及 1,200 組隨機提領表（對照專案的獨立模擬器 `papers/verification/ref_simulator.py`，網站也是對照它驗證的）。全部通過，結果才可信。
 
-## Limits
-- One path per run; no probabilities, no sampling.
-- Inflation and returns are inputs; nothing is looked up. If the user wants "what actually happened in 1973", they must supply the series.
-- Not investment advice.
+## 限制
+- 每次只算一條路徑；沒有機率，也沒有抽樣。
+- 通膨與報酬都是輸入值，不會自動查詢。若使用者想看「1973 年實際發生什麼事」，必須自己提供數列。
+- 不是投資建議。

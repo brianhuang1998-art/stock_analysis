@@ -68,7 +68,32 @@
       <div class="card">
         <h2>試算參數</h2>
         <div class="field-grid">
-          <div>
+          <div class="field-wide">
+            <label for="goal">試算目標 <a class="help" href="#g-reverse" aria-label="名詞解釋：反推所需退休金">ⓘ</a></label>
+            <div class="input-wrap">
+              <select id="goal">
+                <option value="assets">已知退休資產 → 算每月可領多少</option>
+                <option value="spend">已知每月想花多少 → 反推需要準備多少退休金</option>
+              </select>
+            </div>
+          </div>
+          <div id="spendBox" hidden>
+            <label for="monthlySpend">每月想花多少（今日幣值）</label>
+            <div class="input-wrap">
+              <input type="number" id="monthlySpend" inputmode="decimal" step="1000" value="50000">
+              <span class="unit">元</span>
+            </div>
+            <p class="input-error" id="err-monthlySpend" hidden></p>
+          </div>
+          <div id="yearsToRetireBox" hidden>
+            <label for="yearsToRetire">距離退休還有幾年（已退休填 0）</label>
+            <div class="input-wrap">
+              <input type="number" id="yearsToRetire" inputmode="numeric" step="1" value="0">
+              <span class="unit">年</span>
+            </div>
+            <p class="input-error" id="err-yearsToRetire" hidden></p>
+          </div>
+          <div id="assetsBox">
             <label for="assets">退休時資產</label>
             <div class="input-wrap">
               <input type="number" id="assets" inputmode="decimal" step="100000" value="10000000">
@@ -133,6 +158,11 @@
         <h2>試算結果</h2>
         <p class="empty-hint">請先修正上方標紅的欄位，結果會自動更新。</p>
         <div class="tiles">
+          <div class="tile wide" id="needTile" hidden>
+            <div class="k">需要準備的退休金</div>
+            <div class="v mono" id="sumNeed">--</div>
+            <div class="sub" id="sumNeedSub"></div>
+          </div>
           <div class="tile">
             <div class="k">首年每月可提領</div>
             <div class="v mono" id="sumMonthly">--</div>
@@ -222,6 +252,8 @@
           <dd>退休第一年領的金額 ÷ 退休時資產。例：資產 1,000 萬、第一年領 40 萬 → 4%。4% 法則就是把它訂為 4%。</dd>
           <dt>4% 法則 / 25 倍法則</dt>
           <dd>第一年領資產的 4%，之後每年只依通膨調高金額。反推：退休時需要的資產 = 每年花費 ÷ 4% = 每年花費 × 25。例：每年花 60 萬 → 約需 1,500 萬。</dd>
+          <dt id="g-reverse">反推所需退休金</dt>
+          <dd>已知每月想花多少，反過來算需要準備多少：<strong>需要的退休金 = 退休第一年的每年花費 ÷ 首年提領率</strong>。若距離退休還有幾年，每月花費會先依通膨換算成退休當年的金額。例：每月花 5 萬、每年 60 萬，提領率 4% → 1,500 萬（即 25 倍法則）。這個金額只是依你選的提領率反推，不代表那個提領率一定夠安全，請看結果的撐得到與否或成功率。</dd>
           <dt>通膨調整</dt>
           <dd>每年的提領金額 = 去年的金額 × (1 + 通膨率)，讓購買力維持不變。</dd>
           <dt id="g-return">預期年化報酬率</dt>
@@ -248,7 +280,7 @@
           <li>每年「年初」先提領，剩下的資產再成長一年。</li>
           <li>資產不夠付當年提領時，視為在那一年用完（那一年之後提領為 0）。</li>
           <li><strong>可撐年數</strong> = 已完整提領的年數 + 最後一年剩下的資產 ÷ 當年應提領金額；最多模擬 100 年。</li>
-          <li><strong>反推需要的資產</strong>（25 倍法則）= 每年花費 ÷ 提領率。</li>
+          <li><strong>反推需要的資產</strong>（25 倍法則）= 退休第一年的每年花費 ÷ 提領率；每月花費 = 今日每月花費 × (1 + 通膨率)<sup>距離退休年數</sup>。算出後以該金額跑整個試算。</li>
         </ul>
       </details>
 
@@ -265,7 +297,7 @@
 
       <details class="ref" id="ref-compare">
         <summary>提領率對照怎麼看</summary>
-        <p>「提領率對照」固定比較 3%、4%、5%、6%：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
+        <p>「提領率對照」固定比較 3%、4%、5%、6%，若你輸入的首年提領率不在其中（例如 3.5%），會自動加進表中並標示「目前設定」：其他參數（資產、報酬率、通膨、年數）維持不變，只改首年提領率，看資金能撐幾年、撐不撐得到你預計的退休年數。</p>
       </details>
 
       <details class="ref" id="ref-choose">
@@ -300,7 +332,7 @@
 (function(){
   const $ = id => document.getElementById(id);
   const STORAGE_KEY = 'retirementCalc:' + location.pathname;
-  const FIELDS = ['assets','withdrawRate','annualReturn','inflation','years','mode','volatility'];
+  const FIELDS = ['goal','monthlySpend','yearsToRetire','assets','withdrawRate','annualReturn','inflation','years','mode','volatility'];
   const MAX_YEARS = 100;
   const COMPARE_RATES = [3, 4, 5, 6];
   const OK_SHARE = 0.95;            // 成功率達這個比例才標成「撐得到」
@@ -315,7 +347,11 @@
 
   function validate(v){
     const e = {};
-    if(!(v.assets > 0)) e.assets = '請輸入大於 0 的退休資產。';
+    if(v.goal === 'spend'){
+      if(!(v.monthlySpend > 0)) e.monthlySpend = '請輸入大於 0 的每月花費。';
+      if(!Number.isInteger(v.yearsToRetire) || v.yearsToRetire < 0 || v.yearsToRetire > MAX_YEARS) e.yearsToRetire = `距離退休年數請輸入 0～${MAX_YEARS} 的整數。`;
+      if(!(v.rate > 0)) e.withdrawRate = '反推退休金時，提領率請輸入大於 0 的數字。';
+    } else if(!(v.assets > 0)) e.assets = '請輸入大於 0 的退休資產。';
     if(!isFinite(v.rate) || v.rate < 0 || v.rate > 100) e.withdrawRate = '提領率請輸入 0～100 之間的數字。';
     if(!isFinite(v.ret)) e.annualReturn = '請輸入預期年化報酬率。';
     else if(v.ret <= -100) e.annualReturn = '年化報酬率要大於 -100%。';
@@ -365,11 +401,11 @@
   }
 
   // 4,000 random paths: per-year percentiles for the chosen rate, and success / median final balance for every comparison rate (same paths).
-  function runMC(v){
+  function runMC(v, rates){
     const T = v.years, N = MC.TRIALS;
     const mk = () => Array.from({ length: T }, () => new Float64Array(N));
     const rec = { k: 0, start: mk(), wr: mk(), end: mk() };
-    const cmp = COMPARE_RATES.map(rate => ({ rate, ok: 0, ends: new Float64Array(N) }));
+    const cmp = rates.map(rate => ({ rate, ok: 0, ends: new Float64Array(N) }));
     let ok = 0;
     MC.forEachPath({ years: T, ret: v.ret, vol: v.vol }, rets => {
       const r = walk(v.assets, v.rate, v.inf, rets, T, rec);
@@ -394,15 +430,19 @@
     return { success: ok / N, years, cmp, trials: N };
   }
 
+  // 3%、4%、5%、6% 加上目前輸入的提領率（若不在其中），由小到大
+  const compareRates = rate => (COMPARE_RATES.includes(rate) || !(rate >= 0) ? COMPARE_RATES : COMPARE_RATES.concat(rate)).slice().sort((a, b) => a - b);
+
   const fmtYears = n => n === null ? `${MAX_YEARS} 年以上` : (Math.round(n * 10) / 10) + ' 年';
 
   const setEmpty = on => Util.setEmpty(['sumMonthly', 'rateBody', 'yearlyBody', 'assetChartCard', 'rateChartCard'], on);
 
   function clearAll(){
     setEmpty(true);
-    ['sumMonthly','sumYearly','sumLasted','sumEnd','sumLastMonthly'].forEach(id => { $(id).textContent = '--'; });
+    ['sumNeed','sumMonthly','sumYearly','sumLasted','sumEnd','sumLastMonthly'].forEach(id => { $(id).textContent = '--'; });
     $('sumLasted').classList.remove('profit', 'loss');
     $('sumVerdict').textContent = '';
+    $('sumNeedSub').textContent = '';
     $('sumEndSub').textContent = '';
     $('rateBody').innerHTML = '';
     $('yearlyBody').innerHTML = '';
@@ -450,6 +490,9 @@
 
   function update(){
     const v = {
+      goal: $('goal').value,
+      monthlySpend: parseFloat($('monthlySpend').value),
+      yearsToRetire: Number($('yearsToRetire').value),
       assets: parseFloat($('assets').value),
       rate: parseFloat($('withdrawRate').value),
       ret: parseFloat($('annualReturn').value),
@@ -461,6 +504,17 @@
     const data = {};
     FIELDS.forEach(f => { data[f] = $(f).value; });
     Util.store.setJSON(STORAGE_KEY, data);
+
+    const reverse = v.goal === 'spend';
+    $('spendBox').hidden = !reverse;
+    $('yearsToRetireBox').hidden = !reverse;
+    $('assetsBox').hidden = reverse;
+    $('needTile').hidden = !reverse;
+    // 反推：退休第一年的每年花費 ÷ 提領率 = 需要的退休金（每月花費先依通膨換算成退休當年的金額）
+    if(reverse && v.monthlySpend > 0 && Number.isInteger(v.yearsToRetire) && v.yearsToRetire >= 0 && v.rate > 0 && isFinite(v.inf) && v.inf > -100){
+      v.spendAtRetire = v.monthlySpend * Math.pow(1 + v.inf / 100, v.yearsToRetire);
+      v.assets = v.spendAtRetire * 12 / (v.rate / 100);
+    }
 
     const isMC = v.mode === 'mc';
     $('volatilityBox').hidden = !isMC;
@@ -492,10 +546,17 @@
     const T = v.years;
     const shown = r.rows.slice(0, T);
     const last = shown[shown.length - 1];
-    const mc = isMC ? runMC(v) : null;
+    const rates = compareRates(v.rate);
+    const mc = isMC ? runMC(v, rates) : null;
     const deflator = Math.pow(1 + v.inf / 100, T);   // 退休期末的名目金額換回今日購買力
     const enough = isMC ? mc.success >= OK_SHARE : (r.lasted === null || r.lasted >= T);
 
+    if(reverse){
+      $('sumNeed').textContent = fmtMoney(v.assets);
+      $('sumNeedSub').textContent = `退休第一年每月花費約 ${fmtMoney(v.spendAtRetire)}` +
+        (v.yearsToRetire > 0 ? `（今日 ${fmtMoney(v.monthlySpend)}，${v.yearsToRetire} 年後依 ${v.inf}% 通膨換算）` : '') +
+        `；每年 ${fmtMoney(v.spendAtRetire * 12)} ÷ 首年提領率 ${v.rate}%。若改用 4% 法則則需要 ${fmtMoney(v.spendAtRetire * 12 / 0.04)}。`;
+    }
     $('sumMonthly').textContent = fmtMoney(r.first / 12);
     $('sumYearly').textContent = fmtMoney(r.first);
     $('sumLasted').classList.toggle('profit', enough);
@@ -568,7 +629,7 @@
       $('rateFoot').textContent = `成功率 ${fmtPct(OK_SHARE, 0)} 以上標示為綠色。四個提領率使用同一批隨機路徑，所以差異只來自提領率。`;
     } else {
       $('rateHead').innerHTML = '<tr><th>提領率</th><th>首年每月可領</th><th>資產可撐</th><th>撐得到退休年數？</th></tr>';
-      $('rateBody').innerHTML = COMPARE_RATES.map(rate => {
+      $('rateBody').innerHTML = rates.map(rate => {
         const c = simulate(v.assets, rate, v.ret, v.inf);
         const ok = c.lasted === null || c.lasted >= T;
         const mark = rate === v.rate ? ' <strong>（目前設定）</strong>' : '';

@@ -1,29 +1,29 @@
-# Checklist for the three audits
+# 三項審核的檢查清單
 
-## 1. Data audit (tables)
-- [ ] Every table crop rendered at 2-3x; one table per image; no row cut in half.
-- [ ] Two independent transcription passes per table, per copy of the paper; `compare_transcriptions.py` run; every DIFF resolved by looking at the image again (never by averaging).
-- [ ] Copy vs copy (e.g. web capture vs print scan) compared cell by cell.
-- [ ] `check_tables.py` run: enhancement arithmetic, monotonic rates, success/purchasing-power vs the confidence standard, claims in the text vs the tables.
-- [ ] Text numbers (executive summary, body, conclusion) compared with the tables; text-only numbers (e.g. "30-43 percent", "60 percent fewer freezes") traced to their table.
-- [ ] Anything that cannot be reproduced from the paper alone is labelled "not verifiable" instead of "correct".
+## 1. 資料審核（表格）
+- [ ] 每張表的裁切圖以 2–3 倍轉出；一張圖一張表；沒有任何一列被切成兩半。
+- [ ] 每張表、每份論文版本都做兩次獨立轉錄；已執行 `compare_transcriptions.py`；每個 DIFF 都回頭看圖解決（絕不用平均）。
+- [ ] 版本與版本（例如網頁擷取 vs 紙本掃描）逐格比對。
+- [ ] 已執行 `check_tables.py`：增幅算術、比率單調性、成功率／購買力與信心標準、內文說法與表格。
+- [ ] 內文數字（摘要、本文、結論）已與表格比對；只出現在內文的數字（例如「30-43 percent」、「60 percent fewer freezes」）已追溯到它的表格。
+- [ ] 無法只靠論文重現的內容，標為「無法驗證」，不標為「正確」。
 
-## 2. Figure audit
-- [ ] Describe each figure **before** reading its caption or the text that refers to it (blind description): axes, lines, labels, direction of curves.
-- [ ] Then compare the description with the specification in the text (for Figure 1: current withdrawal rate 20% above / below the initial rate, the capital preservation and prosperity rules, the withdrawal rule between them).
-- [ ] Figure numbers, captions and in-text references agree; units and axis labels present.
-- [ ] If the audited material includes our own charts: render a screenshot, then check axis units, legend, guardrail lines at initial rate x 1.2 and x 0.8, clipped values.
+## 2. 圖的審核
+- [ ] 在讀說明文字或引用它的內文**之前**，先描述每張圖（盲測描述）：座標軸、線條、標籤、曲線方向。
+- [ ] 再把描述與內文的規格比對（以 Figure 1 為例：目前提領率在初始提領率上方／下方 20%、保本規則與繁榮規則、介於兩者之間的提領規則）。
+- [ ] 圖號、說明文字與內文引用一致；有單位與座標軸標籤。
+- [ ] 若審核範圍包含我們自己的圖表：截圖後檢查座標單位、圖例、位於初始提領率 × 1.2 與 × 0.8 的護欄線，以及被裁掉的值。
 
-## 3. Label and font audit
-- [ ] Table headers match the column content; units (%, PP%, years) present; footnote markers (1, 2, 3 ...) have matching footnotes and the same marker means the same thing everywhere.
-- [ ] Every abbreviation (WD, POS, PP, WR, PMR, CPR, PR, IR) is defined at first use; the same abbreviation is not used for two things.
-- [ ] Heading hierarchy and table/figure numbering consistent (Table 1 ... 7, Figure 1).
-- [ ] `pdf_inventory.py`: fonts used, whether embedded, text layer present or scan; mixed fonts or missing glyphs (boxes, ligature loss) in extracted text.
-- [ ] Legibility of the printed table text at the original size; low-resolution embedded images flagged.
-- [ ] Differences in wording between copies (typos, changed numbers) listed with page and image evidence.
+## 3. 標籤與字型審核
+- [ ] 表頭與欄內容相符；有單位（%、PP%、年）；註腳符號（1、2、3 ...）有對應的註腳，且同一個符號在各處意思相同。
+- [ ] 每個縮寫（WD、POS、PP、WR、PMR、CPR、PR、IR）在首次出現時都有定義；同一個縮寫沒有用於兩件事。
+- [ ] 標題層級與表／圖編號一致（Table 1 ... 7、Figure 1）。
+- [ ] `pdf_inventory.py`：用了哪些字型、是否嵌入、有文字層還是掃描；抽取出的文字中是否有混用字型或缺字（方框、連字遺失）。
+- [ ] 以原始大小閱讀時，表格文字是否清楚；低解析度的嵌入圖片要標出。
+- [ ] 各版本之間的用字差異（錯字、改過的數字）要列出，並附頁碼與圖片證據。
 
-## Severity
-- **FAIL** two numbers in the paper cannot both be right (arithmetic, ordering, a row violating the table's own rule).
-- **CHECK** text and table disagree or wording is ambiguous; a human must decide (could be a loose summary, not an error).
-- **NOTE** cosmetic: typos, label/footnote problems, low resolution.
-- **OK** verified and consistent (state what was verified).
+## 嚴重程度
+- **FAIL**：論文中兩個數字不可能同時正確（算術、排序、某一列違反該表自己的規則）。
+- **CHECK**：內文與表格不一致，或用字有歧義；需要由人判斷（可能只是寬鬆的摘要，不是錯誤）。
+- **NOTE**：外觀層面：錯字、標籤／註腳問題、低解析度。
+- **OK**：已驗證且一致（要說明驗證了什麼）。
