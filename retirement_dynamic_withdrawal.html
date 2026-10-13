@@ -334,6 +334,11 @@
   if(saved) FIELDS.forEach(f => { if(saved[f] !== undefined) $(f).value = saved[f]; });
 
 
+  /* ---------- 反推 ---------- */
+  // 每月花費（今日幣值）依通膨換算成退休當年的金額；需要的退休金 = 退休第一年的每年花費 ÷ 初始提領率（infl、wr0 都是小數）
+  function spendAtRetirement(monthly, yearsToRetire, infl){ return monthly * Math.pow(1 + infl, yearsToRetire); }
+  function requiredAssets(monthlyAtRetire, wr0){ return monthlyAtRetire * 12 / wr0; }
+
   /* ---------- one retirement path ---------- */
   // rets[t-1] is the market return of year t (as a fraction). Withdrawals happen on the first day of each year.
   function emptyRun(T){
@@ -751,8 +756,8 @@
     $('spendBox').hidden = !reverse;
     $('yearsToRetireBox').hidden = !reverse;
     if(reverse && v.monthlySpend > 0 && Number.isInteger(v.yearsToRetire) && v.yearsToRetire >= 0 && v.wr0 > 0 && isFinite(v.infl)){
-      v.spendAtRetire = v.monthlySpend * Math.pow(1 + v.infl, v.yearsToRetire);
-      v.assets = v.spendAtRetire * 12 / v.wr0;
+      v.spendAtRetire = spendAtRetirement(v.monthlySpend, v.yearsToRetire, v.infl);
+      v.assets = requiredAssets(v.spendAtRetire, v.wr0);
     }
 
     const stress = v.mode === 'stress';
