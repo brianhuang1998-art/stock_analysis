@@ -142,12 +142,12 @@
             <p class="input-error" id="err-volatility" hidden></p>
             <p class="note-line" id="geoNote"></p>
           </div>
-          <div class="field-wide">
+          <div id="modeBox">
             <label for="mode">市場假設 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與百分位區間">ⓘ</a></label>
             <div class="input-wrap">
               <select id="mode">
-                <option value="fixed">每年報酬固定（簡單版，看不出市場波動的風險）</option>
-                <option value="mc">加入市場波動：4,000 條隨機路徑，看成功率與區間</option>
+                <option value="fixed">每年報酬固定（簡單版）</option>
+                <option value="mc">加入市場波動（4,000 條路徑）</option>
               </select>
             </div>
           </div>
@@ -293,6 +293,31 @@
           <li><strong>成功</strong> = 退休期間資金都沒有用完；成功率 95% 以上標為綠色。</li>
           <li>提領率對照的四個提領率使用同一批隨機路徑。</li>
         </ul>
+      </details>
+
+      <details class="ref" id="ref-asset-chart">
+        <summary>資產成長圖怎麼看</summary>
+        <p>這張圖回答：退休後，我的錢會剩多少？電腦隨機模擬 4,000 種未來市場的走法，每個時間點把這 4,000 個人的資產由少到多排隊。</p>
+        <ul>
+          <li><strong>實線（中位數）</strong>：排在正中間的人，一半比他多、一半比他少，可當成「普通運氣」的結果。</li>
+          <li><strong>淡色區塊（10%～90%）</strong>：去掉最倒楣和最幸運各 10% 後，其餘 80% 的人落在的範圍。上緣是運氣很好，下緣是運氣偏差。</li>
+          <li><strong>起點</strong>是退休當天的資產；區塊越寬，代表運氣的影響越大。</li>
+          <li><strong>下緣碰到 0</strong>：代表有一成以上的人在那之前已經把錢領完。提領金額固定隨通膨調高、不看市場，運氣差的人無法少領，所以會較早見底。</li>
+          <li>重點要看<strong>下緣</strong>，不是只看中間那條線；實線看起來不錯，不代表你不會是倒楣的那一群。</li>
+        </ul>
+      </details>
+
+      <details class="ref" id="ref-rate-chart">
+        <summary>每年提領率圖怎麼看</summary>
+        <p>這張圖回答：我每年領的錢，占當時手上資產的幾 %？有沒有越領越吃緊？<strong>提領率 = 當年提領金額 ÷ 當年年初資產</strong>。領的金額每年固定加上通膨，但資產會隨市場起伏，所以提領率每年都不同。</p>
+        <ul>
+          <li><strong>虛線</strong>：你設定的首年提領率，當作基準。</li>
+          <li><strong>實線（中位數）</strong>：普通運氣的人每年的提領率。若慢慢往上爬，代表資產成長追不上每年多領的金額，越領越吃緊。</li>
+          <li><strong>淡色區塊上緣</strong>：運氣差的那 10%。上緣衝得很高，代表這些人一年領掉資產的大部分；到 100% 就是錢領完了（資金用完的路徑直接算 100%）。</li>
+          <li>一般經驗：提領率從 4% 一路升到 6%、8%，就該警覺，代表市場報酬不夠支撐花費。</li>
+          <li>這也是固定提領的盲點：金額不看市場，資產下跌時提領率會自動變高。動態提領頁就是用來處理這件事。</li>
+        </ul>
+        <p>兩張圖搭配看：資產成長圖看「錢還剩多少」，提領率圖看「領得有多吃緊」。</p>
       </details>
 
       <details class="ref" id="ref-compare">
@@ -522,6 +547,7 @@
 
     const isMC = v.mode === 'mc';
     $('volatilityBox').hidden = !isMC;
+    $('modeBox').classList.toggle('field-wide', isMC);   // 波動率欄出現時，市場假設獨佔一列，兩欄才排得整齊
     $('assetChartCard').hidden = !isMC;
     $('rateChartCard').hidden = !isMC;
 
