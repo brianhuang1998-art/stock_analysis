@@ -114,6 +114,7 @@
 | `sw.js` | Service worker：網路優先、離線時用快取。頁面清單讀自 `site-config.js`，新增頁面會自動被快取。只在 https／localhost 生效，由 `nav.js` 註冊。必須放在最外層，否則管不到整個網站 |
 | `_dev/build.py` | 讀取 `site-config.js`，重新產生上表的自動產生內容。發現有 html 沒登記到設定檔，會印出警告 |
 | `papers/verification/ref_simulator.py`、`order_sensitivity.py` | 動態提領的獨立參考實作（含移植頁面的亂數產生器，同種子可重現頁面的 4,000 條路徑），以及「凍結與護欄檢定順序」的敏感度比較（結果寫在同資料夾的 `paper_check.md` §6）。執行 `python3 papers/verification/order_sensitivity.py` |
+| `papers/verification/fixed_withdrawal_check.py` | 固定提領頁的自動檢查：把 `retirement_withdrawal.html` 的 `simulate`、`walk`、反推公式、對照提領率清單與 `mc.js` 取出，用 macOS 內建的 JavaScriptCore（`jsc`）執行，再和獨立寫的 Python 參考版比對（逐年資產、可撐年數、反推退休金、對照表提領率、蒙地卡羅成功率），共 58 項。改了固定提領頁的算式後執行 `python3 papers/verification/fixed_withdrawal_check.py`，輸出 `0 failed` 才算過 |
 | `papers/verification/paper_check.md` | 「退休動態提領試算」與 Guyton & Klinger 2006 論文的逐條對照檢核：每條規則的論文頁碼、程式位置、驗證結果，以及刻意的簡化與解讀上有空間之處 |
 | `_dev/template.html` | 新增頁面用的範本，已包含輸入欄、結果卡、空狀態、儲存輸入的寫法。放在 `_dev/` 底下不會公開，也不會被 build 處理 |
 | `.claude/skills/paper-visual-audit/` | Claude Code 的 skill：以「LLM 視覺檢核」審查論文 PDF 的**數據（表格）、圖表、標籤與字體**。流程：盤點 PDF → 轉成圖片 → 模型雙次轉錄表格 → 腳本做逐格比對與算術／一致性檢查 → 產出檢核報告。腳本需要 `python3 -m venv .venv-pdf && .venv-pdf/bin/pip install pypdf pypdfium2 pillow`（`.venv-pdf/` 已加入 `.gitignore`）。用法與規則見該資料夾的 `SKILL.md` |

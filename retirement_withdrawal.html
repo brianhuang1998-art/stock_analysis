@@ -362,6 +362,10 @@
     return e;
   }
 
+  // 反推：每月花費先依通膨換算成退休當年的金額；需要的退休金 = 退休第一年的每年花費 ÷ 提領率
+  function spendAtRetirement(monthly, yearsToRetire, infPct){ return monthly * Math.pow(1 + infPct / 100, yearsToRetire); }
+  function requiredAssets(monthlyAtRetire, ratePct){ return monthlyAtRetire * 12 / (ratePct / 100); }
+
   // Withdraw at the start of each year (first year = assets × rate, then raised by inflation), then grow the rest.
   // Returns the yearly rows (stopping the year the money runs out) and lasted = years the money lasts (null if still positive after MAX_YEARS).
   function simulate(assets, ratePct, retPct, infPct){
@@ -512,8 +516,8 @@
     $('needTile').hidden = !reverse;
     // 反推：退休第一年的每年花費 ÷ 提領率 = 需要的退休金（每月花費先依通膨換算成退休當年的金額）
     if(reverse && v.monthlySpend > 0 && Number.isInteger(v.yearsToRetire) && v.yearsToRetire >= 0 && v.rate > 0 && isFinite(v.inf) && v.inf > -100){
-      v.spendAtRetire = v.monthlySpend * Math.pow(1 + v.inf / 100, v.yearsToRetire);
-      v.assets = v.spendAtRetire * 12 / (v.rate / 100);
+      v.spendAtRetire = spendAtRetirement(v.monthlySpend, v.yearsToRetire, v.inf);
+      v.assets = requiredAssets(v.spendAtRetire, v.rate);
     }
 
     const isMC = v.mode === 'mc';
