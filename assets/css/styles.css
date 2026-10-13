@@ -588,9 +588,11 @@ label{
   padding:9px 10px;border-bottom:1px solid var(--border);
   text-align:right;font-variant-numeric:tabular-nums;
 }
-/* .wrap：表頭與長文字可換行，表格縮到欄寬內，不用左右拖曳（退休動態提領頁使用） */
+/* .wrap：表頭與長文字可換行，表格縮到欄寬內，不用左右拖曳（退休動態、固定提領頁使用） */
 .data-table.wrap{white-space:normal;}
-.data-table.wrap th,.data-table.wrap td{white-space:normal;}
+.data-table.wrap th,.data-table.wrap td{white-space:normal;padding-left:6px;padding-right:6px;}
+.data-table.wrap{font-size:12.5px;}
+.data-table.wrap th{font-size:11.5px;line-height:1.35;vertical-align:bottom;}
 .lot-table tr:last-child td,.dca-table tr:last-child td,.data-table tr:last-child td{border-bottom:none;}
 .lot-table td.avg{color:var(--navy);font-weight:700;}
 .dca-table td.gain-pos,.data-table td.gain-pos{color:var(--up);font-weight:600;}
