@@ -59,10 +59,10 @@
       <div class="guard-row mid"><span class="tag">4% ～ 6%</span><span>在護欄之內 → 照常依通膨調整（但前一年虧損、且提領率高於 5% 時，今年不調高）</span></div>
       <div class="guard-row lo"><span class="tag">目前提領率 &lt; 4%</span><span>資產成長、提領率太低 → <strong>繁榮規則</strong>：今年多領 10%</span></div>
     </div>
-    <p class="foot-note">本頁依 Guyton &amp; Klinger（2006）論文的規則，並假設退休金 100% 配置台股 ETF（如 0050）。論文只測試到 80% 股票、1928–2004 與 1973–2004 兩段美國歷史資料，100% 股票與台股是外推，請當粗略參考；不是投資建議。名詞與算式請看右側「參考區」（手機在頁面最下方）。</p>
+    <p class="foot-note">本頁依 Guyton &amp; Klinger（2006）論文的規則，並假設退休金 100% 配置台股 ETF（如 0050）。論文只測試到 80% 股票、1928–2004 與 1973–2004 兩段美國歷史資料，100% 股票與台股是外推，請當粗略參考；不是投資建議。</p>
   </section>
 
-  <div class="layout">
+  <div class="layout layout-single">
     <div>
       <div class="card">
         <h2>試算參數</h2>
@@ -101,7 +101,7 @@
             <p class="input-error" id="err-assets" hidden></p>
           </div>
           <div>
-            <label for="wr0">初始提領率 <a class="help" href="#g-initial" aria-label="名詞解釋：初始提領率">ⓘ</a></label>
+            <label for="wr0">初始提領率</label>
             <div class="input-wrap">
               <input type="number" id="wr0" inputmode="decimal" step="0.1" value="5">
               <span class="unit">%</span>
@@ -109,7 +109,7 @@
             <p class="input-error" id="err-wr0" hidden></p>
           </div>
           <div>
-            <label for="annualReturn">預期年化報酬率（算術平均，台股 ETF） <a class="help" href="#g-arith" aria-label="名詞解釋：算術平均與複利年化">ⓘ</a></label>
+            <label for="annualReturn">預期年化報酬率（算術平均，台股 ETF）</label>
             <div class="input-wrap">
               <input type="number" id="annualReturn" inputmode="decimal" step="0.5" value="7">
               <span class="unit">%</span>
@@ -117,7 +117,7 @@
             <p class="input-error" id="err-annualReturn" hidden></p>
           </div>
           <div>
-            <label for="volatility">年化波動率（報酬每年上下震盪的幅度） <a class="help" href="#g-vol" aria-label="名詞解釋：年化波動率">ⓘ</a></label>
+            <label for="volatility">年化波動率（報酬每年上下震盪的幅度）</label>
             <div class="input-wrap">
               <input type="number" id="volatility" inputmode="decimal" step="1" value="18">
               <span class="unit">%</span>
@@ -142,7 +142,7 @@
             <p class="input-error" id="err-years" hidden></p>
           </div>
           <div class="field-wide">
-            <label for="mode">模擬方式 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與壓力情境">ⓘ</a></label>
+            <label for="mode">模擬方式</label>
             <div class="input-wrap">
               <select id="mode">
                 <option value="mc">蒙地卡羅：4,000 條隨機路徑，看機率與中位數</option>
@@ -275,108 +275,6 @@
         <p class="foot-note" id="yearlyNote"></p>
       </div>
     </div>
-
-    <aside class="ref-col" aria-label="參考區：名詞解釋與算式">
-      <h2 class="ref-title">參考區</h2>
-
-      <details class="ref" id="ref-glossary" open>
-        <summary>名詞解釋</summary>
-        <dl class="glossary">
-          <dt id="g-initial">初始提領率</dt>
-          <dd>退休第一年領的金額 ÷ 退休時資產。例：資產 1,000 萬、第一年領 50 萬 → 5%。它是一切護欄的基準。</dd>
-          <dt id="g-current">目前提領率</dt>
-          <dd>今年提領金額 ÷ 今年年初資產。資產縮水它會升高，資產成長它會降低；動態提領就是靠它判斷要不要調整。</dd>
-          <dt>護欄（上、下）</dt>
-          <dd>初始提領率的 ±20%。初始 5% → 上護欄 6%、下護欄 4%。目前提領率碰到護欄，就觸發保本或繁榮規則。</dd>
-          <dt>保本規則</dt>
-          <dd>目前提領率高於上護欄時，今年提領金額<strong>下調 10%</strong>，避免資金耗盡。計畫的最後 15 年不啟用。</dd>
-          <dt>繁榮規則</dt>
-          <dd>目前提領率低於下護欄時，今年提領金額<strong>上調 10%</strong>，避免錢多到花不完。</dd>
-          <dt>提領規則（凍結）</dt>
-          <dd>論文的「提領規則」（Withdrawal Rule）：前一年投資虧損，而且今年的提領率高於初始提領率，今年就<strong>不隨通膨調高</strong>（維持去年金額，之後也不補回）。</dd>
-          <dt>通膨規則</dt>
-          <dd>論文的「通膨規則」（Inflation Rule）：每年依通膨（CPI）調高提領金額。論文原版有 6% 的上限，2006 這篇<strong>取消上限</strong>，本頁也不設上限。</dd>
-          <dt id="g-confidence">信心標準（99%／95%／90%）</dt>
-          <dd>論文 p.56：選一個初始提領率，讓<strong>成功率</strong>與<strong>購買力維持的中位數</strong>「兩者都」至少達到該百分比。例如 95% 信心標準 = 成功率 ≥ 95% 且購買力中位數 ≥ 95%。99% 適合想要幾乎萬無一失的人；95% 容許一點風險、換更高的初始提領率；90% 論文也列出，但較不建議。</dd>
-          <dt>成功率</dt>
-          <dd>退休期間資金都沒有用完的路徑佔多少比例。</dd>
-          <dt id="g-pp">購買力維持</dt>
-          <dd>實際提領 ÷ 「一般隨通膨調整的計畫提領」。100% 代表生活水準完全沒縮水。論文只在<strong>成功的</strong>模擬裡計算（p.54–55）。</dd>
-          <dt id="g-mc">蒙地卡羅 / 壓力情境</dt>
-          <dd>蒙地卡羅：用你設定的報酬率與波動率隨機產生 4,000 條路徑，估計機率；壓力情境：指定退休初期連續幾年下跌，看護欄怎麼一步步動作。</dd>
-          <dt id="g-median">中位數</dt>
-          <dd>把 4,000 條路徑由小排到大，取中間那一個：一半的人比它好、一半比它差。不用平均，是因為少數極好的路徑會把平均拉高，而資金用完的路徑是 0，平均沒有意義；論文也用中位數。</dd>
-          <dt id="g-arith">算術平均與複利年化（CAGR）</dt>
-          <dd>本頁填的是<strong>算術平均</strong>報酬。波動會拖累複利：複利年化 ≈ 算術平均 − 波動率² ÷ 2。例：7%／18% → 長期只以約 5.5% 複利成長。若手上是 ETF 的 CAGR，直接填進來會低估成長（CAGR 8%、波動 18% 約對應算術平均 9.5%）。</dd>
-          <dt id="g-vol">年化波動率</dt>
-          <dd>每年報酬偏離平均的幅度（標準差）。18% 代表約三分之二的年份報酬落在「平均 ± 18%」。波動越大，退休初期遇到大跌的機會越高。</dd>
-        </dl>
-      </details>
-
-      <details class="ref" id="ref-rules">
-        <summary>規則與算式</summary>
-        <p>先算<strong>目前提領率 = 當年提領金額 ÷ 當年年初資產</strong>，再依序套用：</p>
-        <div class="table-wrap">
-          <table class="data-table wrap">
-            <thead><tr><th>規則</th><th>條件</th><th>動作</th></tr></thead>
-            <tbody>
-              <tr><td>提領規則（凍結）</td><td>前一年投資虧損，且今年提領率高於初始提領率</td><td>今年提領金額不隨通膨調整（凍結，不補回）</td></tr>
-              <tr><td>通膨規則</td><td>其他情況</td><td>依通膨（CPI）調高，<strong>不設上限</strong>（論文原版有 6% 上限，2006 版取消）</td></tr>
-              <tr><td>保本規則</td><td>目前提領率 &gt; 初始 × 120%</td><td>今年提領金額 <strong>× 0.9</strong>（最後 15 年停用）</td></tr>
-              <tr><td>繁榮規則</td><td>目前提領率 &lt; 初始 × 80%</td><td>今年提領金額 <strong>× 1.1</strong></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ul>
-          <li><strong>第 1 年提領</strong> = 退休資產 × 初始提領率。例：1,000 萬 × 5% = 50 萬。</li>
-          <li><strong>通膨調整</strong>：今年提領 = 去年提領 × (1 + 通膨率)。例：50 萬 × 1.02 = 51 萬。</li>
-          <li><strong>年底資產</strong> = (年初資產 − 當年提領) × (1 + 當年報酬)。</li>
-          <li>調整後的金額是隔年的基準，之前少領或多領的<strong>不補回</strong>。</li>
-          <li><strong>固定提領</strong>（對照組）= 首年提領 × (1 + 通膨率)^(年度 − 1)，完全不看市場。</li>
-          <li>資金不夠付當年提領 = 失敗，那一年之後提領為 0。</li>
-        </ul>
-        <p><strong>凍結與護欄誰先檢定？論文沒有明說。</strong>預設「先決定是否凍結，再用凍結後的金額檢定護欄」：論文 p.54 說保本規則看的是「using the decision rules in effect」的提領率，而且用論文 Table 6 的凍結次數對照，這個順序比另一種接近。另一種解讀是把 Table 5 當決策樹，可在「進階設定」切換；兩者成功率約差 0.3～3.6 個百分點。</p>
-        <p>論文還有「投資組合管理規則」（決定賣股票、債券或現金），本頁假設 100% 台股 ETF，沒有債券或現金可動用，所以不適用。本頁採用 Guyton &amp; Klinger（2006）論文的規則。</p>
-      </details>
-
-      <details class="ref" id="ref-sim">
-        <summary>這頁怎麼模擬</summary>
-        <ul>
-          <li><strong>蒙地卡羅</strong>：用「預期年化報酬率」與「年化波動率」產生 4,000 條對數常態的報酬路徑（固定亂數種子，同樣輸入每次結果相同）。動態與固定提領<strong>使用同一批路徑</strong>，方便公平比較。成功 = 退休期間資金都沒有用完。</li>
-          <li><strong>壓力情境</strong>：退休最初幾年連續下跌，之後每年固定為預期報酬率，逐年明細會標出每年觸發的規則。</li>
-          <li>每年「年初」先提領，剩下的資產再成長一年。</li>
-          <li>購買力維持只在「成功的路徑」裡計算，取中位數；比較表另外列出含資金用完路徑的版本供對照。</li>
-          <li>通膨固定為你輸入的數字。</li>
-        </ul>
-      </details>
-
-      <details class="ref" id="ref-reverse">
-        <summary>反推：每月想花多少，要準備多少退休金？</summary>
-        <p>把「試算目標」改成「已知每月想花多少」，頁面會用<strong>需要的退休金 = 退休第一年的每年花費 ÷ 初始提領率</strong>算出金額，再用它跑整個模擬，所以成功率、圖表和明細都會一併更新。</p>
-        <p>例：每月花 5 萬、每年 60 萬，初始提領率 5% → 需要 1,200 萬（若用固定 4% 法則則是 1,500 萬，即「25 倍法則」）。如果距離退休還有幾年，每月花費會先依通膨換算成退休當年的金額。</p>
-        <p>注意：這個金額是依你選的初始提領率反推的，不代表那個提領率在你的假設下一定夠安全，請看結果的成功率與較差情境。</p>
-      </details>
-
-      <details class="ref" id="ref-assume">
-        <summary>報酬率與波動率怎麼填</summary>
-        <p>這是你自己的假設，沒有人能保證。預設 7% 與 18% 只是參考值；台股 ETF 的實際報酬與波動請自行查詢長期數據，並多試幾組（例如報酬 5%、7%、9%）。</p>
-        <p>填的是<strong>算術平均</strong>，不是 CAGR；波動率欄下方會即時顯示換算後的長期複利年化與實質年化。壓力情境與波動率為 0 時，報酬每年固定，兩種平均沒有差別。</p>
-      </details>
-
-      <details class="ref" id="ref-limits">
-        <summary>沒算進去的東西與限制</summary>
-        <ul>
-          <li><strong class="neg">稅、手續費、ETF 內扣費用</strong>：會再吃掉部分報酬。</li>
-          <li><strong class="neg">通膨不固定</strong>：實際通膨每年不同，醫療、房租漲幅常高於一般物價。論文的通膨是隨機的、且與資產報酬相關，每組情境 14,000 條路徑；本頁通膨固定、4,000 條路徑。</li>
-          <li><strong class="neg">報酬不是常態分配</strong>：真實市場有更極端的崩跌。</li>
-          <li><strong class="neg">生活費下調 10% 你要吃得消</strong>：若基本開銷無法削減，請預留現金或其他收入。</li>
-          <li><strong class="neg">論文的適用範圍</strong>：只測試到 80% 股票、1928–2004 與 1973–2004 兩段美國歷史資料；100% 股票與台股是外推。</li>
-          <li>蒙地卡羅有抽樣誤差：成功率約 ±1 個百分點、期末資產中位數約 ±4%。</li>
-        </ul>
-      </details>
-
-      <p class="foot-note">此工具僅供試算規劃參考，不代表實際投資結果，也不構成投資建議。方法來源：Guyton &amp; Klinger, "Decision Rules and Maximum Initial Withdrawal Rates", Journal of Financial Planning, 2006。</p>
-    </aside>
   </div>
 </main>
 
@@ -874,15 +772,6 @@
     $('maxRateCard').hidden = stress;
     maxRateCtx = stress ? null : { v: { ...v }, paths };
   }
-
-  document.querySelectorAll('a.help').forEach(a => a.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.getElementById(a.getAttribute('href').slice(1));
-    if(!target) return;
-    const box = target.closest('details');
-    if(box) box.open = true;
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }));
 
   $('maxRateBtn').addEventListener('click', showMaxRates);
 

@@ -142,11 +142,8 @@ h1{
 @media (max-width:860px){
   .layout{grid-template-columns:1fr;}
 }
-/* 左右欄寬固定：寬表格在自己的框裡橫向捲動，不會把左欄撐寬（退休固定提領頁使用，兩種模式的比例才會一致） */
-.layout.layout-fixed{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);}
-@media (max-width:860px){
-  .layout.layout-fixed{grid-template-columns:minmax(0,1fr);}
-}
+/* 只有主內容一欄（退休固定、動態提領頁已移除右側參考區） */
+.layout.layout-single{grid-template-columns:minmax(0,1fr);}
 
 .card{
   background:#fff;
