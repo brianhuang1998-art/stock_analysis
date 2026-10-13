@@ -133,15 +133,6 @@
             </div>
             <p class="input-error" id="err-years" hidden></p>
           </div>
-          <div class="field-wide">
-            <label for="mode">市場假設 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與百分位區間">ⓘ</a></label>
-            <div class="input-wrap">
-              <select id="mode">
-                <option value="fixed">每年報酬固定（簡單版，看不出市場波動的風險）</option>
-                <option value="mc">加入市場波動：4,000 條隨機路徑，看成功率與區間</option>
-              </select>
-            </div>
-          </div>
           <div id="volatilityBox" hidden>
             <label for="volatility">年化波動率（報酬每年上下震盪的幅度） <a class="help" href="#g-vol" aria-label="名詞解釋：年化波動率">ⓘ</a></label>
             <div class="input-wrap">
@@ -150,6 +141,15 @@
             </div>
             <p class="input-error" id="err-volatility" hidden></p>
             <p class="note-line" id="geoNote"></p>
+          </div>
+          <div class="field-wide">
+            <label for="mode">市場假設 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與百分位區間">ⓘ</a></label>
+            <div class="input-wrap">
+              <select id="mode">
+                <option value="fixed">每年報酬固定（簡單版，看不出市場波動的風險）</option>
+                <option value="mc">加入市場波動：4,000 條隨機路徑，看成功率與區間</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -171,7 +171,7 @@
             <div class="k">首年每年可提領</div>
             <div class="v mono" id="sumYearly">--</div>
           </div>
-          <div class="tile wide" id="sumLastTile">
+          <div class="tile" id="sumLastTile">
             <div class="k" id="sumLastedLabel">資產可以撐多久</div>
             <div class="v mono" id="sumLasted">--</div>
             <div class="sub" id="sumVerdict"></div>
