@@ -135,12 +135,12 @@ h1{
 
 .layout{
   display:grid;
-  grid-template-columns:1.55fr 1fr;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);   /* minmax(0,…)：寬表格不會把左欄撐寬、擠壓右欄 */
   gap:20px;
   align-items:start;
 }
 @media (max-width:860px){
-  .layout{grid-template-columns:1fr;}
+  .layout{grid-template-columns:minmax(0,1fr);}
 }
 
 .card{
