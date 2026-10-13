@@ -55,13 +55,14 @@ def cut(src, start):
 
 def page_results(cases, mc_cases):
     html = open(os.path.join(ROOT, 'retirement_withdrawal.html'), encoding='utf-8').read()
-    parts = [cut(html, 'const MAX_YEARS'), cut(html, 'const COMPARE_RATES')] + [cut(html, 'function ' + n) for n in ('spendAtRetirement', 'requiredAssets', 'simulate', 'walk')] + [cut(html, 'const compareRates')]
+    parts = [cut(html, 'const MAX_YEARS'), cut(html, 'const COMPARE_RATES')] + [cut(html, 'function ' + n) for n in ('spendAtRetirement', 'requiredAssets', 'simulate', 'fixedYears', 'walk')] + [cut(html, 'const compareRates')]
     js = 'var window = {};\n' + open(os.path.join(ROOT, 'assets/js/mc.js'), encoding='utf-8').read() + '\nvar MC = window.MC;\n' + '\n'.join(parts) + '''
-var cases = %s, mcCases = %s, out = {fixed: [], need: [], rates: [], mc: []};
+var cases = %s, mcCases = %s, out = {fixed: [], need: [], rates: [], mc: [], chart: []};
 cases.forEach(function(c){
   var r = simulate(c.A, c.rate, c.ret, c.inf);
   out.fixed.push({first: r.first, ends: r.rows.map(function(x){ return x.end; }), lasted: r.lasted});
   out.rates.push(compareRates(c.rate));
+  out.chart.push(fixedYears({years: c.T}, r));
 });
 [[50000, 0, 4, 2], [50000, 10, 3.5, 2], [83333, 25, 5, 3], [30000, 3, 6, 0]].forEach(function(a){
   out.need.push(requiredAssets(spendAtRetirement(a[0], a[1], a[3]), a[2]));
@@ -87,7 +88,7 @@ def close(a, b): return a == b or (a is not None and b is not None and abs(a - b
 
 def main():
     if not os.path.exists(JSC): sys.exit('jsc not found (this check needs macOS JavaScriptCore)')
-    cases = [dict(A=1e7, rate=r, ret=ret, inf=inf) for r, ret, inf in
+    cases = [dict(A=1e7, rate=r, ret=ret, inf=inf, T=30) for r, ret, inf in
              [(4, 5, 2), (3, 5, 2), (6, 3, 2), (3.5, 5, 2), (5, 0, 0), (4, 2, 3), (8, 1, 2), (4, 7, 0), (0, 5, 2), (2.5, 6, 2)]]
     mc_cases = [dict(A=1e7, rate=4, ret=5, vol=18, inf=2, T=30), dict(A=1e7, rate=6, ret=7, vol=18, inf=2, T=40), dict(A=1e7, rate=3, ret=4, vol=10, inf=2.5, T=30)]
     page = page_results(cases, mc_cases)
@@ -95,8 +96,15 @@ def main():
     def check(name, ok, detail=''):
         nonlocal n; n += 1
         if not ok: fails.append(f'{name} {detail}')
+    for c, ch in zip(cases, page['chart']):   # 圖表資料：每年底資產與每年提領率，資金用完之後是 0 與 100%
+        bal, ends, wrs = c['A'], [], []
+        for i in range(c['T']):
+            want = c['A'] * c['rate'] / 100 * (1 + c['inf'] / 100) ** i
+            if bal <= 0 or want >= bal: ends.append(0.0); wrs.append(1.0); bal = 0
+            else: wrs.append(want / bal); bal = (bal - want) * (1 + c['ret'] / 100); ends.append(bal)
+        check(f"chart {c}", all(close(a, y['endMed']) and close(b, y['wrMed']) for a, b, y in zip(ends, wrs, ch)) and len(ch) == c['T'])
     for c, p in zip(cases, page['fixed']):
-        ref, tag = ref_fixed(**c), f"fixed {c}"
+        ref, tag = ref_fixed(c['A'], c['rate'], c['ret'], c['inf']), f"fixed {c}"
         check(tag + ' first', close(ref['first'], p['first']))
         check(tag + ' lasted', close(ref['lasted'], p['lasted']), f"ref={ref['lasted']} page={p['lasted']}")
         check(tag + ' years', len(ref['ends']) == len(p['ends']), f"ref={len(ref['ends'])} page={len(p['ends'])}")

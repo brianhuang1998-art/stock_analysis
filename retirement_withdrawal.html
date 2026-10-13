@@ -188,23 +188,23 @@
         </div>
       </div>
 
-      <div class="card" id="assetChartCard" hidden>
+      <div class="card" id="assetChartCard">
         <h2>資產成長圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出退休金隨年數的變化。</p>
         <div class="chart-wrap" id="assetChart">
           <div class="chart-legend" id="assetLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下退休金餘額的中位數與 10%～90% 區間折線圖"></svg>
+          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下退休金餘額隨年數變化的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
           <div class="chart-tip" hidden></div>
         </div>
         <p class="foot-note" id="assetNote" style="margin-top:10px;"></p>
       </div>
 
-      <div class="card" id="rateChartCard" hidden>
+      <div class="card" id="rateChartCard">
         <h2>每年提領率圖</h2>
         <p class="empty-hint">輸入有效的參數後，這裡會畫出每年的提領率。</p>
         <div class="chart-wrap" id="rateChart">
           <div class="chart-legend" id="rateLegend"></div>
-          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下每年提領率的中位數與 10%～90% 區間折線圖"></svg>
+          <svg class="chart-svg" viewBox="0 0 640 300" role="img" aria-label="固定提領下每年提領率的折線圖（加入市場波動時含中位數與 10%～90% 區間）"></svg>
           <div class="chart-tip" hidden></div>
         </div>
         <p class="foot-note" id="rateNote" style="margin-top:10px;"></p>
@@ -297,6 +297,7 @@
 
       <details class="ref" id="ref-asset-chart">
         <summary>資產成長圖怎麼看</summary>
+        <p><strong>「每年報酬固定」模式</strong>只有一條線（沒有區間）：照固定報酬一路算下來，資金用完後顯示 0；下面說明的中位數與區間是「加入市場波動」模式才有的。</p>
         <p>這張圖回答：退休後，我的錢會剩多少？電腦隨機模擬 4,000 種未來市場的走法，每個時間點把這 4,000 個人的資產由少到多排隊。</p>
         <ul>
           <li><strong>實線（中位數）</strong>：排在正中間的人，一半比他多、一半比他少，可當成「普通運氣」的結果。</li>
@@ -309,6 +310,7 @@
 
       <details class="ref" id="ref-rate-chart">
         <summary>每年提領率圖怎麼看</summary>
+        <p><strong>「每年報酬固定」模式</strong>只有一條線（沒有區間），資金用完之後算 100%。</p>
         <p>這張圖回答：我每年領的錢，占當時手上資產的幾 %？有沒有越領越吃緊？<strong>提領率 = 當年提領金額 ÷ 當年年初資產</strong>。領的金額每年固定加上通膨，但資產會隨市場起伏，所以提領率每年都不同。</p>
         <ul>
           <li><strong>虛線</strong>：你設定的首年提領率，當作基準。</li>
@@ -479,25 +481,35 @@
     LineChart.clear($('rateChart'));
   }
 
-  function renderCharts(v, mc){
+  // 每年報酬固定：只有一條路徑，逐年資料轉成和蒙地卡羅同樣的格式（沒有區間，上下緣等於中位數）
+  function fixedYears(v, r){
+    return Array.from({ length: v.years }, (_, i) => {
+      const row = r.rows[i];
+      const end = row ? row.end : 0, wr = row ? Math.min(1, row.planned / row.start) : 1;
+      return { endMed: end, endLo: end, endHi: end, wrMed: wr, wrLo: wr, wrHi: wr };
+    });
+  }
+
+  // yrs = 逐年資料；mc = 蒙地卡羅結果（固定報酬模式為 null，只畫單一條線、不畫區間）
+  function renderCharts(v, yrs, mc){
     const T = v.years;
     const xs0 = Array.from({ length: T + 1 }, (_, i) => i);
-    const endOf = key => [v.assets].concat(mc.years.map(y => y[key]));
+    const endOf = key => [v.assets].concat(yrs.map(y => y[key]));
     const med = endOf('endMed'), lo = endOf('endLo'), hi = endOf('endHi');
     LineChart.draw($('assetChart'), {
       xs: xs0,
       xLabel: n => n === 0 ? '退休' : n + ' 年',
       yFormat: fmtAxisMoney,
-      bands: [{ cls: 'band-dynamic', lo, hi }],
+      bands: mc ? [{ cls: 'band-dynamic', lo, hi }] : [],
       series: [{ cls: 's-dynamic', values: med }],
-      tooltip: i => `<b>${i === 0 ? '退休當天' : `第 ${i} 年底`}</b><br>中位數　${fmtMoney(med[i])}` +
-        (i > 0 ? `<br><span class="tip-muted">10%～90%：${fmtMoney(lo[i])} ～ ${fmtMoney(hi[i])}</span>` : '')
+      tooltip: i => `<b>${i === 0 ? '退休當天' : `第 ${i} 年底`}</b><br>${mc ? '中位數　' : '資產　'}${fmtMoney(med[i])}` +
+        (mc && i > 0 ? `<br><span class="tip-muted">10%～90%：${fmtMoney(lo[i])} ～ ${fmtMoney(hi[i])}</span>` : '')
     });
-    $('assetLegend').innerHTML = legendItem('l-dynamic', '年底資產（中位數）') + legendItem('l-band', '10%～90% 區間');
-    $('assetNote').textContent = `實線是 ${mc.trials.toLocaleString()} 條隨機路徑每一年的中位數（一半的人比它好、一半比它差）；色塊是 80% 的情境所在範圍（第 10 到第 90 百分位）。提領金額固定隨通膨調高，不看市場，所以較差的路徑會提早見底。`;
+    $('assetLegend').innerHTML = mc ? legendItem('l-dynamic', '年底資產（中位數）') + legendItem('l-band', '10%～90% 區間') : legendItem('l-dynamic', '年底資產');
+    $('assetNote').textContent = !mc ? '每年報酬固定時只有一條線：每年年初先領、剩下的資產再依固定報酬成長。資金用完之後的年度顯示 0。這條線看不出市場起伏的風險；改成「加入市場波動」可以看到較差情境。' : `實線是 ${mc.trials.toLocaleString()} 條隨機路徑每一年的中位數（一半的人比它好、一半比它差）；色塊是 80% 的情境所在範圍（第 10 到第 90 百分位）。提領金額固定隨通膨調高，不看市場，所以較差的路徑會提早見底。`;
 
     const xs1 = Array.from({ length: T }, (_, i) => i + 1);
-    const wMed = mc.years.map(y => y.wrMed), wLo = mc.years.map(y => y.wrLo), wHi = mc.years.map(y => y.wrHi);
+    const wMed = yrs.map(y => y.wrMed), wLo = yrs.map(y => y.wrLo), wHi = yrs.map(y => y.wrHi);
     const base = v.rate / 100;
     const rateMax = LineChart.niceMax(Math.max(base * 2, Math.min(Math.max(...wHi), base * 4)));
     const clipped = wHi.some(x => x > rateMax);
@@ -507,13 +519,13 @@
       yFormat: n => (n * 100).toFixed(1) + '%',
       yMax: rateMax,
       hlines: [{ value: base, cls: 'hline-base', label: `初始 ${fmtPct(base)}` }],
-      bands: [{ cls: 'band-dynamic', lo: wLo, hi: wHi }],
+      bands: mc ? [{ cls: 'band-dynamic', lo: wLo, hi: wHi }] : [],
       series: [{ cls: 's-dynamic', values: wMed }],
-      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>提領率中位數　${fmtPct(wMed[i], 2)}` +
-        `<br><span class="tip-muted">10%～90%：${fmtPct(wLo[i], 2)} ～ ${fmtPct(wHi[i], 2)}</span>`
+      tooltip: i => `<b>第 ${xs1[i]} 年</b><br>${mc ? '提領率中位數　' : '提領率　'}${fmtPct(wMed[i], 2)}` +
+        (mc ? `<br><span class="tip-muted">10%～90%：${fmtPct(wLo[i], 2)} ～ ${fmtPct(wHi[i], 2)}</span>` : '')
     });
-    $('rateLegend').innerHTML = legendItem('l-dynamic', '提領率（中位數）') + legendItem('l-band', '10%～90% 區間');
-    $('rateNote').textContent = '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的路徑算 100%）。金額是固定隨通膨調高的，所以資產掉得越多，提領率就越高；色塊上緣代表較差的 10% 情境。' +
+    $('rateLegend').innerHTML = mc ? legendItem('l-dynamic', '提領率（中位數）') + legendItem('l-band', '10%～90% 區間') : legendItem('l-dynamic', '提領率');
+    $('rateNote').textContent = '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完之後算 100%）。金額是固定隨通膨調高的，所以資產掉得越多，提領率就越高' + (mc ? '；色塊上緣代表較差的 10% 情境。' : '。') +
       (clipped ? ' 超出圖表上緣的部分被截斷，滑鼠移到該年（手機點一下）可看到實際數字。' : '');
   }
 
@@ -547,8 +559,6 @@
 
     const isMC = v.mode === 'mc';
     $('volatilityBox').hidden = !isMC;
-    $('assetChartCard').hidden = !isMC;
-    $('rateChartCard').hidden = !isMC;
 
     const errors = validate(v);
     FIELDS.forEach(f => {
@@ -599,7 +609,7 @@
       $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產（中位數）`;
       $('sumEnd').textContent = fmtMoney(lastY.endMed);
       $('sumEndSub').textContent = `較差的 10% 情境：${fmtMoney(lastY.endLo)}；較好的 10%：${fmtMoney(lastY.endHi)}；中位數約合今日購買力 ${fmtMoney(lastY.endMed / deflator)}`;
-      renderCharts(v, mc);
+      renderCharts(v, mc.years, mc);
     } else {
       $('sumLastedLabel').textContent = '資產可以撐多久';
       $('sumLasted').textContent = fmtYears(r.lasted);
@@ -609,6 +619,7 @@
       $('sumEndLabel').textContent = `退休 ${T} 年後剩餘資產`;
       $('sumEnd').textContent = fmtMoney(enough ? last.end : 0);
       $('sumEndSub').textContent = `名目金額，約合今日購買力 ${fmtMoney((enough ? last.end : 0) / deflator)}`;
+      renderCharts(v, fixedYears(v, r), null);
     }
 
     // ----- yearly table
