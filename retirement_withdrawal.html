@@ -133,15 +133,6 @@
             </div>
             <p class="input-error" id="err-years" hidden></p>
           </div>
-          <div id="volatilityBox" hidden>
-            <label for="volatility">年化波動率（報酬每年上下震盪的幅度） <a class="help" href="#g-vol" aria-label="名詞解釋：年化波動率">ⓘ</a></label>
-            <div class="input-wrap">
-              <input type="number" id="volatility" inputmode="decimal" step="1" value="18">
-              <span class="unit">%</span>
-            </div>
-            <p class="input-error" id="err-volatility" hidden></p>
-            <p class="note-line" id="geoNote"></p>
-          </div>
           <div id="modeBox">
             <label for="mode">市場假設 <a class="help" href="#g-mc" aria-label="名詞解釋：蒙地卡羅與百分位區間">ⓘ</a></label>
             <div class="input-wrap">
@@ -150,6 +141,15 @@
                 <option value="mc">加入市場波動（4,000 條路徑）</option>
               </select>
             </div>
+          </div>
+          <div id="volatilityBox" hidden>
+            <label for="volatility">年化波動率（報酬每年上下震盪的幅度） <a class="help" href="#g-vol" aria-label="名詞解釋：年化波動率">ⓘ</a></label>
+            <div class="input-wrap">
+              <input type="number" id="volatility" inputmode="decimal" step="1" value="18">
+              <span class="unit">%</span>
+            </div>
+            <p class="input-error" id="err-volatility" hidden></p>
+            <p class="note-line" id="geoNote"></p>
           </div>
         </div>
       </div>
@@ -547,7 +547,6 @@
 
     const isMC = v.mode === 'mc';
     $('volatilityBox').hidden = !isMC;
-    $('modeBox').classList.toggle('field-wide', isMC);   // 波動率欄出現時，市場假設獨佔一列，兩欄才排得整齊
     $('assetChartCard').hidden = !isMC;
     $('rateChartCard').hidden = !isMC;
 
