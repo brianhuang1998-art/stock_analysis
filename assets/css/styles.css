@@ -566,11 +566,12 @@ label{
 .chart-tip{
   position:absolute;top:0;left:0;z-index:2;pointer-events:none;
   min-width:150px;padding:8px 10px;
-  background:var(--navy);color:#eafff6;border-radius:8px;
+  background:var(--bg);color:var(--text);
+  border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;
   font-size:12px;line-height:1.6;white-space:nowrap;
-  box-shadow:0 6px 18px rgba(15,34,51,.25);
+  box-shadow:0 6px 18px rgba(15,34,51,.12);
 }
-.chart-tip b{color:#fff;}
+.chart-tip b{color:var(--accent-strong);}
 .chart-tip[hidden]{display:none;}
 
 /* ---------- Rules shared by several calculator pages (moved out of the per-page <style> blocks) ---------- */
@@ -672,7 +673,7 @@ label{
 .chart-legend i.l-fixed{border-color:var(--navy-2);border-top-style:dashed;}
 .chart-legend i.l-guard{border-color:var(--loss);border-top-style:dashed;border-top-width:2px;}
 .chart-legend i.l-band{height:10px;border:none;background:rgba(239,91,82,.2);border-radius:3px;}
-.chart-tip .tip-muted{color:#b9d3c8;}
+.chart-tip .tip-muted{color:var(--text-muted);}
 .field-wide{grid-column:1 / -1;}
 
 /* Rules table inside the explanation card: wrap text instead of scrolling */
