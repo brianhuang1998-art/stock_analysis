@@ -153,7 +153,7 @@
 
 新增分類頁：複製一個現有分類頁（例如 `tools.html`），在 `site-config.js` 的 `categories` 加一筆，再執行 build。
 
-頁面標題格式由 `build.py` 統一產生：首頁 `Brian工具箱`、分類頁 `分類 | Brian工具箱`、工具頁 `頁名 - 分類 | Brian工具箱`。
+頁面標題格式由 `build.py` 統一產生：首頁 `Brian 投資工具箱`、分類頁 `分類 | Brian 投資工具箱`、工具頁 `頁名 - 分類 | Brian 投資工具箱`。
 
 頁面間的導覽路徑：
 

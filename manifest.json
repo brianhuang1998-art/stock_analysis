@@ -1,6 +1,6 @@
 {
   "name": "Brian 投資工具箱",
-  "short_name": "Brian工具箱",
+  "short_name": "Brian 投資工具箱",
   "description": "整理一些自己在投資與生活上會用到的小工具：台股交易損益、目標價、加權平均成本、定期定額複利試算。",
   "lang": "zh-Hant",
   "start_url": "./",

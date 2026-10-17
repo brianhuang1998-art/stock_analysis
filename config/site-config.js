@@ -3,7 +3,7 @@
 // because _dev/build.py reads it. After editing, run:  python3 _dev/build.py
 // "soon": true marks a placeholder (開發中): it shows a greyed card and has no link.
 self.SITE = {
-  "siteName": "Brian工具箱",
+  "siteName": "Brian 投資工具箱",
   "appName": "Brian 投資工具箱",
   "studio": "Brian工作室",
   "description": "整理一些自己在投資與生活上會用到的小工具：台股交易損益、目標價、加權平均成本、定期定額複利試算。",
