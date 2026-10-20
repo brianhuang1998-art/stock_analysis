@@ -22,7 +22,15 @@
       "Bash(sed -i '' \"s|caches.match\\('./'\\)|caches.match\\('home_page.html'\\)|\" sw.js)",
       "Bash(node --check sw.js)",
       "Bash(node --check config/site-config.js)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Read(//Users/brian/.claude/skills/**)",
+      "Read(//Users/brian/.claude/plugins/**)",
+      "Bash(ls -R ~/.claude/skills/synced | head -30)",
+      "Read(//Users/brian/.claude/skills/synced/**)",
+      "Bash(git ls-tree *)",
+      "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/)",
+      "Bash(sed -i '' 's|\"href\": \"home_page.html\",|\"href\": \"./\",|' config/site-config.js)",
+      "Bash(sed -i '' \"s|caches.match\\('home_page.html'\\)|caches.match\\('./'\\)|\" sw.js)"
     ]
   }
 }
