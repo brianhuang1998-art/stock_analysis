@@ -30,7 +30,15 @@
       "Bash(git ls-tree *)",
       "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/)",
       "Bash(sed -i '' 's|\"href\": \"home_page.html\",|\"href\": \"./\",|' config/site-config.js)",
-      "Bash(sed -i '' \"s|caches.match\\('home_page.html'\\)|caches.match\\('./'\\)|\" sw.js)"
+      "Bash(sed -i '' \"s|caches.match\\('home_page.html'\\)|caches.match\\('./'\\)|\" sw.js)",
+      "Bash(sed -n '/<script>/,/<\\\\/script>/p' avg_cost_calculator.html)",
+      "Bash(sed -n '/<script>/,/<\\\\/script>/p' etf_calculator.html stock_calculator.html)",
+      "Bash(awk '/<script>/,/<\\\\/script>/' dca_calculator.html)",
+      "Bash(python3 .claude/skills/gk-withdrawal-schedule/scripts/verify.py)",
+      "Bash(python3 -)",
+      "Bash(sed -i '' \"s|int: n => Math.round\\(n\\).toLocaleString\\('zh-Hant-TW'\\),|int: n => \\(Math.round\\(n\\) \\\\|\\\\| 0\\).toLocaleString\\('zh-Hant-TW'\\),|\" assets/js/util.js)",
+      "Bash(node --check assets/js/util.js)",
+      "Bash(node -e \"console.log\\(\\(Math.round\\(-0.14\\)||0\\).toLocaleString\\('zh-Hant-TW'\\)\\)\")"
     ]
   }
 }

@@ -9,7 +9,7 @@ window.Util = (function(){
   };
 
   const fmt = {
-    int: n => Math.round(n).toLocaleString('zh-Hant-TW'),
+    int: n => (Math.round(n) || 0).toLocaleString('zh-Hant-TW'),
     money: n => fmt.int(n) + ' 元',
     price: n => n.toFixed(2) + ' 元',
     signedMoney: n => (Math.round(n) > 0 ? '+' : '') + fmt.money(n),
