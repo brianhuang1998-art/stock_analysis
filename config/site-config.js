@@ -13,7 +13,7 @@ self.SITE = {
   "home": {
     "title": "首頁",
     "file": "home_page.html",
-    "href": "./",
+    "href": "home_page.html",
     "keywords": "home 回首頁"
   },
   "categories": [

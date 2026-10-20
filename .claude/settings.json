@@ -16,7 +16,13 @@
       "Bash(/opt/homebrew/bin/pdftoppm:*)",
       "Bash(/opt/homebrew/bin/pdftotext:*)",
       "Bash(/opt/homebrew/bin/pdfinfo:*)",
-      "Bash(/opt/homebrew/bin/pdfimages:*)"
+      "Bash(/opt/homebrew/bin/pdfimages:*)",
+      "Bash(python3 _dev/build.py)",
+      "Bash(sed -i '' 's|\"href\": \"./\",|\"href\": \"home_page.html\",|' config/site-config.js)",
+      "Bash(sed -i '' \"s|caches.match\\('./'\\)|caches.match\\('home_page.html'\\)|\" sw.js)",
+      "Bash(node --check sw.js)",
+      "Bash(node --check config/site-config.js)",
+      "Bash(git push *)"
     ]
   }
 }
