@@ -92,12 +92,12 @@ def card(icon, title, desc, href=None, cta=None, soon=False):
         return f'''    <div class="tool-card soon">
       <span class="badge muted corner">開發中</span>
       {icon_html}
-      <h3>{esc(title)}</h3>
+      <h2>{esc(title)}</h2>
       <p>{esc(desc)}</p>
     </div>'''
     return f'''    <a class="tool-card" href="{esc(href)}">
       {icon_html}
-      <h3>{esc(title)}</h3>
+      <h2>{esc(title)}</h2>
       <p>{esc(desc)}</p>
       <div class="go">{esc(cta)}</div>
     </a>'''

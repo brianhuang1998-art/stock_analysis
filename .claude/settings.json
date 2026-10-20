@@ -38,7 +38,13 @@
       "Bash(python3 -)",
       "Bash(sed -i '' \"s|int: n => Math.round\\(n\\).toLocaleString\\('zh-Hant-TW'\\),|int: n => \\(Math.round\\(n\\) \\\\|\\\\| 0\\).toLocaleString\\('zh-Hant-TW'\\),|\" assets/js/util.js)",
       "Bash(node --check assets/js/util.js)",
-      "Bash(node -e \"console.log\\(\\(Math.round\\(-0.14\\)||0\\).toLocaleString\\('zh-Hant-TW'\\)\\)\")"
+      "Bash(node -e \"console.log\\(\\(Math.round\\(-0.14\\)||0\\).toLocaleString\\('zh-Hant-TW'\\)\\)\")",
+      "Bash(head -c 1500 ~/.claude/skills/synced/*/manifest.json)",
+      "Read(//Applications/Google Chrome.app/**)",
+      "Bash(npm view *)",
+      "Bash(node -e ' *)",
+      "Bash(sed -i '' '95s|h3|h2|g;100s|h3|h2|g' _dev/build.py)",
+      "Bash(sed -i '' '496s|\\\\.tool-card h3|.tool-card h2|' assets/css/styles.css)"
     ]
   }
 }
