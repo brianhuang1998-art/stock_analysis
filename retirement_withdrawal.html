@@ -289,7 +289,7 @@
   const { money: fmtMoney } = Util.fmt;
   const { percentile, sortedCopy } = MC;
   const fmtPct = (n, d) => (n * 100).toFixed(d === undefined ? 1 : d) + '%';
-  const legendItem = (cls, text) => `<span><i class="${cls}"></i>${text}</span>`;
+  const legendItem = (cls, text, key) => `<span${key ? ` data-k="${key}"` : ''}><i class="${cls}"></i>${text}</span>`;
   const fmtAxisMoney = n => n >= 1e8 ? +(n / 1e8).toFixed(1) + ' 億' : n >= 1e4 ? +(n / 1e4).toFixed(0) + ' 萬' : String(Math.round(n));
 
   const saved = Util.store.getJSON(STORAGE_KEY);
@@ -428,7 +428,7 @@
       tooltip: i => `<b>${i === 0 ? '退休當天' : `第 ${i} 年底`}</b><br>${mc ? '中位數　' : '資產　'}${fmtMoney(med[i])}` +
         (mc && i > 0 ? `<br><span class="tip-muted">10%～90%：${fmtMoney(lo[i])} ～ ${fmtMoney(hi[i])}</span>` : '')
     });
-    $('assetLegend').innerHTML = mc ? legendItem('l-dynamic', '年底資產（中位數）') + legendItem('l-band', '10%～90% 區間') : legendItem('l-dynamic', '年底資產');
+    $('assetLegend').innerHTML = mc ? legendItem('l-dynamic', '年底資產（中位數）', 's0') + legendItem('l-band', '10%～90% 區間', 'b0') : legendItem('l-dynamic', '年底資產');
     $('assetNote').textContent = !mc ? '每年報酬固定時只有一條線：每年年初先領、剩下的資產再依固定報酬成長。資金用完之後的年度顯示 0。這條線看不出市場起伏的風險；改成「加入市場波動」可以看到較差情境。' : `實線是 ${mc.trials.toLocaleString()} 條隨機路徑每一年的中位數（一半的人比它好、一半比它差）；色塊是 80% 的情境所在範圍（第 10 到第 90 百分位）。提領金額固定隨通膨調高，不看市場，所以較差的路徑會提早見底。`;
 
     const xs1 = Array.from({ length: T }, (_, i) => i + 1);
@@ -447,7 +447,7 @@
       tooltip: i => `<b>第 ${xs1[i]} 年</b><br>${mc ? '提領率中位數　' : '提領率　'}${fmtPct(wMed[i], 2)}` +
         (mc ? `<br><span class="tip-muted">10%～90%：${fmtPct(wLo[i], 2)} ～ ${fmtPct(wHi[i], 2)}</span>` : '')
     });
-    $('rateLegend').innerHTML = mc ? legendItem('l-dynamic', '提領率（中位數）') + legendItem('l-band', '10%～90% 區間') : legendItem('l-dynamic', '提領率');
+    $('rateLegend').innerHTML = mc ? legendItem('l-dynamic', '提領率（中位數）', 's0') + legendItem('l-band', '10%～90% 區間', 'b0') : legendItem('l-dynamic', '提領率');
     $('rateNote').textContent = '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完之後算 100%）。金額是固定隨通膨調高的，所以資產掉得越多，提領率就越高' + (mc ? '；色塊上緣代表較差的 10% 情境。' : '。') +
       (clipped ? ' 超出圖表上緣的部分被截斷，滑鼠移到該年（手機點一下）可看到實際數字。' : '');
   }

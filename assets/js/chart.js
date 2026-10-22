@@ -6,13 +6,15 @@
 //     yFormat: v => '…',                         axis text
 //     yMax: 0.2,                                 optional; default = a "nice" max of the data. Values above it are clipped
 //     bands:   [{ cls: 'band-dynamic', lo: [...], hi: [...] }],
-//     hlines:  [{ value: 0.06, cls: 'hline-guard', label: '上護欄' }],
+//     hlines:  [{ value: 0.06, cls: 'hline-guard', label: '上護欄', key: 'guard' }],
 //     series:  [{ cls: 's-dynamic', values: [...] }],
 //     tooltip: i => '<b>…</b><br>…'              html for the point at index i
 //   });
 //
-// Legend toggle: give legend items data-s="<series index>" (inside .chart-legend) and they switch that series on/off.
-// A band with follow: <series index> hides together with that series; band.color (any CSS colour) draws it as a fade-out gradient.
+// Legend toggle: legend items inside .chart-legend that carry data-k switch that part of the chart on/off:
+//   data-k="s0"      series 0            data-k="b0"      band 0            data-k="guard"   every hline whose key is "guard"
+// The legend may be rebuilt at any time (before or after draw); the on/off state is kept per chart. At least one series stays on.
+// A band with follow: <series index> also hides with that series; band.color (any CSS colour) draws it as a fade-out gradient.
 //
 // wrapEl must contain <svg class="chart-svg"> and <div class="chart-tip" hidden>. Colours come from styles.css (.s-*, .band-*, .hline-*).
 window.LineChart = (function(){
@@ -40,13 +42,12 @@ window.LineChart = (function(){
     tip.hidden = true;
     wrap.__cfg = cfg;
     const hidden = wrap.__hidden || (wrap.__hidden = {});
-    const bandOn = b => !(b.follow !== undefined && hidden[b.follow]);
     bindLegend(wrap);
 
     const xs = cfg.xs;
-    const lines = cfg.series.filter((s, k) => !hidden[k]).map(s => s.values);
-    const bands = (cfg.bands || []).filter(bandOn);
-    const hlines = cfg.hlines || [];
+    const lines = cfg.series.filter((s, k) => !hidden['s' + k]).map(s => s.values);
+    const bands = (cfg.bands || []).filter((b, bi) => !hidden['b' + bi] && !(b.follow !== undefined && hidden['s' + b.follow]));
+    const hlines = (cfg.hlines || []).filter(h => !(h.key && hidden[h.key]));
 
     let dataMax = 0;
     lines.forEach(vs => vs.forEach(v => { if(isFinite(v) && v > dataMax) dataMax = v; }));
@@ -102,18 +103,9 @@ window.LineChart = (function(){
     });
 
     cfg.series.forEach((s, k) => {
-      if(hidden[k]) return;
+      if(hidden['s' + k]) return;
       svg.appendChild(el('path', { class: s.cls, d: pts(s.values, all).map((p, i) => (i ? 'L' : 'M') + p).join(' ') }));
     });
-
-    const g = el('g', { class: 'cursor-group', visibility: 'hidden' });
-    g.appendChild(el('line', { class: 'cursor', y1: PAD.t, y2: H - PAD.b }));
-    cfg.series.forEach((s, k) => {
-      const dot = el('circle', { class: 'dot ' + s.cls, r: 4.5 });
-      if(hidden[k]) dot.setAttribute('visibility', 'hidden');   // otherwise inherit the group's visibility
-      g.appendChild(dot);
-    });
-    svg.appendChild(g);
 
     if(!svg.__bound){
       svg.__bound = true;
@@ -123,27 +115,41 @@ window.LineChart = (function(){
     }
   }
 
-  function bindLegend(wrap){
-    const items = wrap.querySelectorAll('.chart-legend [data-s]');
-    items.forEach(it => {
-      const k = +it.dataset.s;
-      it.classList.toggle('off', !!wrap.__hidden[k]);
-      it.setAttribute('aria-pressed', wrap.__hidden[k] ? 'false' : 'true');
-      if(it.__bound) return;
-      it.__bound = true;
+  // Reflect the on/off state on the legend items (called after every draw and whenever the legend is rebuilt)
+  function syncLegend(wrap){
+    wrap.querySelectorAll('.chart-legend [data-k]').forEach(it => {
+      const off = !!wrap.__hidden[it.dataset.k];
+      it.classList.toggle('off', off);
+      it.setAttribute('aria-pressed', off ? 'false' : 'true');
       it.setAttribute('role', 'button');
       it.tabIndex = 0;
-      const toggle = () => {
-        const cfg = wrap.__cfg;
-        if(!cfg) return;
-        const visible = cfg.series.filter((s, i) => !wrap.__hidden[i]).length;
-        if(!wrap.__hidden[k] && visible <= 1) return;   // keep at least one line on screen
-        wrap.__hidden[k] = !wrap.__hidden[k];
-        draw(wrap, cfg);
-      };
-      it.addEventListener('click', toggle);
-      it.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
     });
+  }
+
+  function toggle(wrap, key){
+    const cfg = wrap.__cfg;
+    if(!cfg) return;
+    if(/^s\d+$/.test(key) && !wrap.__hidden[key]){
+      const visible = cfg.series.filter((s, i) => !wrap.__hidden['s' + i]).length;
+      if(visible <= 1) return;   // keep at least one line on screen
+    }
+    wrap.__hidden[key] = !wrap.__hidden[key];
+    draw(wrap, cfg);
+  }
+
+  function bindLegend(wrap){
+    const legend = wrap.querySelector('.chart-legend');
+    if(legend && !legend.__bound){
+      legend.__bound = true;
+      const hit = e => e.target.closest('[data-k]');
+      legend.addEventListener('click', e => { const it = hit(e); if(it) toggle(wrap, it.dataset.k); });
+      legend.addEventListener('keydown', e => {
+        const it = hit(e);
+        if(it && (e.key === 'Enter' || e.key === ' ')){ e.preventDefault(); toggle(wrap, it.dataset.k); }
+      });
+      new MutationObserver(() => syncLegend(wrap)).observe(legend, { childList: true });
+    }
+    syncLegend(wrap);
   }
 
   function showTip(wrap, evt){
@@ -158,13 +164,21 @@ window.LineChart = (function(){
     const i = Math.min(n - 1, Math.max(0, Math.round(frac * (n - 1))));
     const px = geom.x(cfg.xs[i]);
 
-    const g = svg.querySelector('.cursor-group');
-    g.setAttribute('visibility', 'visible');
+    // The cursor (line + one dot per visible series) only exists while the pointer is on the chart
+    let g = svg.querySelector('.cursor-group');
+    if(!g){
+      g = el('g', { class: 'cursor-group' });
+      g.appendChild(el('line', { class: 'cursor', y1: PAD.t, y2: H - PAD.b }));
+      cfg.series.forEach((s, k) => {
+        if(!wrap.__hidden['s' + k]) g.appendChild(el('circle', { class: 'dot ' + s.cls, r: 4.5, 'data-i': k }));
+      });
+      svg.appendChild(g);
+    }
     const line = g.querySelector('.cursor');
     line.setAttribute('x1', px); line.setAttribute('x2', px);
-    g.querySelectorAll('.dot').forEach((c, k) => {
+    g.querySelectorAll('.dot').forEach(c => {
       c.setAttribute('cx', px);
-      c.setAttribute('cy', geom.y(cfg.series[k].values[i]));
+      c.setAttribute('cy', geom.y(cfg.series[+c.getAttribute('data-i')].values[i]));
     });
 
     tip.innerHTML = cfg.tooltip(i);
@@ -179,7 +193,7 @@ window.LineChart = (function(){
   function hideTip(wrap){
     wrap.querySelector('.chart-tip').hidden = true;
     const g = wrap.querySelector('.cursor-group');
-    if(g) g.setAttribute('visibility', 'hidden');
+    if(g) g.remove();
   }
 
   function clear(wrap){

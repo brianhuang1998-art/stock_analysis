@@ -571,7 +571,7 @@
   }
 
   const FIXED_LABEL = '固定提領（金額固定、提領率會變）';
-  const legendItem = (cls, text) => `<span><i class="${cls}"></i>${text}</span>`;
+  const legendItem = (cls, text, key) => `<span${key ? ` data-k="${key}"` : ''}><i class="${cls}"></i>${text}</span>`;
 
   function render(v, dyn, fix){
     const T = v.years;
@@ -642,9 +642,9 @@
       }
     });
     $('assetLegend').innerHTML =
-      legendItem('l-dynamic', '動態提領' + (stress ? '' : '（中位數）')) +
-      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）')) +
-      (stress ? '' : legendItem('l-band', '動態提領 10%～90% 區間'));
+      legendItem('l-dynamic', '動態提領' + (stress ? '' : '（中位數）'), 's1') +
+      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）'), 's0') +
+      (stress ? '' : legendItem('l-band', '動態提領 10%～90% 區間', 'b0'));
     $('assetNote').textContent = stress
       ? `情境：前 ${v.stressYears} 年每年 ${v.stressReturn}%，之後每年 ${v.ret}%。固定提領在下跌期間照領，資產掉得比較深。`
       : '實線是 4,000 條路徑每一年的中位數（一半的人比它好、一半比它差）；淡綠色區域是動態提領 80% 的情境所在範圍（第 10 到第 90 百分位）。';
@@ -662,9 +662,9 @@
       yFormat: n => (n * 100).toFixed(1) + '%',
       yMax: rateMax,
       hlines: [
-        { value: upper, cls: 'hline-guard', label: `上護欄 ${fmtPct(upper)}` },
+        { value: upper, cls: 'hline-guard', key: 'guard', label: `上護欄 ${fmtPct(upper)}` },
         { value: v.wr0, cls: 'hline-base', label: `初始 ${fmtPct(v.wr0)}` },
-        { value: lower, cls: 'hline-guard', label: `下護欄 ${fmtPct(lower)}` }
+        { value: lower, cls: 'hline-guard', key: 'guard', label: `下護欄 ${fmtPct(lower)}` }
       ],
       bands: stress ? [] : [{ cls: 'band-dynamic', lo: dynWrLo, hi: dynWrHi }],
       series: [{ cls: 's-fixed', values: fixWr }, { cls: 's-dynamic', values: dynWr }],
@@ -672,10 +672,10 @@
         (stress ? '' : `<br><span class="tip-muted">動態 10%～90%：${fmtPct(dynWrLo[i], 2)} ～ ${fmtPct(dynWrHi[i], 2)}</span>`)
     });
     $('rateLegend').innerHTML =
-      legendItem('l-dynamic', '動態提領率' + (stress ? '' : '（中位數）')) +
-      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）')) +
-      (stress ? '' : legendItem('l-band', '動態提領率 10%～90% 區間')) +
-      legendItem('l-guard', '上、下護欄（初始 ±20%）');
+      legendItem('l-dynamic', '動態提領率' + (stress ? '' : '（中位數）'), 's1') +
+      legendItem('l-fixed', stress ? FIXED_LABEL : FIXED_LABEL.replace('）', '、中位數）'), 's0') +
+      (stress ? '' : legendItem('l-band', '動態提領率 10%～90% 區間', 'b0')) +
+      legendItem('l-guard', '上、下護欄（初始 ±20%）', 'guard');
     $('rateNote').textContent = (stress
       ? '提領率 = 當年提領金額 ÷ 當年年初資產。動態提領的提領率超過上護欄就被下調拉回、低於下護欄就被上調拉高；固定提領的「固定」是指每年的提領「金額」只隨通膨調高、不看市場，所以資產一變動，提領率（= 金額 ÷ 年初資產）就跟著變，沒有護欄時下跌會直接飆高。'
       : '提領率 = 當年提領金額 ÷ 當年年初資產（資金用完的那一年，是計畫提領 ÷ 剩餘資產，可能超過 100%；用完之後算 100%）。實線是各年度的中位數，淡綠色區域是動態提領 80% 的情境（10%～90%）。動態提領的中位數通常貼近初始提領率、碰不到護欄，護欄是在比較好或比較差的個別路徑上動作，所以請看淡綠色區域的上下緣（護欄一次只調整 10%，所以區域上緣可能暫時略高於上護欄）。固定提領的「固定」是指每年的提領「金額」只隨通膨調高、不看市場，所以提領率（= 金額 ÷ 年初資產）會跟著資產變動：報酬撐不住提領時逐年攀升，報酬遠高於提領時則會下降。')
