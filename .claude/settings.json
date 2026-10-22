@@ -47,7 +47,8 @@
       "Bash(sed -i '' '496s|\\\\.tool-card h3|.tool-card h2|' assets/css/styles.css)",
       "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css?x=__TRACKED_VAR__)",
       "Bash(curl -sI https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css)",
-      "Bash(git clone *)"
+      "Bash(git clone *)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }
