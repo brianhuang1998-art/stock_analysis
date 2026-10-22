@@ -1,7 +1,7 @@
 // Service worker: lets the site open offline once it has been visited.
 // Network first (so a fresh deploy shows up right away), falling back to the cache when offline.
 // Bump CACHE_VERSION only if you want to force-clear old cached files.
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE = 'brian-toolbox-' + CACHE_VERSION;
 
 // The page list comes from site-config.js, so a new page is cached automatically

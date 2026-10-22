@@ -108,7 +108,11 @@ window.LineChart = (function(){
 
     const g = el('g', { class: 'cursor-group', visibility: 'hidden' });
     g.appendChild(el('line', { class: 'cursor', y1: PAD.t, y2: H - PAD.b }));
-    cfg.series.forEach((s, k) => g.appendChild(el('circle', { class: 'dot ' + s.cls, r: 4.5, visibility: hidden[k] ? 'hidden' : 'visible' })));
+    cfg.series.forEach((s, k) => {
+      const dot = el('circle', { class: 'dot ' + s.cls, r: 4.5 });
+      if(hidden[k]) dot.setAttribute('visibility', 'hidden');   // otherwise inherit the group's visibility
+      g.appendChild(dot);
+    });
     svg.appendChild(g);
 
     if(!svg.__bound){
