@@ -48,7 +48,8 @@
       "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css?x=__TRACKED_VAR__)",
       "Bash(curl -sI https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css)",
       "Bash(git clone *)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(git fetch *)"
     ]
   }
 }
