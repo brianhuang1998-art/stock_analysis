@@ -19,16 +19,16 @@
   --down:#029e6d;
   --down-soft:#d2f6e6;
   /* 文字專用較深色階（對比 ≥ 4.5:1）；--up/--down/--loss 保留亮色給填色與線條 */
-  --up-text:#bf2f27;
+  --up-text:#ef5b52;
   --down-text:#047857;
-  --loss-text:#bf2f27;
+  --loss-text:#ef5b52;
   --disabled-bg:#eceff1;
   --disabled-border:#dde3e7;
   --disabled-text:#5a6978;
   --radius:14px;
 }
 /* 提領率相關頁面不套用台股習慣：綠＝正向、紅＝負面 */
-body.theme-us{--up:#029e6d;--up-soft:#d2f6e6;--up-text:#047857;--down:#ef5b52;--down-soft:#fde6e4;--down-text:#bf2f27;}
+body.theme-us{--up:#029e6d;--up-soft:#d2f6e6;--up-text:#047857;--down:#ef5b52;--down-soft:#fde6e4;--down-text:#ef5b52;}
 body.theme-us .chart-legend i.l-band{background:rgba(0,201,140,.2);}
 *{box-sizing:border-box;}
 body{
