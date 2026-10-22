@@ -11,6 +11,9 @@
 //     tooltip: i => '<b>…</b><br>…'              html for the point at index i
 //   });
 //
+// Legend toggle: give legend items data-s="<series index>" (inside .chart-legend) and they switch that series on/off.
+// A band with follow: <series index> hides together with that series; band.color (any CSS colour) draws it as a fade-out gradient.
+//
 // wrapEl must contain <svg class="chart-svg"> and <div class="chart-tip" hidden>. Colours come from styles.css (.s-*, .band-*, .hline-*).
 window.LineChart = (function(){
   const NS = 'http://www.w3.org/2000/svg';
@@ -36,10 +39,13 @@ window.LineChart = (function(){
     svg.innerHTML = '';
     tip.hidden = true;
     wrap.__cfg = cfg;
+    const hidden = wrap.__hidden || (wrap.__hidden = {});
+    const bandOn = b => !(b.follow !== undefined && hidden[b.follow]);
+    bindLegend(wrap);
 
     const xs = cfg.xs;
-    const lines = cfg.series.map(s => s.values);
-    const bands = cfg.bands || [];
+    const lines = cfg.series.filter((s, k) => !hidden[k]).map(s => s.values);
+    const bands = (cfg.bands || []).filter(bandOn);
     const hlines = cfg.hlines || [];
 
     let dataMax = 0;
@@ -73,10 +79,21 @@ window.LineChart = (function(){
     const pts = (vs, idx) => idx.map(i => x(xs[i]).toFixed(1) + ' ' + y(vs[i]).toFixed(1));
     const all = xs.map((_, i) => i);
 
-    bands.forEach(b => {
+    const defs = el('defs');
+    svg.appendChild(defs);
+    bands.forEach((b, bi) => {
       const top = pts(b.hi, all).map((p, i) => (i ? 'L' : 'M') + p).join(' ');
       const bottom = pts(b.lo, all.slice().reverse()).map(p => 'L' + p).join(' ');
-      svg.appendChild(el('path', { class: b.cls, d: top + ' ' + bottom + ' Z' }));
+      const path = el('path', { class: b.cls, d: top + ' ' + bottom + ' Z' });
+      if(b.color){
+        const id = 'lc-grad-' + (wrap.id || 'w') + '-' + bi;
+        const grad = el('linearGradient', { id, x1: 0, y1: 0, x2: 0, y2: 1 });
+        grad.appendChild(el('stop', { offset: '0%', style: 'stop-color:' + b.color + ';stop-opacity:.32' }));
+        grad.appendChild(el('stop', { offset: '100%', style: 'stop-color:' + b.color + ';stop-opacity:.02' }));
+        defs.appendChild(grad);
+        path.setAttribute('style', 'fill:url(#' + id + ');opacity:1');
+      }
+      svg.appendChild(path);
     });
 
     hlines.forEach(h => {
@@ -84,13 +101,14 @@ window.LineChart = (function(){
       if(h.label) svg.appendChild(el('text', { class: 'hline-label', x: W - PAD.r - 4, y: y(h.value) - 4, 'text-anchor': 'end' }, h.label));
     });
 
-    cfg.series.forEach(s => {
+    cfg.series.forEach((s, k) => {
+      if(hidden[k]) return;
       svg.appendChild(el('path', { class: s.cls, d: pts(s.values, all).map((p, i) => (i ? 'L' : 'M') + p).join(' ') }));
     });
 
     const g = el('g', { class: 'cursor-group', visibility: 'hidden' });
     g.appendChild(el('line', { class: 'cursor', y1: PAD.t, y2: H - PAD.b }));
-    cfg.series.forEach(s => g.appendChild(el('circle', { class: 'dot ' + s.cls, r: 4.5 })));
+    cfg.series.forEach((s, k) => g.appendChild(el('circle', { class: 'dot ' + s.cls, r: 4.5, visibility: hidden[k] ? 'hidden' : 'visible' })));
     svg.appendChild(g);
 
     if(!svg.__bound){
@@ -99,6 +117,29 @@ window.LineChart = (function(){
       svg.addEventListener('pointerdown', e => showTip(wrap, e));
       svg.addEventListener('pointerleave', () => hideTip(wrap));
     }
+  }
+
+  function bindLegend(wrap){
+    const items = wrap.querySelectorAll('.chart-legend [data-s]');
+    items.forEach(it => {
+      const k = +it.dataset.s;
+      it.classList.toggle('off', !!wrap.__hidden[k]);
+      it.setAttribute('aria-pressed', wrap.__hidden[k] ? 'false' : 'true');
+      if(it.__bound) return;
+      it.__bound = true;
+      it.setAttribute('role', 'button');
+      it.tabIndex = 0;
+      const toggle = () => {
+        const cfg = wrap.__cfg;
+        if(!cfg) return;
+        const visible = cfg.series.filter((s, i) => !wrap.__hidden[i]).length;
+        if(!wrap.__hidden[k] && visible <= 1) return;   // keep at least one line on screen
+        wrap.__hidden[k] = !wrap.__hidden[k];
+        draw(wrap, cfg);
+      };
+      it.addEventListener('click', toggle);
+      it.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+    });
   }
 
   function showTip(wrap, evt){

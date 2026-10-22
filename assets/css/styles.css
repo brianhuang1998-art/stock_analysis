@@ -580,6 +580,10 @@ label{
 .chart-legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 8px;font-size:var(--fs-sm);color:var(--text-muted);}
 .chart-legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px;border-radius:2px;}
 .chart-legend i.dash{border-top-style:dashed;}
+.chart-legend [data-s]{display:inline-flex;align-items:center;cursor:pointer;user-select:none;padding:3px 12px;border:1px solid var(--border);border-radius:999px;transition:opacity .15s,background .15s;}
+.chart-legend [data-s]:hover{background:rgba(127,127,127,.1);}
+.chart-legend [data-s]:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px;}
+.chart-legend [data-s].off{opacity:.4;text-decoration:line-through;}
 .chart-svg{display:block;width:100%;height:auto;touch-action:pan-y;}
 .chart-svg text{font-family:var(--font-main);font-size:11px;fill:var(--text-muted);}
 .chart-svg .grid{stroke:var(--border);stroke-width:1;}

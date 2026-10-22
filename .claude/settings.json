@@ -50,7 +50,8 @@
       "Bash(git clone *)",
       "Bash(python3 -c ' *)",
       "Bash(grep -c 'style=\"' *.html | grep -v ':0'; grep -ohE 'style=\"[^\"]*\\(font-size|margin|padding|gap\\)[^\"]*\"' *.html | sort | uniq -c | sort -rn | head -20; grep -n '<style' *.html | head; ls \"/Applications/Google Chrome.app/Contents/MacOS/\" 2>/dev/null)",
-      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)"
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Bash(node --check assets/js/chart.js)"
     ]
   }
 }

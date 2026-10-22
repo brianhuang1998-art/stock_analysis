@@ -113,8 +113,8 @@
         <p class="empty-hint">輸入有效的參數後，這裡會畫出累積投入與資產的成長曲線。</p>
         <div class="chart-wrap" id="chartWrap">
           <div class="chart-legend">
-            <span><i class="dash" style="border-color:var(--navy-2)"></i>累積投入本金</span>
-            <span><i style="border-color:var(--up)"></i>期末預估資產</span>
+            <span data-s="0"><i class="dash" style="border-color:var(--navy-2)"></i>累積投入本金</span>
+            <span data-s="1"><i style="border-color:var(--up)"></i>期末預估資產</span>
           </div>
           <svg class="chart-svg" id="chartSvg" viewBox="0 0 640 300" role="img" aria-label="累積投入本金與期末預估資產的逐年成長折線圖"></svg>
           <div class="chart-tip" id="chartTip" hidden></div>
@@ -239,7 +239,7 @@
       xs: points.map(p => p.year),
       xLabel: yr => yr === 0 ? '起始' : yr + ' 年',
       yFormat: fmtAxis,
-      bands: [{ cls: 'area-assets' + neg, lo: points.map(() => 0), hi: points.map(p => p.assets) }],
+      bands: [{ cls: 'area-assets' + neg, follow: 1, color: last.assets < last.invested ? 'var(--down)' : 'var(--up)', lo: points.map(() => 0), hi: points.map(p => p.assets) }],
       series: [
         { cls: 's-fixed', values: points.map(p => p.invested) },
         { cls: 's-dynamic' + neg, values: points.map(p => p.assets) }
