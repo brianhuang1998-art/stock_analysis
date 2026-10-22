@@ -44,7 +44,10 @@
       "Bash(npm view *)",
       "Bash(node -e ' *)",
       "Bash(sed -i '' '95s|h3|h2|g;100s|h3|h2|g' _dev/build.py)",
-      "Bash(sed -i '' '496s|\\\\.tool-card h3|.tool-card h2|' assets/css/styles.css)"
+      "Bash(sed -i '' '496s|\\\\.tool-card h3|.tool-card h2|' assets/css/styles.css)",
+      "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css?x=__TRACKED_VAR__)",
+      "Bash(curl -sI https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css)",
+      "Bash(git clone *)"
     ]
   }
 }
