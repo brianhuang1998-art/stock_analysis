@@ -3,7 +3,7 @@
   --bg:#ffffff;
   --surface:#f3faf6;
   --surface-2:#eaf8f0;
-  --border:#d9efe3;
+  --border:#b4dcc8;
   --navy:#0f2233;
   --navy-2:#16324a;
   --text:#0f2233;
@@ -180,7 +180,7 @@ h1{
 
 .card{
   background:#fff;
-  border:1px solid var(--border);
+  border:1.5px solid var(--border);
   border-radius:var(--radius);
   padding:var(--sp-5);
 }

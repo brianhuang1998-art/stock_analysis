@@ -51,7 +51,10 @@
       "Bash(python3 -c ' *)",
       "Bash(grep -c 'style=\"' *.html | grep -v ':0'; grep -ohE 'style=\"[^\"]*\\(font-size|margin|padding|gap\\)[^\"]*\"' *.html | sort | uniq -c | sort -rn | head -20; grep -n '<style' *.html | head; ls \"/Applications/Google Chrome.app/Contents/MacOS/\" 2>/dev/null)",
       "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
-      "Bash(node --check assets/js/chart.js)"
+      "Bash(node --check assets/js/chart.js)",
+      "Bash(python3 .claude/skills/gk-withdrawal-schedule/scripts/schedule.py --assets 10000000 --iwr 5 --years 30 --returns 7 --inflation 2 --first-years 3 --first-return=-15 --json)",
+      "Bash(sed -i 's/--border:#d9efe3;/--border:#b4dcc8;/' assets/css/styles.css)",
+      "Bash(sed -i -E '/^\\\\.card\\\\{/,/^\\\\}/ s/border:1px solid var\\\\\\(--border\\\\\\);/border:1.5px solid var\\(--border\\);/' assets/css/styles.css)"
     ]
   }
 }
