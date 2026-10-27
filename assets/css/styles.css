@@ -193,6 +193,9 @@ h1{
   font-weight:700;
   color:var(--navy);
   display:flex;align-items:center;gap:var(--sp-2);
+  padding:var(--sp-2) var(--sp-3);
+  border-radius:8px;
+  background:linear-gradient(to right,var(--accent-soft),#fff);
 }
 .card h2::before{
   content:"";
@@ -200,7 +203,6 @@ h1{
   background:var(--accent);
   display:inline-block;
 }
-
 .card-head-row{
   display:flex;
   align-items:center;
@@ -720,6 +722,7 @@ label{
 .guard-demo{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:4px 0 8px;}
 .guard-head{margin:0;padding:9px 12px;background:#d3e3f5;font-size:var(--fs-sm);font-weight:600;color:var(--navy-2);}
 .guard-head strong{color:var(--navy);}
+.guard-head .guard-icon{font-size:1.2em;line-height:1;vertical-align:-.1em;}
 .guard-row{display:flex;gap:12px;align-items:baseline;padding:9px 12px;font-size:var(--fs-md);line-height:1.6;border-top:1px solid var(--border);}
 .guard-row .tag{flex:none;min-width:8.5em;font-weight:700;font-size:var(--fs-sm);}
 .guard-row.hi{background:var(--down-soft);}
@@ -727,8 +730,14 @@ label{
 .guard-row.mid{background:#e8f1fb;}
 .guard-row.mid .tag{color:var(--navy-2);}
 .guard-demo p.guard-head{margin:0;}
-.guard-demo.plain .guard-head{background:var(--accent-soft);}
+.guard-demo.plain .guard-head{background:transparent;}
+.guard-demo.plain{border:0;}
+.guard-demo.plain .guard-row{border-top:0;}
 .guard-demo.plain .guard-row.mid{background:var(--surface);}
+/* 逐年變深：第 1 年最淡 → 第 10 年最深，呼應金額逐年變多 */
+.guard-demo.plain .guard-row:nth-of-type(1){background:var(--surface);}
+.guard-demo.plain .guard-row:nth-of-type(2){background:var(--surface-2);}
+.guard-demo.plain .guard-row:nth-of-type(3){background:#e0f4ea;}
 .guard-row.lo{background:var(--up-soft);}
 .guard-row.lo .tag{color:var(--up-text);}
 @media (max-width:480px){ .guard-row{flex-direction:column;gap:2px;} .guard-row .tag{min-width:0;} }

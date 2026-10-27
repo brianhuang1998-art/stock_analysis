@@ -183,7 +183,11 @@
       "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 --window-size=900,260 --screenshot=/private/tmp/claude-501/-Users-brian------------/483d969e-9744-4e10-a29d-7ab9d5dc6f7f/scratchpad/topbar2.png file://__TRACKED_VAR__/home_page.html)",
       "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,900 --screenshot=/private/tmp/claude-501/-Users-brian------------/483d969e-9744-4e10-a29d-7ab9d5dc6f7f/scratchpad/guard.png file://__TRACKED_VAR__/retirement_withdrawal.html)",
       "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,900 --screenshot=/private/tmp/claude-501/-Users-brian------------/483d969e-9744-4e10-a29d-7ab9d5dc6f7f/scratchpad/guard2.png file://__TRACKED_VAR__/retirement_withdrawal.html)",
-      "Bash(python3 -I -c ' *)"
+      "Bash(python3 -I -c ' *)",
+      "Read(//Applications/**)",
+      "Bash(python3 -c \"import playwright;print\\('pw'\\)\")",
+      "Bash(pkill -f \"headless\")",
+      "Bash(timeout 60 '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --no-first-run --user-data-dir=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/prof --virtual-time-budget=3000 --screenshot=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/shot.png --window-size=1000,700 file://__TRACKED_VAR__/retirement_withdrawal.html)"
     ]
   }
 }
