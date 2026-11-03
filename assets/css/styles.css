@@ -730,14 +730,14 @@ label{
 .guard-row.mid{background:#e8f1fb;}
 .guard-row.mid .tag{color:var(--navy-2);}
 .guard-demo p.guard-head{margin:0;}
-.guard-demo.plain .guard-head{background:transparent;}
+.guard-demo.plain .guard-head{background:#fbd8b0;}
 .guard-demo.plain{border:0;}
 .guard-demo.plain .guard-row{border-top:0;}
 .guard-demo.plain .guard-row.mid{background:var(--surface);}
-/* 逐年變深：第 1 年最淡 → 第 10 年最深，呼應金額逐年變多 */
-.guard-demo.plain .guard-row:nth-of-type(1){background:var(--surface);}
-.guard-demo.plain .guard-row:nth-of-type(2){background:var(--surface-2);}
-.guard-demo.plain .guard-row:nth-of-type(3){background:#e0f4ea;}
+/* 由深入淺：標題最深 → 第 10 年最淡 */
+.guard-demo.plain .guard-row:nth-of-type(1){background:#fce5cb;}
+.guard-demo.plain .guard-row:nth-of-type(2){background:#fdf0e0;}
+.guard-demo.plain .guard-row:nth-of-type(3){background:#fef8f0;}
 .guard-row.lo{background:var(--up-soft);}
 .guard-row.lo .tag{color:var(--up-text);}
 @media (max-width:480px){ .guard-row{flex-direction:column;gap:2px;} .guard-row .tag{min-width:0;} }

@@ -187,7 +187,10 @@
       "Read(//Applications/**)",
       "Bash(python3 -c \"import playwright;print\\('pw'\\)\")",
       "Bash(pkill -f \"headless\")",
-      "Bash(timeout 60 '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --no-first-run --user-data-dir=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/prof --virtual-time-budget=3000 --screenshot=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/shot.png --window-size=1000,700 file://__TRACKED_VAR__/retirement_withdrawal.html)"
+      "Bash(timeout 60 '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless=new --disable-gpu --no-first-run --user-data-dir=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/prof --virtual-time-budget=3000 --screenshot=/private/tmp/claude-501/-Users-brian------------/fdcd51da-b700-40ed-bbf3-afc9606a4a05/scratchpad/shot.png --window-size=1000,700 file://__TRACKED_VAR__/retirement_withdrawal.html)",
+      "Bash(curl -s https://brianhuang1998-art.github.io/stock_analysis/assets/css/styles.css)",
+      "Bash(sed -i '' -e 's/#f8c68f/#fbd8b0/' -e 's/#fbd8b0;}\\\\n//' assets/css/styles.css)",
+      "Bash(sed -i '' -e '738s/#fbd8b0/#fce5cb/' -e '739s/#fde8d0/#fdf0e0/' -e '740s/#fef4e8/#fef8f0/' assets/css/styles.css)"
     ]
   }
 }
